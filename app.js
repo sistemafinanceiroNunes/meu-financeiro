@@ -58,6 +58,9 @@ let funcaoExclusaoCallback = null;
 let touchStartX = 0;
 let touchEndX = 0;
 
+// Variável Global para controlar o modo de filtro nas receitas
+window.modoFiltroReceita = 'todos';
+
 window.addEventListener('DOMContentLoaded', () => {
     verificarDispositivoMobile();
 
@@ -91,14 +94,20 @@ window.addEventListener('DOMContentLoaded', () => {
     const mesAtual = mesesOrdem[new Date().getMonth()];
     const anoAtual = new Date().getFullYear().toString();
     
+    // Recuperar filtros da Home
     const mesSalvo = localStorage.getItem('mesSelecionadoSolon') || mesAtual;
     const anoSalvo = localStorage.getItem('anoSelecionadoSolon') || anoAtual;
-
     const selectMes = document.getElementById('filtroMes');
     const selectAno = document.getElementById('filtroAno');
-    
     if(selectMes) selectMes.value = mesSalvo;
     if(selectAno) selectAno.value = anoSalvo;
+
+    // Recuperar filtros da aba Receitas
+    window.modoFiltroReceita = localStorage.getItem('modoFiltroReceita') || 'todos';
+    const savedMesRec = localStorage.getItem('filtroMesReceitaSelecionado') || mesAtual;
+    const savedAnoRec = localStorage.getItem('filtroAnoReceitaSelecionado') || anoAtual;
+    if(document.getElementById('filtroMesReceitaLista')) document.getElementById('filtroMesReceitaLista').value = savedMesRec;
+    if(document.getElementById('filtroAnoReceitaLista')) document.getElementById('filtroAnoReceitaLista').value = savedAnoRec;
 
     anoSelecionadoCriacao = anoAtual;
     anoSelecionadoCriacaoReceita = anoAtual;
@@ -161,6 +170,30 @@ window.salvarFiltroPeriodo = function() {
     localStorage.setItem('mesSelecionadoSolon', document.getElementById('filtroMes').value);
     localStorage.setItem('anoSelecionadoSolon', document.getElementById('filtroAno').value);
     atualizarAnaliseMes();
+};
+
+window.filtrarReceitasPorSelecao = function() {
+    window.modoFiltroReceita = 'mes';
+    const mes = document.getElementById('filtroMesReceitaLista').value;
+    const ano = document.getElementById('filtroAnoReceitaLista').value;
+    
+    // Mapeamento caso o valor venha escrito inteiro do HTML
+    const mapa = {
+        'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
+        'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
+        'Setembro': 'Set', 'Outubro': 'Out', 'Novembro': 'Nov', 'Dezembro': 'Dez'
+    };
+    const mesCerto = mapa[mes] || mes;
+
+    localStorage.setItem('filtroMesReceitaSelecionado', mesCerto);
+    localStorage.setItem('filtroAnoReceitaSelecionado', ano);
+    localStorage.setItem('modoFiltroReceita', 'mes');
+    renderizarReceitas();
+};
+
+window.limparFiltroReceitas = function() {
+    window.modoFiltroReceita = 'todos';
+    localStorage.setItem('modoFiltroReceita', 'todos');
     renderizarReceitas();
 };
 
@@ -1403,12 +1436,7 @@ window.atualizarAnaliseMes = function() {
     else { badge.innerText = "SAUDÁVEL"; badge.style.backgroundColor = "#28a745"; badge.style.color = "white"; txtDesc.innerText = "Balanço positivo"; }
 };
 
-window.salvarFiltroReceita = function() {
-    localStorage.setItem('mesSelecionadoReceitaSolon', document.getElementById('filtroMesReceita').value);
-    localStorage.setItem('anoSelecionadoReceitaSolon', document.getElementById('filtroAnoReceita').value);
-    renderizarReceitas();
-};
-
+// FUNÇÃO PARA LIDAR COM A ABA DE RECEITAS E OS SEUS FILTROS VISUAIS
 function renderizarReceitas() {
     const listaHtml = document.getElementById('lista-receitas-html');
     const dashValor = document.getElementById('dash-valor-receita');
@@ -1416,11 +1444,23 @@ function renderizarReceitas() {
     listaHtml.innerHTML = '';
     let totalFiltrado = 0;
 
-    let elMesFiltro = document.getElementById('filtroMesReceita');
-    let elAnoFiltro = document.getElementById('filtroAnoReceita');
+    let elMesFiltro = document.getElementById('filtroMesReceitaLista');
+    let elAnoFiltro = document.getElementById('filtroAnoReceitaLista');
     
-    const mesFiltro = elMesFiltro ? elMesFiltro.value : mesesOrdem[new Date().getMonth()];
-    const anoFiltro = elAnoFiltro ? elAnoFiltro.value : new Date().getFullYear().toString();
+    // Tratamento seguro para saber sempre qual mês e ano ler
+    const mesFiltroSelecionado = elMesFiltro ? elMesFiltro.value : mesesOrdem[new Date().getMonth()];
+    const anoFiltroSelecionado = elAnoFiltro ? elAnoFiltro.value : new Date().getFullYear().toString();
+    
+    // Converte possíveis nomes por extenso para sigla (ex: Outubro -> Out)
+    const mapaMesesTexto = {
+        'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
+        'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
+        'Setembro': 'Set', 'Outubro': 'Out', 'Novembro': 'Nov', 'Dezembro': 'Dez',
+        'Jan': 'Jan', 'Fev': 'Fev', 'Mar': 'Mar', 'Abr': 'Abr', 'Mai': 'Mai', 'Jun': 'Jun',
+        'Jul': 'Jul', 'Ago': 'Ago', 'Set': 'Set', 'Out': 'Out', 'Nov': 'Nov', 'Dez': 'Dez'
+    };
+    const mesFiltro = mapaMesesTexto[mesFiltroSelecionado] || mesFiltroSelecionado;
+    const anoFiltro = anoFiltroSelecionado;
 
     if (!dadosLocais.receitas || dadosLocais.receitas.length === 0) {
         listaHtml.innerHTML = '<li style="color: #777; justify-content: center;">Nenhuma receita adicionada ainda.</li>';
@@ -1433,15 +1473,20 @@ function renderizarReceitas() {
         let tipoR = receita.tipo || 'Fixa';
         let pertenceAoFiltro = false;
 
-        if (tipoR === 'Fixa') {
+        if (window.modoFiltroReceita === 'todos') {
             pertenceAoFiltro = true;
-        } else if (tipoR === 'FixaAte' && receita.intervaloCompleto) {
-            let inicioAbs = receita.intervaloCompleto.inicio.ano * 12 + receita.intervaloCompleto.inicio.mesIndex;
-            let fimAbs = receita.intervaloCompleto.fim.ano * 12 + receita.intervaloCompleto.fim.mesIndex;
-            let filtroAbs = parseInt(anoFiltro) * 12 + mesesOrdem.indexOf(mesFiltro);
-            if (filtroAbs >= inicioAbs && filtroAbs <= fimAbs) pertenceAoFiltro = true;
-        } else if (tipoR === 'Extra' && receita.mesesPorAno) {
-            if ((receita.mesesPorAno[anoFiltro] || []).includes(mesFiltro)) pertenceAoFiltro = true;
+        } else {
+            // Regras Exatas de Filtragem:
+            if (tipoR === 'Fixa') {
+                pertenceAoFiltro = true; 
+            } else if (tipoR === 'FixaAte' && receita.intervaloCompleto) {
+                let inicioAbs = receita.intervaloCompleto.inicio.ano * 12 + receita.intervaloCompleto.inicio.mesIndex;
+                let fimAbs = receita.intervaloCompleto.fim.ano * 12 + receita.intervaloCompleto.fim.mesIndex;
+                let filtroAbs = parseInt(anoFiltro) * 12 + mesesOrdem.indexOf(mesFiltro);
+                if (filtroAbs >= inicioAbs && filtroAbs <= fimAbs) pertenceAoFiltro = true;
+            } else if (tipoR === 'Extra' && receita.mesesPorAno) {
+                if ((receita.mesesPorAno[anoFiltro] || []).includes(mesFiltro)) pertenceAoFiltro = true;
+            }
         }
 
         if (pertenceAoFiltro) {
@@ -1451,7 +1496,7 @@ function renderizarReceitas() {
     });
 
     if (receitasFiltradasParaMostrar.length === 0) {
-        listaHtml.innerHTML = `<li style="color: #777; justify-content: center; font-size: 13px;">Nenhuma receita encontrada para ${mesFiltro}/${anoFiltro}.</li>`;
+        listaHtml.innerHTML = `<li style="color: #777; justify-content: center; font-size: 13px;">Nenhuma receita encontrada para o período selecionado.</li>`;
     } else {
         receitasFiltradasParaMostrar.forEach(function(recMap) {
             let receita = recMap.itemObj;
