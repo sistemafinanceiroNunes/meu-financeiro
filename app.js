@@ -58,6 +58,10 @@ let funcaoExclusaoCallback = null;
 let touchStartX = 0;
 let touchEndX = 0;
 
+// Variáveis globais de controle de filtro nas abas
+window.modoFiltroReceita = 'todos';
+window.modoFiltroDespesa = 'todos';
+
 window.addEventListener('DOMContentLoaded', () => {
     verificarDispositivoMobile();
 
@@ -91,14 +95,21 @@ window.addEventListener('DOMContentLoaded', () => {
     const mesAtual = mesesOrdem[new Date().getMonth()];
     const anoAtual = new Date().getFullYear().toString();
     
+    // Filtros Gerais Home
     const mesSalvo = localStorage.getItem('mesSelecionadoSolon') || mesAtual;
     const anoSalvo = localStorage.getItem('anoSelecionadoSolon') || anoAtual;
+    if(document.getElementById('filtroMes')) document.getElementById('filtroMes').value = mesSalvo;
+    if(document.getElementById('filtroAno')) document.getElementById('filtroAno').value = anoSalvo;
 
-    const selectMes = document.getElementById('filtroMes');
-    const selectAno = document.getElementById('filtroAno');
-    
-    if(selectMes) selectMes.value = mesSalvo;
-    if(selectAno) selectAno.value = anoSalvo;
+    // Filtros Aba Receitas
+    window.modoFiltroReceita = localStorage.getItem('modoFiltroReceita') || 'todos';
+    if(document.getElementById('filtroMesReceitaLista')) document.getElementById('filtroMesReceitaLista').value = localStorage.getItem('filtroMesReceitaSelecionado') || mesAtual;
+    if(document.getElementById('filtroAnoReceitaLista')) document.getElementById('filtroAnoReceitaLista').value = localStorage.getItem('filtroAnoReceitaSelecionado') || anoAtual;
+
+    // Filtros Aba Despesas
+    window.modoFiltroDespesa = localStorage.getItem('modoFiltroDespesa') || 'todos';
+    if(document.getElementById('filtroMesDespesaLista')) document.getElementById('filtroMesDespesaLista').value = localStorage.getItem('filtroMesDespesaSelecionado') || mesAtual;
+    if(document.getElementById('filtroAnoDespesaLista')) document.getElementById('filtroAnoDespesaLista').value = localStorage.getItem('filtroAnoDespesaSelecionado') || anoAtual;
 
     anoSelecionadoCriacao = anoAtual;
     anoSelecionadoCriacaoReceita = anoAtual;
@@ -160,6 +171,55 @@ function aplicarTemaVisual(tema) {
 window.salvarFiltroPeriodo = function() {
     localStorage.setItem('mesSelecionadoSolon', document.getElementById('filtroMes').value);
     localStorage.setItem('anoSelecionadoSolon', document.getElementById('filtroAno').value);
+    atualizarAnaliseMes();
+};
+
+window.filtrarReceitasPorSelecao = function() {
+    window.modoFiltroReceita = 'mes';
+    const mes = document.getElementById('filtroMesReceitaLista').value;
+    const ano = document.getElementById('filtroAnoReceitaLista').value;
+    
+    const mapa = {
+        'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
+        'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
+        'Setembro': 'Set', 'Outubro': 'Out', 'Novembro': 'Nov', 'Dezembro': 'Dez'
+    };
+    const mesCerto = mapa[mes] || mes;
+
+    localStorage.setItem('filtroMesReceitaSelecionado', mesCerto);
+    localStorage.setItem('filtroAnoReceitaSelecionado', ano);
+    localStorage.setItem('modoFiltroReceita', 'mes');
+    renderizarReceitas();
+};
+
+window.limparFiltroReceitas = function() {
+    window.modoFiltroReceita = 'todos';
+    localStorage.setItem('modoFiltroReceita', 'todos');
+    renderizarReceitas();
+};
+
+window.filtrarDespesasPorSelecao = function() {
+    window.modoFiltroDespesa = 'mes';
+    const mes = document.getElementById('filtroMesDespesaLista').value;
+    const ano = document.getElementById('filtroAnoDespesaLista').value;
+    
+    const mapa = {
+        'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
+        'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
+        'Setembro': 'Set', 'Outubro': 'Out', 'Novembro': 'Nov', 'Dezembro': 'Dez'
+    };
+    const mesCerto = mapa[mes] || mes;
+
+    localStorage.setItem('filtroMesDespesaSelecionado', mesCerto);
+    localStorage.setItem('filtroAnoDespesaSelecionado', ano);
+    localStorage.setItem('modoFiltroDespesa', 'mes');
+    renderizarDespesas();
+};
+
+window.limparFiltroDespesas = function() {
+    window.modoFiltroDespesa = 'todos';
+    localStorage.setItem('modoFiltroDespesa', 'todos');
+    renderizarDespesas();
 };
 
 window.toggleListaAnos = function(event, idContainer) {
@@ -238,10 +298,12 @@ window.alternarTipoReceitaUI = function() {
     const tipo = document.getElementById('tipoReceita').value;
     const containerSeletor = document.getElementById('containerSeletorMesReceita');
     const infoBox = document.getElementById('infoIntervaloFixaReceita');
-    if (tipo === 'FixaAte') { containerSeletor.style.display = 'block'; if(infoBox) infoBox.style.display = 'block'; }
-    else if (tipo === 'Extra') { containerSeletor.style.display = 'block'; if(infoBox) infoBox.style.display = 'none'; }
-    else {
-        containerSeletor.style.display = 'none'; if(infoBox) infoBox.style.display = 'none';
+    if (tipo === 'FixaAte' || tipo === 'Extra') {
+        containerSeletor.style.display = 'block';
+        if(infoBox) infoBox.style.display = tipo === 'FixaAte' ? 'block' : 'none';
+    } else {
+        containerSeletor.style.display = 'none';
+        if(infoBox) infoBox.style.display = 'none';
         selecaoMesesReceitaMap = {}; selecaoMesesFixaInicio = null; selecaoMesesFixaFim = null;
         document.getElementById('textoMesesReceita').innerText = "Período / Meses...";
         document.querySelectorAll('#gradeMesesReceitaCriacao .chk-rec-mes').forEach(c => c.checked = false);
@@ -377,6 +439,19 @@ window.processarSelecaoMesReceita = function(mesValor, event) {
     const mesIndex = mesesOrdem.indexOf(mesValor);
     const anoAtualSel = parseInt(anoSelecionadoCriacaoReceita);
 
+    if (tipo === 'Extra') {
+        if (!selecaoMesesReceitaMap[anoAtualSel]) selecaoMesesReceitaMap[anoAtualSel] = [];
+        const chk = document.getElementById(`chkRec-${mesValor}`);
+        if (chk.checked) {
+            if (!selecaoMesesReceitaMap[anoAtualSel].includes(mesValor)) selecaoMesesReceitaMap[anoAtualSel].push(mesValor);
+        } else {
+            selecaoMesesReceitaMap[anoAtualSel] = selecaoMesesReceitaMap[anoAtualSel].filter(m => m !== mesValor);
+            if (selecaoMesesReceitaMap[anoAtualSel].length === 0) delete selecaoMesesReceitaMap[anoAtualSel];
+        }
+        atualizarTextoMesesReceita();
+        return;
+    }
+
     if (tipo === 'FixaAte') {
         if (!selecaoMesesFixaInicio) {
             selecaoMesesFixaInicio = { ano: anoAtualSel, mesIndex: mesIndex, mesNome: mesValor };
@@ -399,31 +474,47 @@ window.processarSelecaoMesReceita = function(mesValor, event) {
             document.getElementById('textoMesesReceita').innerText = `Início: ${mesValor}/${anoAtualSel} (Escolha o fim)`;
         }
         sincronizarCheckboxesVisuaisCriacaoReceitaFixaAte();
-    } else {
-        if (!selecaoMesesReceitaMap[anoAtualSel]) selecaoMesesReceitaMap[anoAtualSel] = [];
-        const chk = document.getElementById(`chkRec-${mesValor}`);
-        if (chk.checked) {
-            if (!selecaoMesesReceitaMap[anoAtualSel].includes(mesValor)) selecaoMesesReceitaMap[anoAtualSel].push(mesValor);
-        } else {
-            selecaoMesesReceitaMap[anoAtualSel] = selecaoMesesReceitaMap[anoAtualSel].filter(m => m !== mesValor);
-            if (selecaoMesesReceitaMap[anoAtualSel].length === 0) delete selecaoMesesReceitaMap[anoAtualSel];
-        }
-        atualizarTextoMesesReceita();
     }
 };
 
 window.processarSelecaoMesEditReceita = function(mesValor, event) {
     editReceitaFoiModificada = true;
+    const tipo = document.getElementById('editTipoReceita').value;
     const anoAtualSel = parseInt(anoEditandoReceitaAnoSel);
-    if (!editMesesReceitaMap[anoAtualSel]) editMesesReceitaMap[anoAtualSel] = [];
-    const chk = document.getElementById(`chkEditRec-${mesValor}`);
-    if (chk.checked) {
-        if (!editMesesReceitaMap[anoAtualSel].includes(mesValor)) editMesesReceitaMap[anoAtualSel].push(mesValor);
-    } else {
-        editMesesReceitaMap[anoAtualSel] = editMesesReceitaMap[anoAtualSel].filter(m => m !== mesValor);
-        if (editMesesReceitaMap[anoAtualSel].length === 0) delete editMesesReceitaMap[anoAtualSel];
+
+    if (tipo === 'Extra') {
+        if (!editMesesReceitaMap[anoAtualSel]) editMesesReceitaMap[anoAtualSel] = [];
+        const chk = document.getElementById(`chkEditRec-${mesValor}`);
+        if (chk.checked) {
+            if (!editMesesReceitaMap[anoAtualSel].includes(mesValor)) editMesesReceitaMap[anoAtualSel].push(mesValor);
+        } else {
+            editMesesReceitaMap[anoAtualSel] = editMesesReceitaMap[anoAtualSel].filter(m => m !== mesValor);
+            if (editMesesReceitaMap[anoAtualSel].length === 0) delete editMesesReceitaMap[anoAtualSel];
+        }
+        atualizarTextoMesesEditReceita();
+        return;
     }
-    atualizarTextoMesesEditReceita();
+
+    if (!editMesesFixaInicio) {
+        editMesesFixaInicio = { ano: anoAtualSel, mesIndex: mesesOrdem.indexOf(mesValor), mesNome: mesValor };
+        editMesesFixaFim = null;
+        document.getElementById('textoMesesEditReceita').innerText = `Início: ${mesValor}/${anoAtualSel} (Escolha o fim)`;
+    } else if (!editMesesFixaFim) {
+        let candidatoFim = { ano: anoAtualSel, mesIndex: mesesOrdem.indexOf(mesValor), mesNome: mesValor };
+        let inicioAbs = editMesesFixaInicio.ano * 12 + editMesesFixaInicio.mesIndex;
+        let fimAbs = candidatoFim.ano * 12 + candidatoFim.mesIndex;
+        if (fimAbs < inicioAbs) {
+            editMesesFixaInicio = candidatoFim;
+            document.getElementById('textoMesesEditReceita').innerText = `Início: ${mesValor}/${anoAtualSel} (Escolha o fim)`;
+        } else {
+            editMesesFixaFim = candidatoFim;
+            document.getElementById('textoMesesEditReceita').innerText = `${(fimAbs - inicioAbs) + 1} meses (${editMesesFixaFixaFormatado()})`;
+        }
+    } else {
+        editMesesFixaInicio = { ano: anoAtualSel, mesIndex: mesesOrdem.indexOf(mesValor), mesNome: mesValor };
+        editMesesFixaFim = null;
+        document.getElementById('textoMesesEditReceita').innerText = `Início: ${mesValor}/${anoAtualSel} (Escolha o fim)`;
+    }
 };
 
 function selecaoMesesFixaFixaFormatado() {
@@ -486,16 +577,24 @@ function sincronizarCheckboxesVisuaisEditDespesa() {
 }
 
 function sincronizarCheckboxesVisuaisCriacaoReceita() {
+    const tipo = document.getElementById('tipoReceita').value;
     const anoAtualSel = parseInt(anoSelecionadoCriacaoReceita);
     document.querySelectorAll('#gradeMesesReceitaCriacao .chk-rec-mes').forEach(chk => {
-        chk.checked = (selecaoMesesReceitaMap[anoAtualSel] || []).includes(chk.value);
+        const mesVal = chk.value;
+        if (tipo === 'Extra') {
+            chk.checked = (selecaoMesesReceitaMap[anoAtualSel] || []).includes(mesVal);
+        }
     });
 }
 
 function sincronizarCheckboxesVisuaisEditReceita() {
+    const tipo = document.getElementById('editTipoReceita').value;
     const anoAtualSel = parseInt(anoEditandoReceitaAnoSel);
     document.querySelectorAll('#gradeMesesEditReceitaCriacao .chk-edit-rec-mes').forEach(chk => {
-        chk.checked = (editMesesReceitaMap[anoAtualSel] || []).includes(chk.value);
+        const mesVal = chk.value;
+        if (tipo === 'Extra') {
+            chk.checked = (editMesesReceitaMap[anoAtualSel] || []).includes(mesVal);
+        }
     });
 }
 
@@ -742,7 +841,7 @@ window.salvarDadosPessoaisConfig = async function() {
 
     if (currentUserUid) {
         try {
-            await setDoc(doc(db, "usuarios", currentUserUid), { nome: novoNome, sobrenome: sobrenome, apelido: novoApelido }, { merge: true });
+            await setDoc(doc(db, "usuarios", currentUserUid), { nome: novoNome, sobrenome: novoSobrenome, apelido: novoApelido }, { merge: true });
             let nomeExibicao = novoApelido || novoNome;
             document.getElementById('nomeUserDisplay').innerText = nomeExibicao;
             document.getElementById('frasePersonalizada').innerText = `Não gasta com besteira ${nomeExibicao}, kkk`;
@@ -1119,6 +1218,10 @@ window.mudarAba = function(nomeAba) {
     if(nomeAba === 'inicio') {
         if (document.getElementById('btnSubMensal').classList.contains('ativo')) atualizarAnaliseMes();
         else zerarPainelLateralAnual();
+    } else if(nomeAba === 'receitas') {
+        renderizarReceitas();
+    } else if(nomeAba === 'despesas') {
+        renderizarDespesas();
     }
 };
 
@@ -1222,14 +1325,21 @@ window.atualizarAnaliseMes = function() {
     if (dadosLocais.receitas) {
         dadosLocais.receitas.forEach(r => {
             let tipoR = r.tipo || 'Fixa';
-            if (tipoR === 'Fixa') totalReceitasMes += r.valor;
-            else if (tipoR === 'FixaAte' && r.intervaloCompleto) {
+            let atendePeriodoReceita = false;
+
+            if (tipoR === 'Fixa') {
+                atendePeriodoReceita = true;
+            } else if (tipoR === 'FixaAte' && r.intervaloCompleto) {
                 let inicioAbs = r.intervaloCompleto.inicio.ano * 12 + r.intervaloCompleto.inicio.mesIndex;
                 let fimAbs = r.intervaloCompleto.fim.ano * 12 + r.intervaloCompleto.fim.mesIndex;
                 let mesAtualAbs = parseInt(anoSelecionado) * 12 + mesesOrdem.indexOf(mesSelecionado);
-                if (mesAtualAbs >= inicioAbs && mesAtualAbs <= fimAbs) totalReceitasMes += r.valor;
+                if (mesAtualAbs >= inicioAbs && mesAtualAbs <= fimAbs) atendePeriodoReceita = true;
             } else if (tipoR === 'Extra' && r.mesesPorAno) {
-                if ((r.mesesPorAno[anoSelecionado] || []).includes(mesSelecionado)) totalReceitasMes += r.valor;
+                if ((r.mesesPorAno[anoSelecionado] || []).includes(mesSelecionado)) atendePeriodoReceita = true;
+            }
+
+            if (atendePeriodoReceita) {
+                totalReceitasMes += r.valor;
             }
         });
     }
@@ -1243,15 +1353,16 @@ window.atualizarAnaliseMes = function() {
     if (dadosLocais.despesas) {
         dadosLocais.despesas.forEach((d, indexOriginal) => {
             let atendePeriodo = false, valorMensalCalculado = d.valor;
-            if (d.tipo === 'Fixa') {
-                let mesAtualAbs = parseInt(anoSelecionado) * 12 + mesesOrdem.indexOf(mesSelecionado);
-                if (mesAtualAbs >= 24000 && mesAtualAbs <= 24431) atendePeriodo = true;
-            } else if (d.tipo === 'FixaAte' && d.intervaloCompleto) {
+            let tipoD = d.tipo || 'Fixa';
+
+            if (tipoD === 'Fixa') {
+                atendePeriodo = true;
+            } else if (tipoD === 'FixaAte' && d.intervaloCompleto) {
                 let inicioAbs = d.intervaloCompleto.inicio.ano * 12 + d.intervaloCompleto.inicio.mesIndex;
                 let fimAbs = d.intervaloCompleto.fim.ano * 12 + d.intervaloCompleto.fim.mesIndex;
                 let mesAtualAbs = parseInt(anoSelecionado) * 12 + mesesOrdem.indexOf(mesSelecionado);
                 if (mesAtualAbs >= inicioAbs && mesAtualAbs <= fimAbs) atendePeriodo = true;
-            } else if (d.tipo === 'Variável' && d.mesesPorAno) {
+            } else if (tipoD === 'Variável' && d.mesesPorAno) {
                 if ((d.mesesPorAno[anoSelecionado] || []).includes(mesSelecionado)) atendePeriodo = true;
             }
 
@@ -1267,10 +1378,25 @@ window.atualizarAnaliseMes = function() {
                 totalPagoMes += valorQuitadoCalculado;
                 totalAPagarMes += valorPendenteCalculado;
 
-                let tipoItem = d.tipo || 'Fixa';
-                if (filtroExtratoAtual === 'Todos' || filtroExtratoAtual === tipoItem || (filtroExtratoAtual === 'Fixa' && tipoItem === 'FixaAte')) {
-                    let rotuloExtrato = d.tipo === 'FixaAte' && d.intervaloCompleto ? `${d.totalMesesContrato} meses` : "Recorrente";
-                    despesasFiltradas.push({ indexOriginal, nome: d.nome, tipo: tipoItem === 'FixaAte' ? 'Fixa Até' : tipoItem, rotuloTempo: rotuloExtrato, valorParcela: valorMensalCalculado, situacao: sit, valorParcial: valParcial });
+                if (filtroExtratoAtual === 'Todos' || filtroExtratoAtual === tipoD || (filtroExtratoAtual === 'Fixa' && tipoD === 'FixaAte')) {
+                    
+                    let rotuloExtrato = "Fixo";
+                    if (tipoD === 'FixaAte' && d.intervaloCompleto) {
+                        rotuloExtrato = `${d.intervaloCompleto.inicio.mesNome}/${d.intervaloCompleto.inicio.ano} a ${d.intervaloCompleto.fim.mesNome}/${d.intervaloCompleto.fim.ano}`;
+                    } else if (tipoD === 'Variável' && d.mesesPorAno) {
+                        let mesesAtivos = [];
+                        Object.keys(d.mesesPorAno).forEach(ano => {
+                            (d.mesesPorAno[ano] || []).forEach(m => mesesAtivos.push(`${m}/${ano}`));
+                        });
+                        if (mesesAtivos.length > 0) {
+                            let primeiro = mesesAtivos[0];
+                            rotuloExtrato = mesesAtivos.length > 1 ? `${primeiro} (+${mesesAtivos.length - 1})` : primeiro;
+                        } else {
+                            rotuloExtrato = "Variável";
+                        }
+                    }
+
+                    despesasFiltradas.push({ indexOriginal, nome: d.nome, tipo: tipoD === 'FixaAte' ? 'Fixa Até' : tipoD, rotuloTempo: rotuloExtrato, valorParcela: valorMensalCalculado, situacao: sit, valorParcial: valParcial });
                 }
             }
         });
@@ -1334,76 +1460,230 @@ window.atualizarAnaliseMes = function() {
     if (totalReceitasMes === 0 && totalDespesasMes === 0) { badge.innerText = "NEUTRO"; badge.style.backgroundColor = "#6c757d"; txtDesc.innerText = "Sem pendências"; }
     else if (previsaoSobraDéficit < 0) { badge.innerText = "DÉFICIT"; badge.style.backgroundColor = "#dc3545"; txtDesc.innerText = "Gastos maiores que entradas"; }
     else if (pctComp > 80) { badge.innerText = "ALERTA"; badge.style.backgroundColor = "#ffc107"; badge.style.color = "#333"; txtDesc.innerText = "Comprometimento alto"; }
-    else { badge.innerText = "SAUDÁVEL"; badge.style.backgroundColor = "#28a745"; txtDesc.innerText = "Balanço positivo"; }
+    else { badge.innerText = "SAUDÁVEL"; badge.style.backgroundColor = "#28a745"; badge.style.color = "white"; txtDesc.innerText = "Balanço positivo"; }
 };
 
+// RENDERIZAR E FILTRAR RECEITAS
 function renderizarReceitas() {
     const listaHtml = document.getElementById('lista-receitas-html');
     const dashValor = document.getElementById('dash-valor-receita');
     if(!listaHtml) return;
     listaHtml.innerHTML = '';
-    let total = 0;
+    let totalFiltrado = 0;
+
+    let elMesFiltro = document.getElementById('filtroMesReceitaLista');
+    let elAnoFiltro = document.getElementById('filtroAnoReceitaLista');
+    
+    const mesFiltroSelecionado = elMesFiltro ? elMesFiltro.value : mesesOrdem[new Date().getMonth()];
+    const anoFiltroSelecionado = elAnoFiltro ? elAnoFiltro.value : new Date().getFullYear().toString();
+    
+    const mapaMesesTexto = {
+        'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
+        'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
+        'Setembro': 'Set', 'Outubro': 'Out', 'Novembro': 'Nov', 'Dezembro': 'Dez',
+        'Jan': 'Jan', 'Fev': 'Fev', 'Mar': 'Mar', 'Abr': 'Abr', 'Mai': 'Mai', 'Jun': 'Jun',
+        'Jul': 'Jul', 'Ago': 'Ago', 'Set': 'Set', 'Out': 'Out', 'Nov': 'Nov', 'Dez': 'Dez'
+    };
+    const mesFiltro = mapaMesesTexto[mesFiltroSelecionado] || mesFiltroSelecionado;
+    const anoFiltro = anoFiltroSelecionado;
 
     if (!dadosLocais.receitas || dadosLocais.receitas.length === 0) {
         listaHtml.innerHTML = '<li style="color: #777; justify-content: center;">Nenhuma receita adicionada ainda.</li>';
         dashValor.innerText = "R$ 0,00"; return;
     }
 
-    dadosLocais.receitas.forEach(function(receita, index) {
-        total += receita.valor;
-        let valFormat = receita.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        let tipoTexto = receita.tipo === 'FixaAte' ? 'Fixa Até' : (receita.tipo === 'Extra' ? 'Receita Extra' : 'Fixa');
-        let rotuloDetalhe = receita.tipo === 'FixaAte' && receita.intervaloCompleto ? `${receita.totalMesesContrato} meses` : "Recorrente";
+    let receitasFiltradasParaMostrar = [];
 
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <div class="info-financa">
-                <span class="nome">${receita.nome} (${tipoTexto})</span>
-                <span class="detalhes">${rotuloDetalhe}</span>
-                <span class="valor-receita">${valFormat}</span>
-            </div>
-            <div class="botoes-acao">
-                <button class="btn-editar" onclick="abrirModalEditarReceita(${index})">✏️</button>
-                <button class="btn-lixeira" onclick="solicitarRemocaoReceita(${index})">🗑️</button>
-            </div>`;
-        listaHtml.appendChild(li);
+    dadosLocais.receitas.forEach(function(receita, index) {
+        let tipoR = receita.tipo || 'Fixa';
+        let pertenceAoFiltro = false;
+
+        if (window.modoFiltroReceita === 'todos') {
+            pertenceAoFiltro = true;
+        } else {
+            if (tipoR === 'Fixa') {
+                pertenceAoFiltro = true; 
+            } else if (tipoR === 'FixaAte' && receita.intervaloCompleto) {
+                let inicioAbs = receita.intervaloCompleto.inicio.ano * 12 + receita.intervaloCompleto.inicio.mesIndex;
+                let fimAbs = receita.intervaloCompleto.fim.ano * 12 + receita.intervaloCompleto.fim.mesIndex;
+                let filtroAbs = parseInt(anoFiltro) * 12 + mesesOrdem.indexOf(mesFiltro);
+                if (filtroAbs >= inicioAbs && filtroAbs <= fimAbs) pertenceAoFiltro = true;
+            } else if (tipoR === 'Extra' && receita.mesesPorAno) {
+                if ((receita.mesesPorAno[anoFiltro] || []).includes(mesFiltro)) pertenceAoFiltro = true;
+            }
+        }
+
+        if (pertenceAoFiltro) {
+            receitasFiltradasParaMostrar.push({ itemObj: receita, indexOriginal: index });
+            totalFiltrado += receita.valor;
+        }
     });
-    dashValor.innerText = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    if (receitasFiltradasParaMostrar.length === 0) {
+        listaHtml.innerHTML = `<li style="color: #777; justify-content: center; font-size: 13px;">Nenhuma receita encontrada para o período selecionado.</li>`;
+    } else {
+        receitasFiltradasParaMostrar.forEach(function(recMap) {
+            let receita = recMap.itemObj;
+            let index = recMap.indexOriginal;
+            
+            let valFormat = receita.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            let tipoTexto = receita.tipo === 'FixaAte' ? 'Fixa Até' : (receita.tipo === 'Extra' ? 'Receita Extra' : 'Fixa');
+            
+            let rotuloDetalhe = "Fixo";
+            if (receita.tipo === 'FixaAte' && receita.intervaloCompleto) {
+                rotuloDetalhe = `${receita.intervaloCompleto.inicio.mesNome}/${receita.intervaloCompleto.inicio.ano} a ${receita.intervaloCompleto.fim.mesNome}/${receita.intervaloCompleto.fim.ano}`;
+            } else if (receita.tipo === 'Extra' && receita.mesesPorAno) {
+                let mesesAtivos = [];
+                Object.keys(receita.mesesPorAno).forEach(ano => {
+                    (receita.mesesPorAno[ano] || []).forEach(m => mesesAtivos.push(`${m}/${ano}`));
+                });
+                if (mesesAtivos.length > 0) {
+                    let primeiro = mesesAtivos[0];
+                    rotuloDetalhe = mesesAtivos.length > 1 ? `${primeiro} (+${mesesAtivos.length - 1})` : primeiro;
+                } else {
+                    rotuloDetalhe = "Receita Extra";
+                }
+            }
+
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <div class="info-financa">
+                    <span class="nome">${receita.nome} (${tipoTexto})</span>
+                    <span class="detalhes">${rotuloDetalhe}</span>
+                    <span class="valor-receita">${valFormat}</span>
+                </div>
+                <div class="botoes-acao">
+                    <button class="btn-editar" onclick="abrirModalEditarReceita(${index})">✏️</button>
+                    <button class="btn-lixeira" onclick="solicitarRemocaoReceita(${index})">🗑️</button>
+                </div>`;
+            listaHtml.appendChild(li);
+        });
+    }
+    dashValor.innerText = totalFiltrado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+// RENDERIZAR E FILTRAR DESPESAS (COM O MESMO PADRÃO DE RECEITAS)
 function renderizarDespesas() {
     const listaHtml = document.getElementById('lista-despesas-html');
     const dashValor = document.getElementById('dash-valor-despesa');
     if(!listaHtml) return;
     listaHtml.innerHTML = '';
-    let total = 0;
+    let totalFiltrado = 0;
+
+    let elMesFiltro = document.getElementById('filtroMesDespesaLista');
+    let elAnoFiltro = document.getElementById('filtroAnoDespesaLista');
+    
+    const mesFiltroSelecionado = elMesFiltro ? elMesFiltro.value : mesesOrdem[new Date().getMonth()];
+    const anoFiltroSelecionado = elAnoFiltro ? elAnoFiltro.value : new Date().getFullYear().toString();
+    
+    const mapaMesesTexto = {
+        'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
+        'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
+        'Setembro': 'Set', 'Outubro': 'Out', 'Novembro': 'Nov', 'Dezembro': 'Dez',
+        'Jan': 'Jan', 'Fev': 'Fev', 'Mar': 'Mar', 'Abr': 'Abr', 'Mai': 'Mai', 'Jun': 'Jun',
+        'Jul': 'Jul', 'Ago': 'Ago', 'Set': 'Set', 'Out': 'Out', 'Nov': 'Nov', 'Dez': 'Dez'
+    };
+    const mesFiltro = mapaMesesTexto[mesFiltroSelecionado] || mesFiltroSelecionado;
+    const anoFiltro = anoFiltroSelecionado;
 
     if (!dadosLocais.despesas || dadosLocais.despesas.length === 0) {
         listaHtml.innerHTML = '<li style="color: #777; justify-content: center;">Nenhuma despesa adicionada ainda.</li>';
         dashValor.innerText = "R$ 0,00"; return;
     }
 
-    dadosLocais.despesas.forEach(function(despesa, index) {
-        total += despesa.valor;
-        let valFormat = despesa.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        let tipoTexto = despesa.tipo === 'FixaAte' ? 'Fixa Até' : (despesa.tipo === 'Variável' ? 'Variável' : 'Fixa');
-        let rotuloDetalhe = despesa.tipo === 'FixaAte' && despesa.intervaloCompleto ? `${despesa.totalMesesContrato} meses` : "Recorrente";
+    let despesasFiltradasParaMostrar = [];
 
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <div class="info-financa">
-                <span class="nome">${despesa.nome} (${tipoTexto})</span>
-                <span class="detalhes">${rotuloDetalhe}</span>
-                <span class="valor-despesa" style="color: #dc3545 !important;">${valFormat}</span>
-            </div>
-            <div class="botoes-acao">
-                <button class="btn-editar" onclick="abrirModalEditarDespesa(${index})">✏️</button>
-                <button class="btn-lixeira" onclick="solicitarRemocaoDespesa(${index})">🗑️</button>
-            </div>`;
-        listaHtml.appendChild(li);
+    dadosLocais.despesas.forEach(function(despesa, index) {
+        let tipoD = despesa.tipo || 'Fixa';
+        let pertenceAoFiltro = false;
+
+        if (window.modoFiltroDespesa === 'todos') {
+            pertenceAoFiltro = true;
+        } else {
+            if (tipoD === 'Fixa') {
+                pertenceAoFiltro = true;
+            } else if (tipoD === 'FixaAte' && despesa.intervaloCompleto) {
+                let inicioAbs = despesa.intervaloCompleto.inicio.ano * 12 + despesa.intervaloCompleto.inicio.mesIndex;
+                let fimAbs = despesa.intervaloCompleto.fim.ano * 12 + despesa.intervaloCompleto.fim.mesIndex;
+                let filtroAbs = parseInt(anoFiltro) * 12 + mesesOrdem.indexOf(mesFiltro);
+                if (filtroAbs >= inicioAbs && filtroAbs <= fimAbs) pertenceAoFiltro = true;
+            } else if (tipoD === 'Variável' && despesa.mesesPorAno) {
+                if ((despesa.mesesPorAno[anoFiltro] || []).includes(mesFiltro)) pertenceAoFiltro = true;
+            }
+        }
+
+        if (pertenceAoFiltro) {
+            despesasFiltradasParaMostrar.push({ itemObj: despesa, indexOriginal: index });
+            totalFiltrado += despesa.valor;
+        }
     });
-    dashValor.innerText = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    if (despesasFiltradasParaMostrar.length === 0) {
+        listaHtml.innerHTML = `<li style="color: #777; justify-content: center; font-size: 13px;">Nenhuma despesa encontrada para o período selecionado.</li>`;
+    } else {
+        despesasFiltradasParaMostrar.forEach(function(despMap) {
+            let despesa = despMap.itemObj;
+            let index = despMap.indexOriginal;
+            
+            let valFormat = despesa.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            let tipoTexto = despesa.tipo === 'FixaAte' ? 'Fixa Até' : (despesa.tipo === 'Variável' ? 'Variável' : 'Fixa');
+            
+            let rotuloDetalhe = "Fixo";
+            if (despesa.tipo === 'FixaAte' && despesa.intervaloCompleto) {
+                rotuloDetalhe = `${despesa.intervaloCompleto.inicio.mesNome}/${despesa.intervaloCompleto.inicio.ano} a ${despesa.intervaloCompleto.fim.mesNome}/${despesa.intervaloCompleto.fim.ano}`;
+            } else if (despesa.tipo === 'Variável' && despesa.mesesPorAno) {
+                let mesesAtivos = [];
+                Object.keys(despesa.mesesPorAno).forEach(ano => {
+                    (despesa.mesesPorAno[ano] || []).forEach(m => mesesAtivos.push(`${m}/${ano}`));
+                });
+                if (mesesAtivos.length > 0) {
+                    let primeiro = mesesAtivos[0];
+                    rotuloDetalhe = mesesAtivos.length > 1 ? `${primeiro} (+${mesesAtivos.length - 1})` : primeiro;
+                } else {
+                    rotuloDetalhe = "Variável";
+                }
+            }
+
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <div class="info-financa">
+                    <span class="nome">${despesa.nome} (${tipoTexto})</span>
+                    <span class="detalhes">${rotuloDetalhe}</span>
+                    <span class="valor-despesa" style="color: #dc3545 !important;">${valFormat}</span>
+                </div>
+                <div class="botoes-acao">
+                    <button class="btn-editar" onclick="abrirModalEditarDespesa(${index})">✏️</button>
+                    <button class="btn-lixeira" onclick="solicitarRemocaoDespesa(${index})">🗑️</button>
+                </div>`;
+            listaHtml.appendChild(li);
+        });
+    }
+    dashValor.innerText = totalFiltrado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
+
+window.filtrarDespesasPorSelecao = function() {
+    window.modoFiltroDespesa = 'mes';
+    const mes = document.getElementById('filtroMesDespesaLista').value;
+    const ano = document.getElementById('filtroAnoDespesaLista').value;
+    
+    const mapa = {
+        'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
+        'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
+        'Setembro': 'Set', 'Outubro': 'Out', 'Novembro': 'Nov', 'Dezembro': 'Dez'
+    };
+    const mesCerto = mapa[mes] || mes;
+
+    localStorage.setItem('filtroMesDespesaSelecionado', mesCerto);
+    localStorage.setItem('filtroAnoDespesaSelecionado', ano);
+    localStorage.setItem('modoFiltroDespesa', 'mes');
+    renderizarDespesas();
+};
+
+window.limparFiltroDespesas = function() {
+    window.modoFiltroDespesa = 'todos';
+    localStorage.setItem('modoFiltroDespesa', 'todos');
+    renderizarDespesas();
+};
 
 window.adicionarReceita = async function() {
     let nome = document.getElementById('nomeReceita').value.trim();
@@ -1465,7 +1745,6 @@ window.adicionarItem = async function() {
     t.value = ''; await salvarNaNuvem();
 };
 
-// Ativar login ao pressionar Enter na tela de login
 document.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
         const telaLogin = document.getElementById("tela-login");
