@@ -58,9 +58,14 @@ let funcaoExclusaoCallback = null;
 let touchStartX = 0;
 let touchEndX = 0;
 
+<<<<<<< HEAD
 // Variáveis globais de controle de filtro nas abas
 window.modoFiltroReceita = 'todos';
 window.modoFiltroDespesa = 'todos';
+=======
+// Variável Global para controlar o modo de filtro nas receitas
+window.modoFiltroReceita = 'todos';
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
 
 window.addEventListener('DOMContentLoaded', () => {
     verificarDispositivoMobile();
@@ -95,6 +100,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const mesAtual = mesesOrdem[new Date().getMonth()];
     const anoAtual = new Date().getFullYear().toString();
     
+<<<<<<< HEAD
     // Filtros Gerais Home
     const mesSalvo = localStorage.getItem('mesSelecionadoSolon') || mesAtual;
     const anoSalvo = localStorage.getItem('anoSelecionadoSolon') || anoAtual;
@@ -110,6 +116,22 @@ window.addEventListener('DOMContentLoaded', () => {
     window.modoFiltroDespesa = localStorage.getItem('modoFiltroDespesa') || 'todos';
     if(document.getElementById('filtroMesDespesaLista')) document.getElementById('filtroMesDespesaLista').value = localStorage.getItem('filtroMesDespesaSelecionado') || mesAtual;
     if(document.getElementById('filtroAnoDespesaLista')) document.getElementById('filtroAnoDespesaLista').value = localStorage.getItem('filtroAnoDespesaSelecionado') || anoAtual;
+=======
+    // Recuperar filtros da Home
+    const mesSalvo = localStorage.getItem('mesSelecionadoSolon') || mesAtual;
+    const anoSalvo = localStorage.getItem('anoSelecionadoSolon') || anoAtual;
+    const selectMes = document.getElementById('filtroMes');
+    const selectAno = document.getElementById('filtroAno');
+    if(selectMes) selectMes.value = mesSalvo;
+    if(selectAno) selectAno.value = anoSalvo;
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
+
+    // Recuperar filtros da aba Receitas
+    window.modoFiltroReceita = localStorage.getItem('modoFiltroReceita') || 'todos';
+    const savedMesRec = localStorage.getItem('filtroMesReceitaSelecionado') || mesAtual;
+    const savedAnoRec = localStorage.getItem('filtroAnoReceitaSelecionado') || anoAtual;
+    if(document.getElementById('filtroMesReceitaLista')) document.getElementById('filtroMesReceitaLista').value = savedMesRec;
+    if(document.getElementById('filtroAnoReceitaLista')) document.getElementById('filtroAnoReceitaLista').value = savedAnoRec;
 
     anoSelecionadoCriacao = anoAtual;
     anoSelecionadoCriacaoReceita = anoAtual;
@@ -179,6 +201,10 @@ window.filtrarReceitasPorSelecao = function() {
     const mes = document.getElementById('filtroMesReceitaLista').value;
     const ano = document.getElementById('filtroAnoReceitaLista').value;
     
+<<<<<<< HEAD
+=======
+    // Mapeamento caso o valor venha escrito inteiro do HTML
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
     const mapa = {
         'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
         'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
@@ -196,6 +222,7 @@ window.limparFiltroReceitas = function() {
     window.modoFiltroReceita = 'todos';
     localStorage.setItem('modoFiltroReceita', 'todos');
     renderizarReceitas();
+<<<<<<< HEAD
 };
 
 window.filtrarDespesasPorSelecao = function() {
@@ -220,6 +247,8 @@ window.limparFiltroDespesas = function() {
     window.modoFiltroDespesa = 'todos';
     localStorage.setItem('modoFiltroDespesa', 'todos');
     renderizarDespesas();
+=======
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
 };
 
 window.toggleListaAnos = function(event, idContainer) {
@@ -1220,8 +1249,11 @@ window.mudarAba = function(nomeAba) {
         else zerarPainelLateralAnual();
     } else if(nomeAba === 'receitas') {
         renderizarReceitas();
+<<<<<<< HEAD
     } else if(nomeAba === 'despesas') {
         renderizarDespesas();
+=======
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
     }
 };
 
@@ -1463,7 +1495,11 @@ window.atualizarAnaliseMes = function() {
     else { badge.innerText = "SAUDÁVEL"; badge.style.backgroundColor = "#28a745"; badge.style.color = "white"; txtDesc.innerText = "Balanço positivo"; }
 };
 
+<<<<<<< HEAD
 // RENDERIZAR E FILTRAR RECEITAS
+=======
+// FUNÇÃO PARA LIDAR COM A ABA DE RECEITAS E OS SEUS FILTROS VISUAIS
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
 function renderizarReceitas() {
     const listaHtml = document.getElementById('lista-receitas-html');
     const dashValor = document.getElementById('dash-valor-receita');
@@ -1474,9 +1510,17 @@ function renderizarReceitas() {
     let elMesFiltro = document.getElementById('filtroMesReceitaLista');
     let elAnoFiltro = document.getElementById('filtroAnoReceitaLista');
     
+<<<<<<< HEAD
     const mesFiltroSelecionado = elMesFiltro ? elMesFiltro.value : mesesOrdem[new Date().getMonth()];
     const anoFiltroSelecionado = elAnoFiltro ? elAnoFiltro.value : new Date().getFullYear().toString();
     
+=======
+    // Tratamento seguro para saber sempre qual mês e ano ler
+    const mesFiltroSelecionado = elMesFiltro ? elMesFiltro.value : mesesOrdem[new Date().getMonth()];
+    const anoFiltroSelecionado = elAnoFiltro ? elAnoFiltro.value : new Date().getFullYear().toString();
+    
+    // Converte possíveis nomes por extenso para sigla (ex: Outubro -> Out)
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
     const mapaMesesTexto = {
         'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
         'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
@@ -1501,6 +1545,10 @@ function renderizarReceitas() {
         if (window.modoFiltroReceita === 'todos') {
             pertenceAoFiltro = true;
         } else {
+<<<<<<< HEAD
+=======
+            // Regras Exatas de Filtragem:
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
             if (tipoR === 'Fixa') {
                 pertenceAoFiltro = true; 
             } else if (tipoR === 'FixaAte' && receita.intervaloCompleto) {
@@ -1591,7 +1639,30 @@ function renderizarDespesas() {
         dashValor.innerText = "R$ 0,00"; return;
     }
 
+<<<<<<< HEAD
     let despesasFiltradasParaMostrar = [];
+=======
+    dadosLocais.despesas.forEach(function(despesa, index) {
+        total += despesa.valor;
+        let valFormat = despesa.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        let tipoTexto = despesa.tipo === 'FixaAte' ? 'Fixa Até' : (despesa.tipo === 'Variável' ? 'Variável' : 'Fixa');
+        
+        let rotuloDetalhe = "Fixo";
+        if (despesa.tipo === 'FixaAte' && despesa.intervaloCompleto) {
+            rotuloDetalhe = `${despesa.intervaloCompleto.inicio.mesNome}/${despesa.intervaloCompleto.inicio.ano} a ${despesa.intervaloCompleto.fim.mesNome}/${despesa.intervaloCompleto.fim.ano}`;
+        } else if (despesa.tipo === 'Variável' && despesa.mesesPorAno) {
+            let mesesAtivos = [];
+            Object.keys(despesa.mesesPorAno).forEach(ano => {
+                (despesa.mesesPorAno[ano] || []).forEach(m => mesesAtivos.push(`${m}/${ano}`));
+            });
+            if (mesesAtivos.length > 0) {
+                let primeiro = mesesAtivos[0];
+                rotuloDetalhe = mesesAtivos.length > 1 ? `${primeiro} (+${mesesAtivos.length - 1})` : primeiro;
+            } else {
+                rotuloDetalhe = "Variável";
+            }
+        }
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
 
     dadosLocais.despesas.forEach(function(despesa, index) {
         let tipoD = despesa.tipo || 'Fixa';

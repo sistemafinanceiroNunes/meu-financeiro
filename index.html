@@ -272,6 +272,7 @@
                         </div>
                     </div>
 
+<<<<<<< HEAD
                     <!-- CAIXA DE FILTROS DA LISTA DE RECEITAS (COMPACTA E ALINHADA À DIREITA NO DESKTOP) -->
                     <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #444;">
                         <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
@@ -284,6 +285,42 @@
                             <button onclick="filtrarReceitasPorSelecao()" style="background-color: #007BFF; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Filtrar</button>
                             <button onclick="limparFiltroReceitas()" style="background-color: #6c757d; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Todos os Lançamentos</button>
                         </div>
+=======
+                    <!-- CAIXA DE FILTROS DA LISTA DE RECEITAS -->
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #444;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <select id="filtroMesReceitaLista" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white;">
+                                <option value="Jan">Janeiro</option>
+                                <option value="Fev">Fevereiro</option>
+                                <option value="Mar">Março</option>
+                                <option value="Abr">Abril</option>
+                                <option value="Mai">Maio</option>
+                                <option value="Jun">Junho</option>
+                                <option value="Jul">Julho</option>
+                                <option value="Ago">Agosto</option>
+                                <option value="Set">Setembro</option>
+                                <option value="Out">Outubro</option>
+                                <option value="Nov">Novembro</option>
+                                <option value="Dez">Dezembro</option>
+                            </select>
+                            <select id="filtroAnoReceitaLista" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white;">
+                                <option value="2020">2020</option>
+                                <option value="2021">2021</option>
+                                <option value="2022">2022</option>
+                                <option value="2023">2023</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                                <option value="2031">2031</option>
+                            </select>
+                            <button onclick="filtrarReceitasPorSelecao()" style="background-color: #007BFF; color: white; border: none; padding: 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer;">Filtrar</button>
+                        </div>
+                        <button onclick="limparFiltroReceitas()" style="background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; cursor: pointer;">Todos os Lançamentos</button>
+>>>>>>> 818b13d29bcb02f589fe0284925bf53c83e8d245
                     </div>
 
                     <ul id="lista-receitas-html" class="lista-financas"></ul>
