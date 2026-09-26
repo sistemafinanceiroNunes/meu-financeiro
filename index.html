@@ -272,40 +272,18 @@
                         </div>
                     </div>
 
-                    <!-- CAIXA DE FILTROS DA LISTA DE RECEITAS -->
+                    <!-- CAIXA DE FILTROS DA LISTA DE RECEITAS (COMPACTA E ALINHADA À DIREITA NO DESKTOP) -->
                     <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #444;">
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <select id="filtroMesReceitaLista" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white;">
-                                <option value="Jan">Janeiro</option>
-                                <option value="Fev">Fevereiro</option>
-                                <option value="Mar">Março</option>
-                                <option value="Abr">Abril</option>
-                                <option value="Mai">Maio</option>
-                                <option value="Jun">Junho</option>
-                                <option value="Jul">Julho</option>
-                                <option value="Ago">Agosto</option>
-                                <option value="Set">Setembro</option>
-                                <option value="Out">Outubro</option>
-                                <option value="Nov">Novembro</option>
-                                <option value="Dez">Dezembro</option>
+                        <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
+                            <select id="filtroMesReceitaLista" style="max-width: 140px; padding: 6px 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white; font-size: 13px;">
+                                <option value="Jan">Janeiro</option><option value="Fev">Fevereiro</option><option value="Mar">Março</option><option value="Abr">Abril</option><option value="Mai">Maio</option><option value="Jun">Junho</option><option value="Jul">Julho</option><option value="Ago">Agosto</option><option value="Set">Setembro</option><option value="Out">Outubro</option><option value="Nov">Novembro</option><option value="Dez">Dezembro</option>
                             </select>
-                            <select id="filtroAnoReceitaLista" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white;">
-                                <option value="2020">2020</option>
-                                <option value="2021">2021</option>
-                                <option value="2022">2022</option>
-                                <option value="2023">2023</option>
-                                <option value="2024">2024</option>
-                                <option value="2025">2025</option>
-                                <option value="2026">2026</option>
-                                <option value="2027">2027</option>
-                                <option value="2028">2028</option>
-                                <option value="2029">2029</option>
-                                <option value="2030">2030</option>
-                                <option value="2031">2031</option>
+                            <select id="filtroAnoReceitaLista" style="max-width: 90px; padding: 6px 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white; font-size: 13px;">
+                                <option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
                             </select>
-                            <button onclick="filtrarReceitasPorSelecao()" style="background-color: #007BFF; color: white; border: none; padding: 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer;">Filtrar</button>
+                            <button onclick="filtrarReceitasPorSelecao()" style="background-color: #007BFF; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Filtrar</button>
+                            <button onclick="limparFiltroReceitas()" style="background-color: #6c757d; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Todos os Lançamentos</button>
                         </div>
-                        <button onclick="limparFiltroReceitas()" style="background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; cursor: pointer;">Todos os Lançamentos</button>
                     </div>
 
                     <ul id="lista-receitas-html" class="lista-financas"></ul>
@@ -317,7 +295,7 @@
                     <p>Organize suas dívidas escolhendo o tipo, o ano e os meses de pagamento.</p>
                     <div class="dash-container">
                         <div class="dash-card despesa">
-                            <h4>Total de Despesas Adicionadas</h4>
+                            <h4>Total de Despesas</h4>
                             <h2 id="dash-valor-despesa">R$ 0,00</h2>
                         </div>
                     </div>
@@ -368,6 +346,21 @@
                             <button class="btn-add-despesa" onclick="adicionarDespesa()">Salvar Despesa</button>
                         </div>
                     </div>
+
+                    <!-- CAIXA DE FILTROS DA LISTA DE DESPESAS (COMPACTA E ALINHADA À DIREITA NO DESKTOP) -->
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #444;">
+                        <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
+                            <select id="filtroMesDespesaLista" style="max-width: 140px; padding: 6px 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white; font-size: 13px;">
+                                <option value="Jan">Janeiro</option><option value="Fev">Fevereiro</option><option value="Mar">Março</option><option value="Abr">Abril</option><option value="Mai">Maio</option><option value="Jun">Junho</option><option value="Jul">Julho</option><option value="Ago">Agosto</option><option value="Set">Setembro</option><option value="Out">Outubro</option><option value="Nov">Novembro</option><option value="Dez">Dezembro</option>
+                            </select>
+                            <select id="filtroAnoDespesaLista" style="max-width: 90px; padding: 6px 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white; font-size: 13px;">
+                                <option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
+                            </select>
+                            <button onclick="filtrarDespesasPorSelecao()" style="background-color: #007BFF; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Filtrar</button>
+                            <button onclick="limparFiltroDespesas()" style="background-color: #6c757d; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Todos os Lançamentos</button>
+                        </div>
+                    </div>
+
                     <ul id="lista-despesas-html" class="lista-financas"></ul>
                 </div>
 
