@@ -58,7 +58,6 @@ let funcaoExclusaoCallback = null;
 let touchStartX = 0;
 let touchEndX = 0;
 
-// Variáveis globais de controle de filtro nas abas
 window.modoFiltroReceita = 'todos';
 window.modoFiltroDespesa = 'todos';
 
@@ -95,18 +94,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const mesAtual = mesesOrdem[new Date().getMonth()];
     const anoAtual = new Date().getFullYear().toString();
     
-    // Filtros Gerais Home
     const mesSalvo = localStorage.getItem('mesSelecionadoSolon') || mesAtual;
     const anoSalvo = localStorage.getItem('anoSelecionadoSolon') || anoAtual;
     if(document.getElementById('filtroMes')) document.getElementById('filtroMes').value = mesSalvo;
     if(document.getElementById('filtroAno')) document.getElementById('filtroAno').value = anoSalvo;
 
-    // Filtros Aba Receitas
     window.modoFiltroReceita = localStorage.getItem('modoFiltroReceita') || 'todos';
     if(document.getElementById('filtroMesReceitaLista')) document.getElementById('filtroMesReceitaLista').value = localStorage.getItem('filtroMesReceitaSelecionado') || mesAtual;
     if(document.getElementById('filtroAnoReceitaLista')) document.getElementById('filtroAnoReceitaLista').value = localStorage.getItem('filtroAnoReceitaSelecionado') || anoAtual;
 
-    // Filtros Aba Despesas
     window.modoFiltroDespesa = localStorage.getItem('modoFiltroDespesa') || 'todos';
     if(document.getElementById('filtroMesDespesaLista')) document.getElementById('filtroMesDespesaLista').value = localStorage.getItem('filtroMesDespesaSelecionado') || mesAtual;
     if(document.getElementById('filtroAnoDespesaLista')) document.getElementById('filtroAnoDespesaLista').value = localStorage.getItem('filtroAnoDespesaSelecionado') || anoAtual;
@@ -1080,28 +1076,16 @@ window.recuperarSenha = function() {
 };
 
 window.fazerLogout = function() {
-    const modal = document.getElementById('modalConfirmarLogout');
-    if (modal) {
-        modal.style.display = 'flex';
-    }
-};
-
-window.acaoConfirmarLogout = function(sair) {
-    const modal = document.getElementById('modalConfirmarLogout');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-
-    if (sair) {
-        signOut(auth).then(() => {
-            if (unsubscribeFirestore) unsubscribeFirestore();
-            currentUserUid = null; 
-            dadosLocais = { itens: [], receitas: [], despesas: [], economia: [] };
-            document.getElementById('emailLogin').value = ''; 
-            document.getElementById('senhaLogin').value = '';
-            trocarPainelAuth('login'); 
-        });
-    }
+    signOut(auth).then(() => {
+        if (unsubscribeFirestore) unsubscribeFirestore();
+        currentUserUid = null; 
+        dadosLocais = { itens: [], receitas: [], despesas: [], economia: [] };
+        if(document.getElementById('emailLogin')) document.getElementById('emailLogin').value = ''; 
+        if(document.getElementById('senhaLogin')) document.getElementById('senhaLogin').value = '';
+        trocarPainelAuth('login'); 
+    }).catch((error) => {
+        console.error("Erro ao sair:", error);
+    });
 };
 
 window.abrirModalNotificacoes = function() { document.getElementById('modalNotificacoes').style.display = 'flex'; };
@@ -1139,8 +1123,8 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUserUid = user.uid;
         docRef = doc(db, "financeiro", currentUserUid);
-        document.getElementById('tela-login').style.display = 'none';
-        document.getElementById('conteudo-app').style.display = 'flex'; 
+        if(document.getElementById('tela-login')) document.getElementById('tela-login').style.display = 'none';
+        if(document.getElementById('conteudo-app')) document.getElementById('conteudo-app').style.display = 'flex'; 
         
         const userDocSnap = await getDoc(doc(db, "usuarios", user.uid));
         const avatarLat = document.getElementById('avatarLateral'), avatarPad = document.getElementById('avatarLateralPadrao');
@@ -1149,41 +1133,42 @@ onAuthStateChanged(auth, async (user) => {
 
         if (userDocSnap.exists()) {
             const dadosUsuario = userDocSnap.data();
-            document.getElementById('configEditNome').value = dadosUsuario.nome || '';
-            document.getElementById('configEditSobrenome').value = dadosUsuario.sobrenome || '';
-            document.getElementById('configEditApelido').value = dadosUsuario.apelido || '';
+            if(document.getElementById('configEditNome')) document.getElementById('configEditNome').value = dadosUsuario.nome || '';
+            if(document.getElementById('configEditSobrenome')) document.getElementById('configEditSobrenome').value = dadosUsuario.sobrenome || '';
+            if(document.getElementById('configEditApelido')) document.getElementById('configEditApelido').value = dadosUsuario.apelido || '';
 
             if (dadosUsuario.temaPadrao) {
                 localStorage.setItem('temaSolon', dadosUsuario.temaPadrao);
                 aplicarTemaVisual(dadosUsuario.temaPadrao);
-                document.getElementById('selectTema').value = dadosUsuario.temaPadrao;
+                if(document.getElementById('selectTema')) document.getElementById('selectTema').value = dadosUsuario.temaPadrao;
                 atualizarRotulosTemaPadrao(dadosUsuario.temaPadrao, dadosUsuario.temaPadrao);
             }
             if (dadosUsuario.fontePadrao) {
                 localStorage.setItem('fonteSolon', dadosUsuario.fontePadrao);
                 document.body.style.fontFamily = dadosUsuario.fontePadrao;
-                document.getElementById('selectFonte').value = dadosUsuario.fontePadrao;
+                if(document.getElementById('selectFonte')) document.getElementById('selectFonte').value = dadosUsuario.fontePadrao;
             }
-            if (dadosUsuario.fotoPerfil) {
+            if (dadosUsuario.fotoPerfil && avatarLat && avatarPad) {
                 avatarLat.src = dadosUsuario.fotoPerfil; avatarLat.style.display = 'block'; avatarPad.style.display = 'none';
-                previewConf.src = dadosUsuario.fotoPerfil; previewConf.style.display = 'block'; padraoConf.style.display = 'none';
+                if(previewConf && padraoConf) { previewConf.src = dadosUsuario.fotoPerfil; previewConf.style.display = 'block'; padraoConf.style.display = 'none'; }
             }
             if (!dadosUsuario.nome || !dadosUsuario.sobrenome) {
-                document.getElementById('painelAlertaPerfil').style.display = 'flex'; saudacao.style.display = 'none';
+                if(document.getElementById('painelAlertaPerfil')) document.getElementById('painelAlertaPerfil').style.display = 'flex'; 
+                if(saudacao) saudacao.style.display = 'none';
             } else {
-                document.getElementById('painelAlertaPerfil').style.display = 'none';
+                if(document.getElementById('painelAlertaPerfil')) document.getElementById('painelAlertaPerfil').style.display = 'none';
                 let nomeExibicao = dadosUsuario.apelido || dadosUsuario.nome;
-                document.getElementById('nomeUserDisplay').innerText = nomeExibicao;
-                document.getElementById('frasePersonalizada').innerText = `Não gasta com besteira ${nomeExibicao}, kkk`;
-                saudacao.style.display = 'block';
+                if(document.getElementById('nomeUserDisplay')) document.getElementById('nomeUserDisplay').innerText = nomeExibicao;
+                if(document.getElementById('frasePersonalizada')) document.getElementById('frasePersonalizada').innerText = `Não gasta com besteira ${nomeExibicao}, kkk`;
+                if(saudacao) saudacao.style.display = 'block';
             }
         }
         iniciarEscutaBanco();
     } else {
         if (unsubscribeFirestore) unsubscribeFirestore();
         currentUserUid = null;
-        document.getElementById('tela-login').style.display = 'flex';
-        document.getElementById('conteudo-app').style.display = 'none';
+        if(document.getElementById('tela-login')) document.getElementById('tela-login').style.display = 'flex';
+        if(document.getElementById('conteudo-app')) document.getElementById('conteudo-app').style.display = 'none';
     }
 });
 
@@ -1198,16 +1183,16 @@ function iniciarEscutaBanco() {
             setDoc(doc(db, "financeiro", currentUserUid), dadosLocais);
         }
         atualizarTelaHTML(); renderizarReceitas(); renderizarDespesas(); renderizarEconomia();
-        if (document.getElementById('btnSubMensal').classList.contains('ativo')) atualizarAnaliseMes();
+        if (document.getElementById('btnSubMensal') && document.getElementById('btnSubMensal').classList.contains('ativo')) atualizarAnaliseMes();
         else zerarPainelLateralAnual();
     });
 }
 
 window.mudarAba = function(nomeAba) {
     document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('ativa'));
-    document.getElementById('aba-' + nomeAba).classList.add('ativa');
+    if(document.getElementById('aba-' + nomeAba)) document.getElementById('aba-' + nomeAba).classList.add('ativa');
     document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('btn-ativo'));
-    document.getElementById('btn-' + nomeAba).classList.add('btn-ativo');
+    if(document.getElementById('btn-' + nomeAba)) document.getElementById('btn-' + nomeAba).classList.add('btn-ativo');
 
     const menu = document.getElementById('menuLateralApp');
     if(menu) menu.classList.remove('aberto');
@@ -1216,7 +1201,7 @@ window.mudarAba = function(nomeAba) {
     if(document.getElementById('opcoesMeses')) document.getElementById('opcoesMeses').style.display = 'none';
     if(document.getElementById('opcoesMesesReceita')) document.getElementById('opcoesMesesReceita').style.display = 'none';
     if(nomeAba === 'inicio') {
-        if (document.getElementById('btnSubMensal').classList.contains('ativo')) atualizarAnaliseMes();
+        if (document.getElementById('btnSubMensal') && document.getElementById('btnSubMensal').classList.contains('ativo')) atualizarAnaliseMes();
         else zerarPainelLateralAnual();
     } else if(nomeAba === 'receitas') {
         renderizarReceitas();
@@ -1231,7 +1216,7 @@ window.filtrarExtrato = function(tipo) {
         let btn = document.getElementById('btnFiltro' + (t === 'Variável' ? 'Variavel' : t));
         if(btn) { if(t === tipo) btn.classList.add('ativo'); else btn.classList.remove('ativo'); }
     });
-    if (document.getElementById('btnSubMensal').classList.contains('ativo')) atualizarAnaliseMes();
+    if (document.getElementById('btnSubMensal') && document.getElementById('btnSubMensal').classList.contains('ativo')) atualizarAnaliseMes();
 };
 
 window.marcarModificadoStatus = function() { statusFoiModificado = true; };
@@ -1284,7 +1269,7 @@ window.salvarStatusPagamentoModal = async function() {
 
 window.toggleDropdownMeses = function(id) {
     const dr = document.getElementById(id);
-    dr.style.display = (dr.style.display === 'none' || dr.style.display === '') ? 'flex' : 'none';
+    if(dr) dr.style.display = (dr.style.display === 'none' || dr.style.display === '') ? 'flex' : 'none';
 };
 
 document.addEventListener('click', function(event) {
@@ -1463,7 +1448,6 @@ window.atualizarAnaliseMes = function() {
     else { badge.innerText = "SAUDÁVEL"; badge.style.backgroundColor = "#28a745"; badge.style.color = "white"; txtDesc.innerText = "Balanço positivo"; }
 };
 
-// RENDERIZAR E FILTRAR RECEITAS
 function renderizarReceitas() {
     const listaHtml = document.getElementById('lista-receitas-html');
     const dashValor = document.getElementById('dash-valor-receita');
@@ -1562,7 +1546,6 @@ function renderizarReceitas() {
     dashValor.innerText = totalFiltrado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// RENDERIZAR E FILTRAR DESPESAS (COM O MESMO PADRÃO DE RECEITAS)
 function renderizarDespesas() {
     const listaHtml = document.getElementById('lista-despesas-html');
     const dashValor = document.getElementById('dash-valor-despesa');
@@ -1660,30 +1643,6 @@ function renderizarDespesas() {
     }
     dashValor.innerText = totalFiltrado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
-
-window.filtrarDespesasPorSelecao = function() {
-    window.modoFiltroDespesa = 'mes';
-    const mes = document.getElementById('filtroMesDespesaLista').value;
-    const ano = document.getElementById('filtroAnoDespesaLista').value;
-    
-    const mapa = {
-        'Janeiro': 'Jan', 'Fevereiro': 'Fev', 'Março': 'Mar', 'Abril': 'Abr',
-        'Maio': 'Mai', 'Junho': 'Jun', 'Julho': 'Jul', 'Agosto': 'Ago',
-        'Setembro': 'Set', 'Outubro': 'Out', 'Novembro': 'Nov', 'Dezembro': 'Dez'
-    };
-    const mesCerto = mapa[mes] || mes;
-
-    localStorage.setItem('filtroMesDespesaSelecionado', mesCerto);
-    localStorage.setItem('filtroAnoDespesaSelecionado', ano);
-    localStorage.setItem('modoFiltroDespesa', 'mes');
-    renderizarDespesas();
-};
-
-window.limparFiltroDespesas = function() {
-    window.modoFiltroDespesa = 'todos';
-    localStorage.setItem('modoFiltroDespesa', 'todos');
-    renderizarDespesas();
-};
 
 window.adicionarReceita = async function() {
     let nome = document.getElementById('nomeReceita').value.trim();
