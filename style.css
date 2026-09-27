@@ -1,4 +1,4 @@
-html, body {
+Html, body {
     width: 100%;
     min-height: 100vh;
     margin: 0;
@@ -478,7 +478,7 @@ h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
 .btn-editar:hover { background: #0056b3 !important; }
 .titulo-secao-config { color: #001f3f; }
 
-/* TEMAS (ESCURO / MARGARIDAS / MOBILE) */
+/* TEMAS (ESCURO / MARGARIDAS) */
 body.modo-escuro { background-color: #121212; color: #e0e0e0; }
 body.modo-escuro .conteudo-principal { background-color: #1e1e1e; color: #e0e0e0; border: none; }
 body.modo-escuro h1 { color: #4dabf7; }
@@ -535,6 +535,7 @@ body.modo-margaridas .mes-chip label { background-color: #ffccd5; color: #800040
 body.modo-margaridas .modal-box { background-color: #ffe6ee; color: #3b1426; border: 1px solid #ffb3c6; }
 body.modo-margaridas .barra-topo-mobile { background-color: #a81c5f; }
 
+/* AJUSTES EXCLUSIVOS MOBILE: MENU LATERAL ESTENDIDO DE PONTA A PONTA, SEM CORTAR A FOTO */
 body.modo-mobile { max-width: 100vw; height: auto !important; overflow-x: hidden !important; overflow-y: auto !important; }
 body.modo-mobile html { height: auto !important; overflow-y: auto !important; }
 body.modo-mobile #conteudo-app { height: auto !important; overflow: visible !important; }
@@ -542,21 +543,19 @@ body.modo-mobile .barra-topo-mobile { display: flex; position: fixed; top: 0; le
 body.modo-mobile #conteudo-app { padding-top: 55px; }
 body.modo-mobile .layout-principal { flex-direction: column; padding: 8px; gap: 8px; width: 100vw; max-width: 100%; height: auto !important; overflow: visible !important; }
 
-/* MENU LATERAL MOBILE: FLUTUANTE, BORDAS FINAS E ESPAÇADO */
 body.modo-mobile .menu-lateral { 
     position: fixed !important; 
-    top: 10px !important; 
-    left: -275px !important; 
-    width: 245px !important; 
-    height: calc(100vh - 20px) !important; 
-    max-height: 600px !important; 
+    top: 0 !important; 
+    left: -280px !important; 
+    width: 260px !important; 
+    height: 100vh !important; 
+    max-height: none !important; 
     z-index: 4000; 
-    border-radius: 0 16px 16px 0 !important; 
-    border-right: 1px solid rgba(255, 255, 255, 0.15); 
-    box-shadow: 8px 0 30px rgba(0,0,0,0.6); 
+    border-radius: 0 20px 20px 0 !important; 
+    box-shadow: 10px 0 30px rgba(0,0,0,0.7); 
     transition: left 0.3s ease-in-out; 
     overflow-y: auto; 
-    padding: 20px 12px 20px 12px !important; 
+    padding: 65px 15px 25px 15px !important; 
     box-sizing: border-box; 
     display: flex; 
     flex-direction: column; 
