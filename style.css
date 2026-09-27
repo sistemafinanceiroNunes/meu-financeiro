@@ -16,13 +16,11 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* BLOQUEIO TOTAL DA TELA DE TRÁS NO MOBILE QUANDO O MENU ESTIVER ATIVO */
-body.modo-mobile.menu-lateral-ativo {
+body.menu-lateral-ativo {
     overflow: hidden !important;
     height: 100vh !important;
-    position: fixed !important;
-    width: 100% !important;
-    touch-action: none !important;
+    position: fixed;
+    width: 100%;
 }
 
 /* TELA DE LOGIN */
@@ -544,7 +542,7 @@ body.modo-mobile .barra-topo-mobile { display: flex; position: fixed; top: 0; le
 body.modo-mobile #conteudo-app { padding-top: 55px; }
 body.modo-mobile .layout-principal { flex-direction: column; padding: 8px; gap: 8px; width: 100vw; max-width: 100%; height: auto !important; overflow: visible !important; }
 
-/* MENU LATERAL MOBILE: COM FOTO AFASTADA DA BARRA E TRAVAMENTO DE TOQUE */
+/* MENU LATERAL MOBILE: FLUTUANTE, BORDAS FINAS E ESPAÇADO */
 body.modo-mobile .menu-lateral { 
     position: fixed !important; 
     top: 10px !important; 
@@ -558,13 +556,11 @@ body.modo-mobile .menu-lateral {
     box-shadow: 8px 0 30px rgba(0,0,0,0.6); 
     transition: left 0.3s ease-in-out; 
     overflow-y: auto; 
-    /* Aumentado o padding superior para descer a foto de perfil e evitar conflito com a barra superior */
-    padding: 35px 12px 20px 12px !important; 
+    padding: 20px 12px 20px 12px !important; 
     box-sizing: border-box; 
     display: flex; 
     flex-direction: column; 
     justify-content: space-between !important; 
-    touch-action: pan-y !important; /* Permite rolar apenas dentro do menu, bloqueando movimentos externos */
 }
 
 body.modo-mobile .menu-lateral.aberto { left: 0 !important; }
