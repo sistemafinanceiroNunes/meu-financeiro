@@ -1,7 +1,8 @@
 html, body {
     max-width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body {
@@ -15,11 +16,12 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-body.menu-lateral-ativo {
+/* TRAVA APENAS QUANDO O MENU ESTIVER ATIVO NO MOBILE */
+body.modo-mobile.menu-lateral-ativo {
     overflow: hidden !important;
-    height: 100vh !important;
-    position: fixed;
-    width: 100%;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* TELA DE LOGIN */
@@ -140,7 +142,7 @@ body.menu-lateral-ativo {
 }
 .rodape-desenvolvedores p { margin: 2px 0; }
 
-#conteudo-app { display: none; width: 100%; height: 100vh; flex-direction: column; box-sizing: border-box; overflow: hidden; }
+#conteudo-app { display: none; width: 100%; flex-direction: column; box-sizing: border-box; }
 
 .barra-topo-mobile {
     display: none;
@@ -166,13 +168,11 @@ body.menu-lateral-ativo {
 .layout-principal {
     display: flex; 
     width: 100%; 
-    height: 100vh;
     gap: 20px; 
     padding: 20px; 
     box-sizing: border-box; 
     flex: 1;
     position: relative;
-    overflow: hidden;
 }
 
 .menu-lateral {
@@ -187,10 +187,9 @@ body.menu-lateral-ativo {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
     box-sizing: border-box; 
     transition: background-color 0.3s, transform 0.3s ease;
-    height: calc(100vh - 40px);
 }
 
-.menu-topo { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.menu-topo { display: flex; flex-direction: column; gap: 10px; align-items: center; width: 100%; }
 
 .menu-avatar-container {
     display: flex;
@@ -226,10 +225,8 @@ body.menu-lateral-ativo {
     border-radius: 15px; 
     box-sizing: border-box; 
     min-width: 0; 
-    height: calc(100vh - 40px);
     display: flex; 
     flex-direction: column; 
-    overflow: hidden;
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -265,24 +262,15 @@ h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
     grid-template-columns: 1.3fr 1fr;
     gap: 20px;
     margin-top: 10px;
-    flex: 1;
-    min-height: 0;
-    height: calc(100% - 70px);
 }
 .coluna-esquerda {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    height: 100%;
-    min-height: 0;
-    overflow-y: auto;
-    padding-right: 4px;
 }
 .coluna-direita {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    min-height: 0;
 }
 .quadrante {
     background: #f8f9fa;
@@ -379,8 +367,7 @@ h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
 .btn-filtro-extrato:hover { background: #d6dbdf; }
 .btn-filtro-extrato.ativo { background: #001f3f; color: white; }
 
-.extrato-quadrante-container { flex: 1; display: flex; flex-direction: column; height: 100%; min-height: 0; }
-.extrato-container { flex: 1; overflow-y: auto; padding-right: 4px; min-height: 0; max-height: calc(100vh - 220px); }
+.extrato-container { max-height: 350px; overflow-y: auto; padding-right: 4px; }
 .lista-extrato { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .item-extrato { background: white; padding: 10px 12px; border-radius: 6px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
 .item-extrato .info-linha { display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -394,8 +381,7 @@ h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
 .btn-editar-status { background: #007BFF; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
 .btn-editar-status:hover { background: #0056b3; }
 
-.anotacoes-quadrante-container { flex: 1; display: flex; flex-direction: column; min-height: 0; max-height: 220px; }
-.lista-anotacoes { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; min-height: 0; }
+.lista-anotacoes { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; }
 .item-anotacao { background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
 .btn-lixeira-anotacao { background: #6c757d; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; }
 .btn-lixeira-anotacao:hover { background: #c82333; }
@@ -414,7 +400,7 @@ h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
 .conteudo-principal button.btn-limpar-despesa { background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; padding: 10px 20px; font-size: 14px; font-weight: bold; height: 40px;}
 .conteudo-principal button.btn-limpar-despesa:hover { background-color: #5a6268; }
 
-.aba { display: none; flex: 1; height: 100%; flex-direction: column; overflow-y: auto; overflow-x: hidden; padding-right: 4px; }
+.aba { display: none; flex: 1; flex-direction: column; }
 .aba.ativa { display: flex; }
 
 .dash-container { display: flex; gap: 20px; margin-top: 15px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -446,7 +432,7 @@ h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
 .mes-chip label:hover { background: #e2e6ea; }
 .mes-chip input[type="checkbox"]:checked + label { background: #dc3545; color: white; box-shadow: 0 2px 5px rgba(220, 53, 69, 0.4); }
 
-.lista-financas { list-style: none; padding: 0; margin-top: 15px; margin-bottom: 30px; }
+.lista-financas { list-style: none; padding: 0; margin-top: 15px; margin-bottom: 30px; max-height: 400px; overflow-y: auto; }
 .lista-financas li { background: #f9f9f9; margin-bottom: 8px; padding: 12px 18px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #ddd; font-size: 15px; }
 .info-financa { display: flex; flex-direction: column; gap: 4px; }
 .info-financa .nome { font-weight: bold; color: #333; }
@@ -518,13 +504,61 @@ body.modo-margaridas .mes-chip label { background-color: #ffccd5; color: #800040
 body.modo-margaridas .modal-box { background-color: #ffe6ee; color: #3b1426; border: 1px solid #ffb3c6; }
 body.modo-margaridas .barra-topo-mobile { background-color: #a81c5f; }
 
-body.modo-mobile { max-width: 100vw; height: auto !important; overflow-x: hidden !important; overflow-y: auto !important; }
-body.modo-mobile html { height: auto !important; overflow-y: auto !important; }
-body.modo-mobile #conteudo-app { height: auto !important; overflow: visible !important; }
-body.modo-mobile .barra-topo-mobile { display: flex; position: fixed; top: 0; left: 0; z-index: 4500; border-radius: 0 0 15px 15px; width: 100%; box-sizing: border-box; }
+body.modo-mobile { 
+    max-width: 100vw; 
+    height: auto !important; 
+    overflow-x: hidden !important; 
+    overflow-y: auto !important; 
+}
+body.modo-mobile html { 
+    height: auto !important; 
+    overflow-y: auto !important; 
+}
+body.modo-mobile #conteudo-app { 
+    height: auto !important; 
+    overflow: visible !important; 
+}
+body.modo-mobile .barra-topo-mobile { 
+    display: flex; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    z-index: 4500; 
+    border-radius: 0 0 15px 15px; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
 body.modo-mobile #conteudo-app { padding-top: 55px; }
-body.modo-mobile .layout-principal { flex-direction: column; padding: 8px; gap: 8px; width: 100vw; max-width: 100%; height: auto !important; overflow: visible !important; }
-body.modo-mobile .menu-lateral { position: fixed; top: 0; left: -280px; width: 260px; height: 100vh; z-index: 4000; border-radius: 0 15px 15px 0; box-shadow: 5px 0 25px rgba(0,0,0,0.5); transition: left 0.3s ease-in-out; overflow-y: auto; padding-top: 65px; }
+body.modo-mobile .layout-principal { 
+    flex-direction: column; 
+    padding: 8px; 
+    gap: 8px; 
+    width: 100vw; 
+    max-width: 100%; 
+    height: auto !important; 
+    overflow: visible !important; 
+}
+
+/* MENU LATERAL MOBILE: Ocupa a altura total da tela, ligeiramente mais estreito, com cantos arredondados finos, sem cortar conteúdo e travando apenas ao abrir */
+body.modo-mobile .menu-lateral { 
+    position: fixed; 
+    top: 0; 
+    left: -260px; 
+    width: 235px; 
+    height: 100vh; 
+    z-index: 4000; 
+    border-radius: 0 16px 16px 0; 
+    box-shadow: 8px 0 30px rgba(0,0,0,0.6); 
+    transition: left 0.3s ease-in-out; 
+    overflow-y: auto; 
+    -webkit-overflow-scrolling: touch; 
+    padding: 45px 10px 20px 10px !important; 
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 body.modo-mobile .menu-lateral.aberto { left: 0; }
 body.modo-mobile .conteudo-principal { padding: 8px; border-radius: 12px; width: 100% !important; max-width: 100% !important; height: auto !important; overflow: visible !important; }
 body.modo-mobile .sub-abas-container { flex-wrap: wrap; }
