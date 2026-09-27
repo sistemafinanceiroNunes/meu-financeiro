@@ -524,27 +524,7 @@ body.modo-mobile #conteudo-app { height: auto !important; overflow: visible !imp
 body.modo-mobile .barra-topo-mobile { display: flex; position: fixed; top: 0; left: 0; z-index: 4500; border-radius: 0 0 15px 15px; width: 100%; box-sizing: border-box; }
 body.modo-mobile #conteudo-app { padding-top: 55px; }
 body.modo-mobile .layout-principal { flex-direction: column; padding: 8px; gap: 8px; width: 100vw; max-width: 100%; height: auto !important; overflow: visible !important; }
-
-/* MENU LATERAL MOBILE: Altura total da tela, cantos arredondados finos à direita, espaçamento perfeito para não cortar foto nem o logout, travando apenas o fundo */
-body.modo-mobile .menu-lateral { 
-    position: fixed; 
-    top: 0; 
-    left: -280px; 
-    width: 260px; 
-    height: 100vh; 
-    z-index: 4000; 
-    border-radius: 0 20px 20px 0; 
-    box-shadow: 5px 0 25px rgba(0,0,0,0.5); 
-    transition: left 0.3s ease-in-out; 
-    overflow-y: auto; 
-    -webkit-overflow-scrolling: touch; 
-    padding: 60px 15px 30px 15px; 
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
+body.modo-mobile .menu-lateral { position: fixed; top: 0; left: -280px; width: 260px; height: 100vh; z-index: 4000; border-radius: 0 15px 15px 0; box-shadow: 5px 0 25px rgba(0,0,0,0.5); transition: left 0.3s ease-in-out; overflow-y: auto; padding-top: 65px; }
 body.modo-mobile .menu-lateral.aberto { left: 0; }
 body.modo-mobile .conteudo-principal { padding: 8px; border-radius: 12px; width: 100% !important; max-width: 100% !important; height: auto !important; overflow: visible !important; }
 body.modo-mobile .sub-abas-container { flex-wrap: wrap; }
