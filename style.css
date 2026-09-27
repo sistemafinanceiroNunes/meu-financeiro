@@ -1,6 +1,6 @@
-html, body { 
+Html, body { 
     max-width: 100vw; 
-    height: 100%; 
+    min-height: 100vh; /* Faz a tela esticar até ao fundo no desktop */
     overflow-x: hidden; 
     overflow-y: auto; 
 } 
@@ -16,10 +16,9 @@ body {
     transition: background-color 0.3s, color 0.3s; 
 } 
 
+/* TRAVA A TELA APENAS QUANDO O MENU LATERAL ABRE */
 body.menu-lateral-ativo { 
     overflow: hidden !important; 
-    position: fixed; 
-    width: 100%; 
 } 
 
 /* TELA DE LOGIN */ 
@@ -107,14 +106,43 @@ body.menu-lateral-ativo {
 .rodape-desenvolvedores { color: rgba(255, 255, 255, 0.85); font-size: 11.5px; text-align: center; line-height: 1.4; margin-top: 5px; background: rgba(0, 15, 30, 0.6); backdrop-filter: blur(5px); padding: 10px 15px; border-radius: 10px; width: 100%; box-sizing: border-box; border: 1px solid rgba(255, 255, 255, 0.1); } 
 .rodape-desenvolvedores p { margin: 2px 0; } 
 
-#conteudo-app { display: none; width: 100%; flex-direction: column; box-sizing: border-box; } 
+/* ESTRUTURA PRINCIPAL DESKTOP (Completar Tela) */
+#conteudo-app { 
+    display: none; 
+    width: 100%; 
+    flex-direction: column; 
+    box-sizing: border-box; 
+    min-height: 100vh; /* Garante que o container mestre usa a tela toda */
+} 
 
 .barra-topo-mobile { display: none; align-items: center; justify-content: space-between; background-color: #001f3f; color: white; padding: 12px 16px; width: 100%; box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.3); } 
 .btn-hamburguer { background: transparent; border: none; color: white; font-size: 24px; cursor: pointer; padding: 4px 12px 4px 0; border-radius: 4px; } 
 
-.layout-principal { display: flex; width: 100%; gap: 20px; padding: 20px; box-sizing: border-box; flex: 1; position: relative; } 
+.layout-principal { 
+    display: flex; 
+    width: 100%; 
+    gap: 20px; 
+    padding: 20px; 
+    box-sizing: border-box; 
+    flex: 1; /* Estica a área útil para preencher o espaço de baixo */
+    align-items: stretch; /* Estica o menu e o conteúdo para completar o fundo */
+    position: relative; 
+} 
 
-.menu-lateral { width: 260px; min-width: 260px; background-color: #001f3f; border-radius: 15px; padding: 30px 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-box; transition: background-color 0.3s, transform 0.3s ease; } 
+.menu-lateral { 
+    width: 260px; 
+    min-width: 260px; 
+    background-color: #001f3f; 
+    border-radius: 15px; 
+    padding: 30px 20px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+    box-sizing: border-box; 
+    transition: background-color 0.3s, transform 0.3s ease; 
+} 
+
 .menu-topo { display: flex; flex-direction: column; gap: 10px; align-items: center; width: 100%; } 
 .menu-avatar-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; gap: 8px; text-align: center; width: 100%; } 
 .avatar-lateral { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #4dabf7; background: #e9ecef; } 
@@ -126,7 +154,17 @@ body.menu-lateral-ativo {
 .btn-sair { background-color: #111111 !important; border-color: #222222 !important; color: white !important; } 
 .btn-sair:hover { background-color: #000000 !important; } 
 
-.conteudo-principal { flex: 1; background: white; padding: 30px; border-radius: 15px; box-sizing: border-box; min-width: 0; display: flex; flex-direction: column; transition: background-color 0.3s, color 0.3s; } 
+.conteudo-principal { 
+    flex: 1; /* Cresce junto com a tela */
+    background: white; 
+    padding: 30px; 
+    border-radius: 15px; 
+    box-sizing: border-box; 
+    min-width: 0; 
+    display: flex; 
+    flex-direction: column; 
+    transition: background-color 0.3s, color 0.3s; 
+} 
 h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; } 
 
 .painel-notificacao-isolado { background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 10px; padding: 15px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); } 
@@ -311,9 +349,9 @@ body.modo-margaridas .mes-chip label { background-color: #ffccd5; color: #800040
 body.modo-margaridas .modal-box { background-color: #ffe6ee; color: #3b1426; border: 1px solid #ffb3c6; } 
 body.modo-margaridas .barra-topo-mobile { background-color: #a81c5f; } 
 
-/* ========================================================
-   REGRAS EXCLUSIVAS MOBILE - O DESKTOP FICA INTACTO ACIMA
-   ======================================================== */
+/* =========================================================================
+   REGRAS EXCLUSIVAS MOBILE 
+   ========================================================================= */
 body.modo-mobile { 
     max-width: 100vw; 
     height: auto !important; 
@@ -349,11 +387,11 @@ body.modo-mobile .layout-principal {
     overflow: visible !important; 
 } 
 
-/* MENU LATERAL MOBILE:
-   - Vai até o final da tela (top: 0, bottom: 0, height: 100%)
-   - Levemente menor na largura (250px) para adaptar aos celulares
-   - Cantos arredondados finos à direita (18px)
-   - Espaçamento ajustado para não cortar a foto nem o botão de Sair
+/* 
+   MENU LATERAL MOBILE (Perfeitamente adaptável):
+   - Usa 100dvh para ir exatamente até o final da tela em qualquer formato de celular.
+   - Cantos arredondados finos (16px).
+   - Largura ajustada para não ficar enorme.
 */
 body.modo-mobile .menu-lateral { 
     position: fixed; 
@@ -361,14 +399,14 @@ body.modo-mobile .menu-lateral {
     bottom: 0;
     left: -280px; 
     width: 250px; 
-    max-width: 80vw;
-    height: 100%; 
+    max-width: 85vw;
+    height: 100dvh !important; /* Dinâmico: não corta com as barras do navegador mobile */
     z-index: 4000; 
-    border-radius: 0 18px 18px 0; 
+    border-radius: 0 16px 16px 0; 
     box-shadow: 5px 0 25px rgba(0,0,0,0.5); 
     transition: left 0.3s ease-in-out; 
     overflow-y: auto; 
-    padding: 70px 15px 25px 15px !important; 
+    padding: 60px 15px 25px 15px !important; 
     box-sizing: border-box; 
     display: flex; 
     flex-direction: column; 
