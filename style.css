@@ -16,7 +16,6 @@ body {
     transition: background-color 0.3s, color 0.3s; 
 } 
 
-/* TRAVA COMPLETAMENTE A TELA DE FUNDO NO MOBILE QUANDO O MENU ESTIVER ATIVO, SEM AFETAR O DESKTOP */
 body.modo-mobile.menu-lateral-ativo { 
     overflow: hidden !important; 
     position: fixed !important; 
@@ -326,31 +325,33 @@ body.modo-mobile .layout-principal {
     overflow: visible !important; 
 } 
 
-/* MENU LATERAL MOBILE COM ALINHAMENTO AO TOPO E TRAVAMENTO DO FUNDO */ 
+/* MENU LATERAL MOBILE: COM ALTURA AJUSTADA, BORDAS FINAS ARREDONDADAS E ESPAÇADO DA PARTE INFERIOR */ 
 body.modo-mobile .menu-lateral { 
     position: fixed; 
-    top: 0; 
-    left: -280px; 
-    width: 250px; 
-    height: 100vh; 
+    top: 10px; 
+    left: -275px; 
+    width: 245px; 
+    height: calc(100vh - 20px) !important; 
+    max-height: 620px;
     z-index: 4000; 
-    border-radius: 0 15px 15px 0; 
-    box-shadow: 5px 0 25px rgba(0,0,0,0.5); 
+    border-radius: 0 16px 16px 0 !important; 
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 8px 0 30px rgba(0,0,0,0.6); 
     transition: left 0.3s ease-in-out; 
     overflow-y: auto; 
-    padding: 50px 10px 20px 10px !important; 
+    padding: 25px 12px 20px 12px !important; 
     box-sizing: border-box; 
     display: flex; 
     flex-direction: column; 
-    justify-content: flex-start !important; 
+    justify-content: space-between !important; 
 } 
 
-/* COMPACTAÇÃO DOS ITENS E MARGEM PARA O MENU BAIXO SUBIR */ 
-body.modo-mobile .menu-avatar-container { margin-bottom: 12px !important; gap: 4px !important; } 
-body.modo-mobile .avatar-lateral { width: 50px !important; height: 50px !important; } 
+/* COMPACTAÇÃO DOS ITENS DO MENU LATERAL */ 
+body.modo-mobile .menu-avatar-container { margin-bottom: 10px !important; gap: 4px !important; } 
+body.modo-mobile .avatar-lateral { width: 48px !important; height: 48px !important; } 
 body.modo-mobile .menu-topo { gap: 6px !important; width: 100%; } 
-body.modo-mobile .menu-lateral button { padding: 9px 12px !important; font-size: 13.5px !important; margin-bottom: 4px !important; } 
-body.modo-mobile .menu-baixo { margin-top: 15px !important; padding-top: 12px !important; gap: 6px !important; width: 100%; } 
+body.modo-mobile .menu-lateral button { padding: 8px 10px !important; font-size: 13px !important; margin-bottom: 3px !important; } 
+body.modo-mobile .menu-baixo { margin-top: 10px !important; padding-top: 10px !important; gap: 6px !important; width: 100%; } 
 body.modo-mobile .menu-lateral.aberto { left: 0; } 
 body.modo-mobile .conteudo-principal { padding: 8px; border-radius: 12px; width: 100% !important; max-width: 100% !important; height: auto !important; overflow: visible !important; } 
 body.modo-mobile .sub-abas-container { flex-wrap: wrap; } 
