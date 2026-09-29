@@ -61,6 +61,15 @@ let touchEndX = 0;
 window.modoFiltroReceita = 'todos';
 window.modoFiltroDespesa = 'todos';
 
+// Registo do Service Worker para permitir instalação nativa PWA no Android
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then((reg) => { console.log('Service Worker registado com sucesso:', reg.scope); })
+            .catch((err) => { console.log('Falha ao registar o Service Worker:', err); });
+    });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     verificarDispositivoMobile();
 
@@ -1636,7 +1645,7 @@ function renderizarDespesas() {
                 </div>
                 <div class="botoes-acao">
                     <button class="btn-editar" onclick="abrirModalEditarDespesa(${index})">✏️</button>
-                    <button class="btn-lixeira" onclick="solicitarRemocaoDespesa(${index})">🗑️</button>
+                    <button class="btn-lixeira" onclick="solicitarRemocaoDespesa(${index})">🗑️️</button>
                 </div>`;
             listaHtml.appendChild(li);
         });
