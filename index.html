@@ -121,8 +121,10 @@
 
                 <!-- PÁGINA INICIAL -->
                 <div id="aba-inicio" class="aba ativa">
-                    <h1>Visão Geral Financeira</h1>
-                    <p id="frasePersonalizada" style="margin-bottom: 0;">Não gasta com besteira amigo, kkk</p>
+                    <div class="topo-pagina-flex">
+                        <h1>Visão Geral Financeira</h1>
+                        <p id="frasePersonalizada" style="margin: 0;">Não gasta com besteira amigo, kkk</p>
+                    </div>
                     
                     <div class="grid-home">
                         <div class="coluna-esquerda">
@@ -193,7 +195,9 @@
                                     <input type="text" id="novoItemTexto" placeholder="Nova anotação rápida..." style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
                                     <button class="btn-add" onclick="adicionarItem()" style="padding: 8px 12px; height: auto;">+</button>
                                 </div>
-                                <ul id="lista-itens" class="lista-anotacoes"></ul>
+                                <div class="anotacoes-container">
+                                    <ul id="lista-itens" class="lista-anotacoes"></ul>
+                                </div>
                             </div>
                         </div>
 
