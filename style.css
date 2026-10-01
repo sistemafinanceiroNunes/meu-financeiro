@@ -236,7 +236,7 @@ body.menu-lateral-ativo {
 
 h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
 
-/* NOVO TOPO FLEX PARA ALINHAR TÍTULO E FRASE À DIREITA */
+/* TOPO FLEX PARA ALINHAR TÍTULO E FRASE À DIREITA */
 .topo-pagina-flex {
     display: flex;
     justify-content: space-between;
@@ -413,7 +413,7 @@ h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
 .btn-editar-status { background: #007BFF; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
 .btn-editar-status:hover { background: #0056b3; }
 
-/* CONTROLO DE ANOTAÇÕES COM SCROLL IDÊNTICO AO EXTRATO */
+/* CONTROLO DE ANOTAÇÕES */
 .anotacoes-quadrante-container {
     flex: 1 !important;
     display: flex;
@@ -425,7 +425,7 @@ h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
     overflow-y: auto;
     padding-right: 4px;
     min-height: 0;
-    max-height: 140px; /* Garante que mostra cerca de duas notas e depois ativa a barra de rolagem */
+    max-height: 140px;
 }
 .lista-anotacoes {
     list-style: none; 
@@ -557,7 +557,7 @@ body.modo-margaridas .mes-chip label { background-color: #ffccd5; color: #800040
 body.modo-margaridas .modal-box { background-color: #ffe6ee; color: #3b1426; border: 1px solid #ffb3c6; }
 body.modo-margaridas .barra-topo-mobile { background-color: #a81c5f; }
 
-/* AJUSTES EXCLUSIVOS MOBILE: MENU LATERAL ESTENDIDO E OCULTAÇÃO DO TÍTULO QUANDO ABERTO */
+/* AJUSTES EXCLUSIVOS MOBILE */
 body.modo-mobile { max-width: 100vw; height: auto !important; overflow-x: hidden !important; overflow-y: auto !important; }
 body.modo-mobile html { height: auto !important; overflow-y: auto !important; }
 body.modo-mobile #conteudo-app { height: auto !important; overflow: visible !important; }
@@ -586,7 +586,6 @@ body.modo-mobile .menu-lateral {
 
 body.modo-mobile .menu-lateral.aberto { left: 0 !important; }
 
-/* OCULTA O TEXTO DO TOPO NO MOBILE QUANDO O MENU ESTÁ ATIVO, DEIXANDO SÓ O BOTÃO HAMBÚRGUER */
 body.modo-mobile.menu-lateral-ativo .barra-topo-mobile span {
     display: none !important;
 }
@@ -601,3 +600,21 @@ body.modo-mobile .analise-resumo-grid { grid-template-columns: repeat(2, minmax(
 body.modo-mobile .graficos-triplo-container { grid-template-columns: 1fr; gap: 10px; width: 100%; }
 body.modo-mobile .item-extrato { flex-direction: column; align-items: stretch; gap: 6px; padding: 10px; }
 body.modo-mobile .linha-unica { grid-template-columns: 1fr; width: 100%; }
+
+
+/* =========================================================================
+   AJUSTE EXCLUSIVO PARA O MONITOR DO PC (TELA GRANDE >= 1200px)
+   - Aumenta levemente a altura do painel de cima (gráficos/números) na vertical.
+   - Empurra o bloco de "Controle de Anotações" mais para baixo.
+   - NÃO mexe em absolutamente nenhuma outra posição, no notebook e nem no mobile.
+   ========================================================================= */
+@media (min-width: 1200px) {
+    .coluna-esquerda {
+        justify-content: space-between; /* Empurra o quadrante de baixo para o rodapé da coluna, criando o espaço */
+    }
+
+    .coluna-esquerda .quadrante:first-child {
+        padding-top: 22px;
+        padding-bottom: 22px; /* Dá uma esticada leve na vertical no painel dos números/gráficos */
+    }
+}
