@@ -604,33 +604,38 @@ body.modo-mobile .linha-unica { grid-template-columns: 1fr; width: 100%; }
 
 /* =========================================================================
    AJUSTE EXCLUSIVO PARA O MONITOR DO PC (TELA GRANDE >= 1200px)
-   - Empurra o bloco de "Controle de Anotações" para baixo (ocupando o espaço vazio).
-   - Mantém o tamanho do bloco de anotações intacto.
-   - Aumenta apenas a altura vertical dos gráficos para preencher o espaço intermediário.
+   - Empurra o bloco de anotações estritamente para o fundo (espaço vazio de baixo).
+   - Mantém o tamanho do bloco de anotações exatamente igual.
+   - Expande a altura/espaçamento interno apenas da seção de gráficos no meio.
    ========================================================================= */
 @media (min-width: 1200px) {
     .coluna-esquerda {
-        justify-content: space-between; /* Move o bloco de anotações para baixo, colando no rodapé da coluna */
+        justify-content: space-between; /* Mantém o topo no alto e joga o bloco de anotações para o rodapé da coluna */
     }
 
-    /* Aumenta a altura dos gráficos verticalmente para suprir o espaço que abriu */
+    /* Trava o tamanho do painel de anotações sem esticá-lo */
+    .anotacoes-container {
+        max-height: 140px !important; 
+    }
+
+    /* Aumenta a altura e preenchimento da área dos gráficos verticalmente */
     .graficos-triplo-container {
-        padding-top: 14px;
-        padding-bottom: 14px;
+        padding-top: 25px !important;
+        padding-bottom: 25px !important;
     }
 
     .grafico-circulo-corpo {
-        width: 78px;
-        height: 78px;
+        width: 82px !important;
+        height: 82px !important;
     }
 
     .grafico-circulo-centro {
-        width: 60px;
-        height: 60px;
+        width: 64px !important;
+        height: 64px !important;
     }
 
     .barra-faixa {
-        height: 18px;
-        border-radius: 9px;
+        height: 20px !important;
+        border-radius: 10px !important;
     }
 }
