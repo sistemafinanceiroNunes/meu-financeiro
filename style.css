@@ -425,7 +425,7 @@ h1 { color: #007BFF; margin-top: 0; margin-bottom: 5px; }
     overflow-y: auto;
     padding-right: 4px;
     min-height: 0;
-    max-height: 10px;
+    max-height: 120px;
 }
 .lista-anotacoes {
     list-style: none; 
