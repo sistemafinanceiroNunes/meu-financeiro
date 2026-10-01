@@ -604,17 +604,33 @@ body.modo-mobile .linha-unica { grid-template-columns: 1fr; width: 100%; }
 
 /* =========================================================================
    AJUSTE EXCLUSIVO PARA O MONITOR DO PC (TELA GRANDE >= 1200px)
-   - Aumenta levemente a altura do painel de cima (gráficos/números) na vertical.
-   - Empurra o bloco de "Controle de Anotações" mais para baixo.
-   - NÃO mexe em absolutamente nenhuma outra posição, no notebook e nem no mobile.
+   - Empurra o bloco de "Controle de Anotações" para baixo (ocupando o espaço vazio).
+   - Mantém o tamanho do bloco de anotações intacto.
+   - Aumenta apenas a altura vertical dos gráficos para preencher o espaço intermediário.
    ========================================================================= */
 @media (min-width: 1200px) {
     .coluna-esquerda {
-        justify-content: space-between; /* Empurra o quadrante de baixo para o rodapé da coluna, criando o espaço */
+        justify-content: space-between; /* Move o bloco de anotações para baixo, colando no rodapé da coluna */
     }
 
-    .coluna-esquerda .quadrante:first-child {
-        padding-top: 22px;
-        padding-bottom: 22px; /* Dá uma esticada leve na vertical no painel dos números/gráficos */
+    /* Aumenta a altura dos gráficos verticalmente para suprir o espaço que abriu */
+    .graficos-triplo-container {
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+
+    .grafico-circulo-corpo {
+        width: 78px;
+        height: 78px;
+    }
+
+    .grafico-circulo-centro {
+        width: 60px;
+        height: 60px;
+    }
+
+    .barra-faixa {
+        height: 18px;
+        border-radius: 9px;
     }
 }
