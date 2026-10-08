@@ -1,689 +1,362 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Configurações PWA / Tela Cheia Nativa -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Sistema Financeiro">
-    <meta name="theme-color" content="#001f3f">
-    <link rel="manifest" href="manifest.json">
-    <title>Sistema Financeiro</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%2328a745%22/><text x=%2216%22 y=%2223%22 font-size=%2222%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22 font-family=%22Arial%22>$</text></svg>">
-    <link rel="stylesheet" href="style.css?v=2.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Sistema Financeiro</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231BFF85'/%3E%3Ctext x='16' y='24' text-anchor='middle' font-family='Urbanist' font-size='24' fill='white'%3E$%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=27">
 </head>
 <body>
-
-    <!-- HUB DE AUTENTICAÇÃO -->
-    <div id="tela-login">
-        <div class="container-login-geral">
-            <p class="slogan-sistema">O seu mundo financeiro bem mais organizado</p>
-            
-            <div class="caixa-login">
-                <div id="painel-login" class="painel-auth ativo">
-                    <h2>Sistema Financeiro</h2>
-                    <input type="email" id="emailLogin" placeholder="E-mail">
-                    <input type="password" id="senhaLogin" placeholder="Senha">
-                    <button onclick="fazerLogin()">Entrar</button>
-                    <p id="msgErroLogin" class="msg-aviso" style="color: #dc3545;"></p>
-                    <div class="links-auth">
-                        <a onclick="trocarPainelAuth('cadastro')">Novo usuário? Criar conta</a>
-                        <a onclick="trocarPainelAuth('recuperacao')">Esqueceu a senha?</a>
-                    </div>
-                </div>
-
-                <div id="painel-cadastro" class="painel-auth">
-                    <h2>Nova Conta</h2>
-                    <div class="upload-foto-container">
-                        <img id="previewAvatar" src="" class="preview-avatar" style="display: none;">
-                        <div id="previewTexto" class="preview-avatar">Sem Foto</div>
-                        <label style="font-size: 12px; color: #007BFF; cursor: pointer; text-decoration: underline;">
-                            Adicionar Foto (Opcional)
-                            <input type="file" id="inputFotoCadastro" accept="image/*" style="display: none;" onchange="processarFotoPerfil(this, 'cadastro')">
-                        </label>
-                    </div>
-                    <input type="text" id="nomeCadastro" placeholder="Seu Nome">
-                    <input type="text" id="sobrenomeCadastro" placeholder="Seu Sobrenome">
-                    <input type="text" id="apelidoCadastro" placeholder="Seu Apelido (Como quer ser chamado)">
-                    <input type="email" id="emailCadastro" placeholder="Seu E-mail">
-                    <input type="password" id="senhaCadastro" placeholder="Crie uma Senha (mínimo 6 chars)">
-                    <input type="password" id="confirmaSenha" placeholder="Repita a Senha">
-                    <button onclick="fazerCadastro()" style="background-color: #007BFF;">Cadastrar</button>
-                    <p id="msgErroCadastro" class="msg-aviso" style="color: #dc3545;"></p>
-                    <div class="links-auth">
-                        <a onclick="trocarPainelAuth('login')">Já tenho conta. Voltar</a>
-                    </div>
-                </div>
-
-                <div id="painel-recuperacao" class="painel-auth">
-                    <h2>Recuperar Senha</h2>
-                    <p style="font-size: 13px; color: #888; margin-bottom: 15px;">Digite seu e-mail abaixo. Enviaremos um link para você criar uma nova senha.</p>
-                    <input type="email" id="emailRecuperacao" placeholder="Seu E-mail">
-                    <button onclick="recuperarSenha()" style="background-color: #17a2b8;">Enviar E-mail</button>
-                    <p id="msgRecuperacao" class="msg-aviso"></p>
-                    <div class="links-auth">
-                        <a onclick="trocarPainelAuth('login')">Voltar ao Login</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CONTATO DOS DESENVOLVEDORES -->
-            <div class="rodape-desenvolvedores">
-                <p><strong>Desenvolvedores:</strong></p>
-                <p>Samuel Nunes: nsamuelnunes21@gmail.com | (91) 98570-7702</p>
-                <p>Daniel Nunes: danielnunes3553@gmail.com | (91) 98512-3367</p>
-            </div>
-        </div>
+  <a class="skip-link" href="#main">Ir para o conteúdo</a>
+  <div id="notice" role="status" aria-live="polite" hidden></div>
+  <section id="auth" class="auth-screen" aria-label="Acesso à conta">
+    <div class="auth-container">
+      <img class="auth-brand auth-brand-light" src="icons/brand-nunes.svg" alt="" aria-hidden="true"><img class="auth-brand auth-brand-dark" src="icons/brand-nunes-dark.svg" alt="" aria-hidden="true">
+      <p class="slogan">Finanças organizadas. Decisões mais claras.</p>
+      <div class="login-box">
+        <div class="login-heading"><span class="eyebrow">Bem-vindo</span><h1>Sistema Financeiro</h1><p>Entre para acompanhar receitas, despesas e compromissos em um só lugar.</p></div>
+        <p id="authLoading" role="status">Carregando acesso…</p>
+        <form id="loginForm" hidden>
+          <label for="emailLogin">E-mail</label><input id="emailLogin" name="email" type="email" autocomplete="username" required>
+          <label for="senhaLogin">Senha</label><input id="senhaLogin" name="password" type="password" autocomplete="current-password" required>
+          <label class="check-row" for="rememberLogin"><input id="rememberLogin" type="checkbox"> <span>Manter conectado neste dispositivo</span></label>
+          <button class="primary" type="submit">Entrar</button>
+          <button class="link" type="button" data-auth="registerForm">Novo usuário? Criar conta</button>
+          <button class="link" type="button" data-auth="resetForm">Esqueceu a senha?</button>
+        </form>
+        <form id="registerForm" hidden>
+          <h2>Nova conta</h2>
+          <label for="nomeCadastro">Nome</label><input id="nomeCadastro" name="nome" autocomplete="given-name" maxlength="80" required>
+          <label for="sobrenomeCadastro">Sobrenome</label><input id="sobrenomeCadastro" name="sobrenome" autocomplete="family-name" maxlength="80" required>
+          <label for="apelidoCadastro">Como quer ser chamado? (opcional)</label><input id="apelidoCadastro" name="apelido" maxlength="80">
+          <label for="emailCadastro">E-mail</label><input id="emailCadastro" name="email" type="email" autocomplete="email" required>
+          <label for="senhaCadastro">Senha (mínimo 6 caracteres)</label><input id="senhaCadastro" name="password" type="password" autocomplete="new-password" minlength="6" required>
+          <label for="confirmaSenha">Repita a senha</label><input id="confirmaSenha" name="confirm" type="password" autocomplete="new-password" minlength="6" required>
+          <label for="fotoCadastro">Foto (opcional)</label><input id="fotoCadastro" type="file" accept="image/png,image/jpeg,image/webp">
+          <button class="primary" type="submit">Criar conta</button><button class="link" type="button" data-auth="loginForm">Voltar ao login</button>
+        </form>
+        <form id="resetForm" hidden>
+          <h2>Recuperar senha</h2>
+          <label for="emailRecuperacao">E-mail</label><input id="emailRecuperacao" name="email" type="email" autocomplete="email" required>
+          <button class="primary" type="submit">Enviar link de recuperação</button><button class="link" type="button" data-auth="loginForm">Voltar ao login</button>
+        </form>
+        <p id="authError" role="alert"></p>
+      </div>
+      <footer class="developer-footer">Sistema Financeiro · acesso seguro aos seus dados</footer>
     </div>
-
-    <!-- TODO O APP -->
-    <div id="conteudo-app">
-        <div class="barra-topo-mobile" id="barraTopoMobile">
-            <button class="btn-hamburguer" onclick="alternarMenuMobile()">☰</button>
-            <span style="font-weight: bold; font-size: 15px;">Sistema Financeiro</span>
-            <div style="width: 30px;"></div>
+  </section>
+  <div id="app" hidden>
+    <div class="app-shell">
+      <aside id="desktopSidebar" class="desktop-sidebar" aria-label="Navegação principal">
+        <div class="sidebar-brand-row">
+          <button type="button" class="sidebar-brand sidebar-home" data-page="inicio" aria-label="Ir para o início"><span class="brand-mark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1276.31 1276.31" aria-hidden="true" focusable="false"><path fill="#5FB88A" d="M0 0h1101.99c95.87 0 174.32 78.45 174.32 174.32v927.67c0 95.87-78.45 174.32-174.32 174.32H174.32C78.44 1276.31 0 1197.86 0 1101.99V0z"/><path fill="#fff" d="M387.83 247.89h446.35c14.26 0 26.09 11.78 26.09 26.17v106.4c0 14.39-11.83 26.17-26.09 26.17H513.69l348.62 373.09V468.15c0-14.53 11.78-26.25 26.17-26.25h106.4c14.39 0 26.17 11.73 26.17 26.25v534.02c0 14.53-11.78 26.25-26.17 26.25h-106.4c-8.5 0-16.09-4.09-20.88-10.44L414 532.37V804.8c0 14.44-11.78 26.1-26.17 26.1h-106.4c-14.39 0-26.17-11.66-26.17-26.1V273.99c0-14.44 11.78-26.1 26.17-26.1h106.4z"/></svg></span><strong class="sidebar-label">Meu Financeiro</strong></button>
+          <button id="sidebarCollapse" class="icon-button sidebar-collapse" type="button" aria-label="Recolher menu lateral" aria-pressed="false"><i data-lucide="panel-left-close" aria-hidden="true"></i></button>
         </div>
-
-        <div class="layout-principal">
-            <div class="menu-lateral" id="menuLateralApp">
-                <div class="menu-topo">
-                    <div class="menu-avatar-container">
-                        <img id="avatarLateral" src="" class="avatar-lateral" style="display: none;">
-                        <div id="avatarLateralPadrao" class="avatar-lateral" style="display: flex; align-items: center; justify-content: center; font-size: 20px; color: #aaa; font-weight: bold;">👤</div>
-                        <div id="saudacaoUser" style="color: #ffffff; font-size: 13.5px; text-align: center; display: none; line-height: 1.4; margin-top: 4px;">
-                            Olá, <strong id="nomeUserDisplay">Usuário</strong>!<br>
-                            <span style="font-size: 11.5px; color: #ffeb3b; font-weight: normal;">Aqui está o seu sistema financeiro</span>
-                        </div>
-                    </div>
-
-                    <button id="btn-inicio" class="btn-nav btn-ativo" onclick="mudarAba('inicio')">Página Inicial</button>
-                    <button id="btn-receitas" class="btn-nav" onclick="mudarAba('receitas')">Receitas</button>
-                    <button id="btn-despesas" class="btn-nav" onclick="mudarAba('despesas')">Despesas</button>
-                    <button id="btn-economia" class="btn-nav" onclick="mudarAba('economia')">Banco Economia</button>
+        <nav class="sidebar-nav">
+          <button type="button" data-page="inicio" aria-current="page"><i data-lucide="layout-dashboard" aria-hidden="true"></i><span class="sidebar-label">Visão geral</span></button>
+          <button type="button" data-page="receitas"><i data-lucide="trending-up" aria-hidden="true"></i><span class="sidebar-label">Receitas</span></button>
+          <button type="button" data-page="despesas"><i data-lucide="trending-down" aria-hidden="true"></i><span class="sidebar-label">Despesas</span></button>
+          <button type="button" data-page="economia"><i data-lucide="piggy-bank" aria-hidden="true"></i><span class="sidebar-label">Economia</span></button>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="settings-anchor">
+            <button id="settingsToggle" class="sidebar-settings" type="button" aria-controls="settingsMenu" aria-expanded="false"><i data-lucide="settings-2" aria-hidden="true"></i><span class="sidebar-label">Configurações</span><i class="settings-chevron sidebar-label" data-lucide="chevron-right" aria-hidden="true"></i></button>
+            <div id="settingsMenu" class="settings-menu" hidden>
+              <button type="button" data-page="configuracoes"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Configurações</span></button>
+              <button type="button" data-logout class="settings-logout"><i data-lucide="log-out" aria-hidden="true"></i><span>Sair</span></button>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <div class="app-main">
+        <header class="topbar">
+          <div class="user-greeting">
+            <span id="avatarInitials" class="avatar" aria-hidden="true">U</span><img id="avatarImage" class="avatar" alt="" hidden>
+            <div class="greeting-copy"><span class="eyebrow">Bem-vindo</span><strong>Olá, <span id="userName">usuário</span>!</strong></div>
+          </div>
+          <div class="top-actions">
+            <button id="notificationButton" class="icon-button top-action" type="button" aria-label="Notificações"><i data-lucide="bell" aria-hidden="true"></i><span class="notification-dot" hidden></span></button>
+            <button id="themeToggle" class="icon-button top-action theme-toggle" type="button" aria-label="Ativar tema escuro" aria-pressed="false">
+              <i class="theme-icon theme-icon-moon" data-lucide="moon" aria-hidden="true"></i>
+              <i class="theme-icon theme-icon-sun" data-lucide="sun" aria-hidden="true"></i>
+            </button>
+            <button id="headerLogoutButton" class="icon-button top-action" type="button" aria-label="Sair da conta"><i data-lucide="log-out" aria-hidden="true"></i></button>
+          </div>
+        </header>
+        <div class="layout">
+      <main id="main" tabindex="-1">
+        <p id="connectionStatus" class="muted" role="status">Carregando dados…</p>
+        <div id="reviewNotice" class="warning" hidden></div>
+        <section id="page-inicio" class="page dashboard-page">
+          <div class="dashboard-heading">
+            <div class="dashboard-heading-copy">
+              <h1>Visão financeira</h1>
+              <p>Desempenho do período em uma leitura rápida.</p>
+            </div>
+            <div class="dashboard-period" aria-label="Período da análise">
+              <div class="period-controls">
+                <button id="openNotesDialog" class="notes-button" type="button" aria-label="Abrir anotações" title="Anotações"><i data-lucide="notebook-pen" aria-hidden="true"></i><span>Anotações</span></button>
+              </div>
+                <div class="period-mode" role="group" aria-label="Tipo de período">
+                  <button type="button" data-period-mode="month" aria-pressed="true">Mensal</button>
+                  <button type="button" data-period-mode="year" aria-pressed="false">Anual</button>
                 </div>
                 
-                <div class="menu-baixo">
-                    <button id="btn-configuracoes" class="btn-nav" onclick="mudarAba('configuracoes')">Configurações</button>
-                    <button class="btn-sair" onclick="fazerLogout()">Sair (Logout)</button>
-                </div>
+              <div class="period-inputs">
+                <label class="sr-only" for="monthFilter">Mês da análise</label>
+                <input id="monthFilter" type="month" required>
+                <label class="sr-only" for="yearFilter">Ano da análise</label>
+                <input id="yearFilter" type="number" min="1900" max="9999" step="1" inputmode="numeric" hidden>
+              </div>
             </div>
+          </div>
 
-            <div class="conteudo-principal">
-                <div id="painelAlertaPerfil" class="painel-notificacao-isolado" style="display: none;">
-                    <p>⚠️ O seu perfil está incompleto (falta Nome ou Sobrenome).</p>
-                    <button class="btn-aviso-acao" onclick="abrirModalNotificacoes()">
-                        Atualizar Agora
-                        <span id="badgeNotificacao" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 10px; height: 10px; display: inline-block;"></span>
-                    </button>
+          <div class="dashboard-grid">
+            <article class="dashboard-card dashboard-income dashboard-action-card">
+              <div class="dashboard-action-head">
+                <span>Receitas</span>
+                <button type="button" class="dashboard-card-add income" data-add="receitas" aria-label="Adicionar receita"><i data-lucide="plus" aria-hidden="true"></i><span>Adicionar</span></button>
+              </div>
+              <button type="button" class="dashboard-card-main" data-dashboard-detail="receitas" aria-label="Ver detalhes das receitas do período">
+                <strong id="incomeTotal" class="dashboard-main-value income">R$ 0,00</strong>
+                <div class="dashboard-submetrics">
+                  <div><span>Previsão</span><strong id="incomeForecast">R$ 0,00</strong></div>
+                  <div><span>A receber</span><strong id="incomeReceivable">R$ 0,00</strong></div>
                 </div>
+              </button>
+            </article>
 
-                <!-- PÁGINA INICIAL -->
-                <div id="aba-inicio" class="aba ativa">
-                    <div class="topo-pagina-flex">
-                        <h1>Visão Geral Financeira</h1>
-                        <p id="frasePersonalizada" style="margin: 0;">Não gasta com besteira amigo, kkk</p>
-                    </div>
-                    
-                    <div class="grid-home">
-                        <div class="coluna-esquerda">
-                            <div class="quadrante">
-                                <div class="sub-abas-container">
-                                    <button id="btnSubMensal" class="btn-sub-aba ativo" onclick="mudarSubAba('mensal')">Análise Mensal</button>
-                                    <button id="btnSubAnual" class="btn-sub-aba" onclick="mudarSubAnual('anual')">Análise Anual (Ajustes)</button>
-                                </div>
-
-                                <div id="painelSubMensal" class="painel-sub-aba ativo">
-                                    <div class="filtro-periodo">
-                                        <select id="filtroMes" onchange="salvarFiltroPeriodo(); atualizarAnaliseMes()">
-                                            <option value="Jan">Janeiro</option><option value="Fev">Fevereiro</option><option value="Mar">Março</option><option value="Abr">Abril</option><option value="Mai">Maio</option><option value="Jun">Junho</option><option value="Jul">Julho</option><option value="Ago">Agosto</option><option value="Set">Setembro</option><option value="Out">Outubro</option><option value="Nov">Novembro</option><option value="Dez">Dezembro</option>
-                                        </select>
-                                        <select id="filtroAno" onchange="salvarFiltroPeriodo(); atualizarAnaliseMes()">
-                                            <option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="analise-resumo-grid">
-                                        <div class="mini-card" id="card-receita"><span>Receitas</span><strong id="analiseReceita" class="cor-receita">R$ 0,00</strong></div>
-                                        <div class="mini-card" id="card-balanco"><span>Balanço</span><strong id="analiseSaldo" class="cor-saldo">R$ 0,00</strong></div>
-                                        <div class="mini-card" id="card-sobra"><span>Previsão Superáft / Déficit</span><strong id="analiseDisponivel" class="cor-disponivel">R$ 0,00</strong></div>
-                                        <div class="mini-card" id="card-despesa"><span>Despesas</span><strong id="analiseDespesa" class="cor-despesa">R$ 0,00</strong></div>
-                                        <div class="mini-card" id="card-pago"><span>Já Pago</span><strong id="analisePago" class="cor-pago">R$ 0,00</strong></div>
-                                        <div class="mini-card" id="card-apagar"><span>A Pagar</span><strong id="analiseAPagar" class="cor-apagar">R$ 0,00</strong></div>
-                                    </div>
-
-                                    <div class="graficos-triplo-container">
-                                        <div class="card-grafico-box">
-                                            <span class="badge-titulo-grafico">Proporção</span>
-                                            <div class="grafico-barra-corpo">
-                                                <div class="barra-faixa">
-                                                    <div id="barraRecFill" class="barra-fill-rec" style="width: 50%;"></div>
-                                                    <div id="barraDespFill" class="barra-fill-desp" style="width: 50%;"></div>
-                                                </div>
-                                                <span style="font-size: 10px; color: #555;" id="txtLegendaBarra">Entrada vs Saída</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="card-grafico-box">
-                                            <span class="badge-titulo-grafico">Compromisso</span>
-                                            <div class="grafico-status-corpo" style="justify-content: center;">
-                                                <div id="graficoCirculo" class="grafico-circulo-corpo">
-                                                    <div class="grafico-circulo-centro" id="txtCirculoPorc">0%</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="card-grafico-box">
-                                            <span class="badge-titulo-grafico">Tendência</span>
-                                            <div class="grafico-status-corpo">
-                                                <div id="badgeStatus" class="badge-status" style="background-color: #6c757d;">Estável</div>
-                                                <span style="font-size: 10px; color: #555;" id="txtDescStatus">Fluxo do mês</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div id="painelSubAnual" class="painel-sub-aba">
-                                    <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">📊 Painel de Análise Anual (Ainda em ajustes)...</p>
-                                </div>
-                            </div>
-
-                            <div class="quadrante anotacoes-quadrante-container">
-                                <h3>Controle de Anotações</h3>
-                                <div style="display: flex; gap: 8px;">
-                                    <input type="text" id="novoItemTexto" placeholder="Nova anotação rápida..." style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
-                                    <button class="btn-add" onclick="adicionarItem()" style="padding: 8px 12px; height: auto;">+</button>
-                                </div>
-                                <div class="anotacoes-container">
-                                    <ul id="lista-itens" class="lista-anotacoes"></ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="coluna-direita">
-                            <div class="quadrante extrato-quadrante-container">
-                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e1e4e8; padding-bottom: 8px; margin-bottom: 0;">
-                                    <h3 id="tituloExtratoPainel" style="border: none; padding: 0; margin: 0;">Extrato de Despesas</h3>
-                                    <div class="extrato-filtros">
-                                        <button id="btnFiltroTodos" class="btn-filtro-extrato ativo" onclick="filtrarExtrato('Todos')">Todos</button>
-                                        <button id="btnFiltroFixa" class="btn-filtro-extrato" onclick="filtrarExtrato('Fixa')">Fixas</button>
-                                        <button id="btnFiltroVariavel" class="btn-filtro-extrato" onclick="filtrarExtrato('Variável')">Variável</button>
-                                    </div>
-                                </div>
-                                <div class="extrato-container">
-                                    <ul id="listaExtratoMes" class="lista-extrato"></ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <article class="dashboard-card dashboard-expense dashboard-action-card">
+              <div class="dashboard-action-head">
+                <span>Despesas</span>
+                <button type="button" class="dashboard-card-add expense" data-add="despesas" aria-label="Adicionar despesa"><i data-lucide="plus" aria-hidden="true"></i><span>Adicionar</span></button>
+              </div>
+              <button type="button" class="dashboard-card-main" data-dashboard-detail="despesas" aria-label="Ver detalhes das despesas do período">
+                <strong id="expenseTotal" class="dashboard-main-value expense">R$ 0,00</strong>
+                <div class="dashboard-submetrics">
+                  <div><span>Pago</span><strong id="expensePaid">R$ 0,00</strong></div>
+                  <div><span>A pagar</span><strong id="expensePayable">R$ 0,00</strong></div>
                 </div>
+              </button>
+            </article>
 
-                <!-- ABA: RECEITAS -->
-                <div id="aba-receitas" class="aba">
-                    <h1>Minhas Receitas</h1>
-                    <p>Controle de todas as suas entradas de dinheiro (fixas, fixa até ou extras).</p>
-                    <div class="dash-container">
-                        <div class="dash-card receita">
-                            <h4>Total das Receitas</h4>
-                            <h2 id="dash-valor-receita">R$ 0,00</h2>
-                        </div>
-                    </div>
-                    <div class="caixa-edicao">
-                        <h4 style="margin: 0 0 2px 0; font-size: 14px; color: #555;">Adicionar Nova Receita:</h4>
-                        <div class="linha-unica">
-                            <input type="text" id="nomeReceita" placeholder="Nome (Ex: Salário, Bico...)">
-                            <input type="number" id="valorReceita" placeholder="Valor (R$)" step="0.01">
-                            <select id="tipoReceita" onchange="alternarTipoReceitaUI()">
-                                <option value="Fixa">Receita Fixa (Permanente)</option>
-                                <option value="FixaAte">Receita Fixa Até...</option>
-                                <option value="Extra">Receita Extra (Escolher Meses)</option>
-                            </select>
-                            <div class="multi-select" id="containerSeletorMesReceita" style="display: none;">
-                                <div class="select-box" onclick="toggleDropdownMeses('opcoesMesesReceita')">
-                                    <span id="textoMesesReceita">Período / Meses...</span> <span>▼</span>
-                                </div>
-                                <div class="opcoes-meses" id="opcoesMesesReceita">
-                                    <div class="seletor-ano-container">
-                                        <label>Ano de Referência:</label>
-                                        <button type="button" class="btn-ano-atual-toggle" onclick="toggleListaAnos(event, 'listaAnosReceitaSelecao')">
-                                            <span id="txtAnoSelecionadoReceita">2026</span> <span>▼</span>
-                                        </button>
-                                        <div class="lista-anos-vertical" id="listaAnosReceitaSelecao">
-                                            <button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2020', event)">2020</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2021', event)">2021</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2022', event)">2022</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2023', event)">2023</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2024', event)">2024</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2025', event)">2025</button><button type="button" class="btn-ano-opcao ativo" onclick="selecionarAnoReceita('2026', event)">2026</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2027', event)">2027</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2028', event)">2028</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2029', event)">2029</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2030', event)">2030</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2031', event)">2031</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2032', event)">2032</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2033', event)">2033</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2034', event)">2034</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceita('2035', event)">2035</button>
-                                        </div>
-                                    </div>
-                                    <div class="grade-meses-chips" id="gradeMesesReceitaCriacao">
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Jan" class="chk-rec-mes" value="Jan" onclick="processarSelecaoMesReceita('Jan', event)"><label for="chkRec-Jan">Jan</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Fev" class="chk-rec-mes" value="Fev" onclick="processarSelecaoMesReceita('Fev', event)"><label for="chkRec-Fev">Fev</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Mar" class="chk-rec-mes" value="Mar" onclick="processarSelecaoMesReceita('Mar', event)"><label for="chkRec-Mar">Mar</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Abr" class="chk-rec-mes" value="Abr" onclick="processarSelecaoMesReceita('Abr', event)"><label for="chkRec-Abr">Abr</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Mai" class="chk-rec-mes" value="Mai" onclick="processarSelecaoMesReceita('Mai', event)"><label for="chkRec-Mai">Mai</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Jun" class="chk-rec-mes" value="Jun" onclick="processarSelecaoMesReceita('Jun', event)"><label for="chkRec-Jun">Jun</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Jul" class="chk-rec-mes" value="Jul" onclick="processarSelecaoMesReceita('Jul', event)"><label for="chkRec-Jul">Jul</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Ago" class="chk-rec-mes" value="Ago" onclick="processarSelecaoMesReceita('Ago', event)"><label for="chkRec-Ago">Ago</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Set" class="chk-rec-mes" value="Set" onclick="processarSelecaoMesReceita('Set', event)"><label for="chkRec-Set">Set</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Out" class="chk-rec-mes" value="Out" onclick="processarSelecaoMesReceita('Out', event)"><label for="chkRec-Out">Out</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Nov" class="chk-rec-mes" value="Nov" onclick="processarSelecaoMesReceita('Nov', event)"><label for="chkRec-Nov">Nov</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chkRec-Dez" class="chk-rec-mes" value="Dez" onclick="processarSelecaoMesReceita('Dez', event)"><label for="chkRec-Dez">Dez</label></div>
-                                    </div>
-                                    <div id="infoIntervaloFixaReceita" style="font-size: 11px; color: #007BFF; font-weight: bold; text-align: center; margin-top: 4px; display: none;">Clique no mês inicial e no mês final (intervalo contínuo).</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="rodape-form">
-                            <button class="btn-limpar-despesa" onclick="limparCamposFormularioReceita()">Limpar</button>
-                            <button class="btn-add" onclick="adicionarReceita()">Salvar Receita</button>
-                        </div>
-                    </div>
-
-                    <!-- CAIXA DE FILTROS DA LISTA DE RECEITAS -->
-                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #444;">
-                        <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
-                            <select id="filtroMesReceitaLista" style="max-width: 140px; padding: 6px 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white; font-size: 13px;">
-                                <option value="Jan">Janeiro</option><option value="Fev">Fevereiro</option><option value="Mar">Março</option><option value="Abr">Abril</option><option value="Mai">Maio</option><option value="Jun">Junho</option><option value="Jul">Julho</option><option value="Ago">Agosto</option><option value="Set">Setembro</option><option value="Out">Outubro</option><option value="Nov">Novembro</option><option value="Dez">Dezembro</option>
-                            </select>
-                            <select id="filtroAnoReceitaLista" style="max-width: 90px; padding: 6px 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white; font-size: 13px;">
-                                <option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
-                            </select>
-                            <button onclick="filtrarReceitasPorSelecao()" style="background-color: #007BFF; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Filtrar</button>
-                            <button onclick="limparFiltroReceitas()" style="background-color: #6c757d; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Todos os Lançamentos</button>
-                        </div>
-                    </div>
-
-                    <ul id="lista-receitas-html" class="lista-financas"></ul>
+            <button type="button" class="dashboard-card dashboard-flow" data-dashboard-detail="fluxo" aria-label="Ver detalhes do fluxo do período">
+              <div class="dashboard-card-head">
+                <span>Fluxo do período</span>
+                <span class="dashboard-card-icon"><i data-lucide="chart-no-axes-combined" aria-hidden="true"></i></span>
+              </div>
+              <div class="flow-balance-line">
+                <div><span>Balanço atual</span><strong id="actualBalanceTotal">R$ 0,00</strong></div>
+                <div class="flow-forecast"><span>Previsão</span><strong id="balanceTotal">R$ 0,00</strong></div>
+              </div>
+              <div class="flow-line-wrap">
+                <div class="flow-legend" aria-hidden="true">
+                  <span><i class="flow-legend-dot income-dot"></i>Recebido</span>
+                  <span><i class="flow-legend-dot expense-dot"></i>Pago</span>
                 </div>
-
-                <!-- ABA: DESPESAS -->
-                <div id="aba-despesas" class="aba">
-                    <h1>Minhas Despesas</h1>
-                    <p>Organize suas dívidas escolhendo o tipo, o ano e os meses de pagamento.</p>
-                    <div class="dash-container">
-                        <div class="dash-card despesa">
-                            <h4>Total de Despesas</h4>
-                            <h2 id="dash-valor-despesa">R$ 0,00</h2>
-                        </div>
-                    </div>
-                    <div class="caixa-edicao">
-                        <h4 style="margin: 0 0 2px 0; font-size: 14px; color: #555;">Adicionar Nova Despesa:</h4>
-                        <div class="linha-unica">
-                            <input type="text" id="nomeDespesa" placeholder="Nome (Ex: Financiamento Carro, Luz...)">
-                            <input type="number" id="valorDespesa" placeholder="Valor (R$)" step="0.01">
-                            <select id="tipoDespesa" onchange="alternarTipoDespesaUI()">
-                                <option value="Fixa">Despesa Fixa (Permanente)</option>
-                                <option value="FixaAte">Despesa Fixa Até...</option>
-                                <option value="Variável">Despesa Variável</option>
-                            </select>
-                            <div class="multi-select" id="containerSeletorMesDespesa" style="display: none;">
-                                <div class="select-box" onclick="toggleDropdownMeses('opcoesMeses')">
-                                    <span id="textoMeses">Período / Meses...</span> <span>▼</span>
-                                </div>
-                                <div class="opcoes-meses" id="opcoesMeses">
-                                    <div class="seletor-ano-container">
-                                        <label>Ano de Referência:</label>
-                                        <button type="button" class="btn-ano-atual-toggle" onclick="toggleListaAnos(event, 'listaAnosSelecao')">
-                                            <span id="txtAnoSelecionado">2026</span> <span>▼</span>
-                                        </button>
-                                        <div class="lista-anos-vertical" id="listaAnosSelecao">
-                                            <button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2020', event)">2020</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2021', event)">2021</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2022', event)">2022</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2023', event)">2023</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2024', event)">2024</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2025', event)">2025</button><button type="button" class="btn-ano-opcao ativo" onclick="selecionarAnoDespesa('2026', event)">2026</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2027', event)">2027</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2028', event)">2028</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2029', event)">2029</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2030', event)">2030</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2031', event)">2031</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2032', event)">2032</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2033', event)">2033</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2034', event)">2034</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesa('2035', event)">2035</button>
-                                        </div>
-                                    </div>
-                                    <div class="grade-meses-chips" id="gradeMesesCriacao">
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Jan" class="chk-mes" value="Jan" onclick="processarSelecaoMes('Jan', event)"><label for="chk-Jan">Jan</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Fev" class="chk-mes" value="Fev" onclick="processarSelecaoMes('Fev', event)"><label for="chk-Fev">Fev</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Mar" class="chk-mes" value="Mar" onclick="processarSelecaoMes('Mar', event)"><label for="chk-Mar">Mar</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Abr" class="chk-mes" value="Abr" onclick="processarSelecaoMes('Abr', event)"><label for="chk-Abr">Abr</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Mai" class="chk-mes" value="Mai" onclick="processarSelecaoMes('Mai', event)"><label for="chk-Mai">Mai</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Jun" class="chk-mes" value="Jun" onclick="processarSelecaoMes('Jun', event)"><label for="chk-Jun">Jun</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Jul" class="chk-mes" value="Jul" onclick="processarSelecaoMes('Jul', event)"><label for="chk-Jul">Jul</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Ago" class="chk-mes" value="Ago" onclick="processarSelecaoMes('Ago', event)"><label for="chk-Ago">Ago</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Set" class="chk-mes" value="Set" onclick="processarSelecaoMes('Set', event)"><label for="chk-Set">Set</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Out" class="chk-mes" value="Out" onclick="processarSelecaoMes('Out', event)"><label for="chk-Out">Out</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Nov" class="chk-mes" value="Nov" onclick="processarSelecaoMes('Nov', event)"><label for="chk-Nov">Nov</label></div>
-                                        <div class="mes-chip"><input type="checkbox" id="chk-Dez" class="chk-mes" value="Dez" onclick="processarSelecaoMes('Dez', event)"><label for="chk-Dez">Dez</label></div>
-                                    </div>
-                                    <div id="infoIntervaloFixa" style="font-size: 11px; color: #007BFF; font-weight: bold; text-align: center; margin-top: 4px; display: none;">Clique no mês inicial e no mês final (intervalo contínuo).</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="rodape-form">
-                            <button class="btn-limpar-despesa" onclick="limparCamposFormularioDespesa()">Limpar</button>
-                            <button class="btn-add-despesa" onclick="adicionarDespesa()">Salvar Despesa</button>
-                        </div>
-                    </div>
-
-                    <!-- CAIXA DE FILTROS DA LISTA DE DESPESAS -->
-                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #444;">
-                        <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
-                            <select id="filtroMesDespesaLista" style="max-width: 140px; padding: 6px 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white; font-size: 13px;">
-                                <option value="Jan">Janeiro</option><option value="Fev">Fevereiro</option><option value="Mar">Março</option><option value="Abr">Abril</option><option value="Mai">Maio</option><option value="Jun">Junho</option><option value="Jul">Julho</option><option value="Ago">Agosto</option><option value="Set">Setembro</option><option value="Out">Outubro</option><option value="Nov">Novembro</option><option value="Dez">Dezembro</option>
-                            </select>
-                            <select id="filtroAnoDespesaLista" style="max-width: 90px; padding: 6px 10px; border-radius: 6px; border: 1px solid #555; background: #333; color: white; font-size: 13px;">
-                                <option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
-                            </select>
-                            <button onclick="filtrarDespesasPorSelecao()" style="background-color: #007BFF; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Filtrar</button>
-                            <button onclick="limparFiltroDespesas()" style="background-color: #6c757d; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap;">Todos os Lançamentos</button>
-                        </div>
-                    </div>
-
-                    <ul id="lista-despesas-html" class="lista-financas"></ul>
+                <div class="flow-chart-stage">
+                  <svg id="flowLineChart" class="flow-line-chart" viewBox="0 0 600 180" preserveAspectRatio="none" role="img" aria-label="Evolução das receitas recebidas e despesas pagas no período">
+                    <line x1="8" y1="30" x2="592" y2="30" class="flow-grid-line"/>
+                    <line x1="8" y1="90" x2="592" y2="90" class="flow-grid-line"/>
+                    <line x1="8" y1="150" x2="592" y2="150" class="flow-grid-line"/>
+                    <path id="flowIncomeLine" class="flow-line income-line" d=""/>
+                    <path id="flowExpenseLine" class="flow-line expense-line" d=""/>
+                  </svg>
+                  <p id="flowChartEmpty" class="flow-chart-empty" hidden>Sem movimentações confirmadas neste período.</p>
                 </div>
+                <div id="flowAxis" class="flow-axis" aria-hidden="true"></div>
+                <p id="flowChartSummary" class="sr-only"></p>
+              </div>
+              <p id="actualSummary" class="sr-only"></p>
+            </button>
 
-                <!-- ABA: BANCO ECONOMIA -->
-                <div id="aba-economia" class="aba">
-                    <h1>Banco Economia</h1>
-                    <p>Guarde e proteja suas economias de forma 100% isolada e segura.</p>
-                    <div class="dash-container">
-                        <div class="dash-card economia">
-                            <h4>Total Acumulado na Economia</h4>
-                            <h2 id="dash-valor-economia">R$ 0,00</h2>
-                        </div>
-                    </div>
-                    <div class="caixa-edicao">
-                        <h4 style="margin: 0 0 2px 0; font-size: 14px; color: #555;">Movimentar Economia:</h4>
-                        <div class="linha-unica">
-                            <input type="text" id="motivoEconomia" placeholder="Motivo (Ex: Reserva, Moto...)">
-                            <input type="number" id="valorEconomia" placeholder="Valor (R$)" step="0.01">
-                            <select id="tipoMovimentoEconomia">
-                                <option value="Deposito">Depositar (Guardar)</option>
-                                <option value="Saque">Retirar (Sacar)</option>
-                            </select>
-                            <button class="btn-add" onclick="adicionarMovimentoEconomia()" style="height: 40px; margin: 0;">Efetivar Movimento</button>
-                        </div>
-                    </div>
-                    <ul id="lista-economia-html" class="lista-financas"></ul>
+            <section class="dashboard-card dashboard-analysis" aria-labelledby="analysisTitle">
+              <div class="dashboard-card-head">
+                <span id="analysisTitle">Análise</span>
+                <span class="dashboard-card-icon"><i data-lucide="activity" aria-hidden="true"></i></span>
+              </div>
+              <div class="analysis-stack">
+                <div class="analysis-block">
+                  <div class="analysis-label"><span>Entrada × saída</span><strong><span id="analysisIncomeShare">0%</span> / <span id="analysisExpenseShare">0%</span></strong></div>
+                  <div class="ratio-track" aria-hidden="true"><span id="analysisIncomeBar" class="ratio-income"></span><span id="analysisExpenseBar" class="ratio-expense"></span></div>
                 </div>
-
-                <!-- ABA DE CONFIGURAÇÕES -->
-                <div id="aba-configuracoes" class="aba">
-                    <h1>Configurações do Sistema</h1>
-                    <p>Personalize o visual, atualize seus dados pessoais e gira os dados da sua conta.</p>
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px; padding-bottom: 30px;">
-                        <div class="caixa-edicao" style="width: 420px; margin-top: 0;">
-                            <h3 class="titulo-secao-config" style="margin-top: 0; font-size: 16px;">Dados Pessoais & Apelido</h3>
-                            <div style="width: 100%; margin-bottom: 10px;">
-                                <label style="font-weight: bold; display: block; margin-bottom: 5px; font-size: 13px;">Nome:</label>
-                                <input type="text" id="configEditNome" placeholder="Seu Nome" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: white; color: #333; box-sizing: border-box; font-size: 14px;">
-                            </div>
-                            <div style="width: 100%; margin-bottom: 10px;">
-                                <label style="font-weight: bold; display: block; margin-bottom: 5px; font-size: 13px;">Sobrenome:</label>
-                                <input type="text" id="configEditSobrenome" placeholder="Seu Sobrenome" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: white; color: #333; box-sizing: border-box; font-size: 14px;">
-                            </div>
-                            <div style="width: 100%; margin-bottom: 15px;">
-                                <label style="font-weight: bold; display: block; margin-bottom: 5px; font-size: 13px;">Apelido (Como quer ser chamado):</label>
-                                <input type="text" id="configEditApelido" placeholder="Seu Apelido" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: white; color: #333; box-sizing: border-box; font-size: 14px;">
-                            </div>
-                            <div class="rodape-form">
-                                <button onclick="salvarDadosPessoaisConfig()" class="btn-add" style="background-color: #007BFF;">Atualizar Dados</button>
-                            </div>
-                        </div>
-
-                        <div class="caixa-edicao" style="width: 420px; margin-top: 0;">
-                            <h3 class="titulo-secao-config" style="margin-top: 0; font-size: 16px;">Perfil e Aparência</h3>
-                            <div style="width: 100%; margin-bottom: 15px; text-align: center;">
-                                <label style="font-weight: bold; display: block; margin-bottom: 8px;">Foto de Perfil:</label>
-                                <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                                    <img id="previewConfigAvatar" src="" class="avatar-lateral" style="display: none; width: 60px; height: 60px;">
-                                    <div id="previewConfigPadrao" class="avatar-lateral" style="display: flex; align-items: center; justify-content: center; font-size: 20px; color: #aaa; font-weight: bold; width: 60px; height: 60px;">👤</div>
-                                    <label style="background: #007BFF; color: white; padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer;">
-                                        Alterar Foto
-                                        <input type="file" id="inputFotoConfig" accept="image/*" style="display: none;" onchange="processarFotoPerfil(this, 'config')">
-                                    </label>
-                                </div>
-                            </div>
-                            <div style="width: 100%; margin-bottom: 10px;">
-                                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Tipo de Letra (Fonte):</label>
-                                <select id="selectFonte" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: white; color: #333;">
-                                    <option value="Arial, sans-serif">Arial (Padrão)</option>
-                                    <option value="Verdana, sans-serif">Verdana</option>
-                                    <option value="Tahoma, sans-serif">Tahoma</option>
-                                    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                                    <option value="Georgia, serif">Georgia</option>
-                                </select>
-                            </div>
-                            <div style="width: 100%; margin-bottom: 15px;">
-                                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Tema Visual:</label>
-                                <select id="selectTema" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: white; color: #333;">
-                                    <option id="optTemaClaro" value="claro">Modo Claro</option>
-                                    <option id="optTemaEscuro" value="escuro">Modo Escuro</option>
-                                    <option id="optTemaMargaridas" value="margaridas">🌸 Rosa com Margaridas</option>
-                                </select>
-                            </div>
-                            <div class="rodape-form">
-                                <button onclick="salvarConfiguracoes()" class="btn-add" style="background-color: #007BFF;">Salvar Configurações</button>
-                            </div>
-                        </div>
-
-                        <div class="caixa-edicao" style="width: 420px; margin-top: 0; border: 1px solid #f5c6cb; background: #fff8f8;">
-                            <h3 style="margin-top: 0; font-size: 16px; color: #dc3545;">⚠️ Zona de Perigo</h3>
-                            <p style="font-size: 13px; color: #666; line-height: 1.4;">Precisa de reiniciar a sua conta do zero? Pode apagar permanentemente todas as suas receitas, despesas e anotações guardadas na nuvem.</p>
-                            <div style="margin-top: auto; padding-top: 20px;">
-                                <button onclick="abrirModalApagarDados()" style="width: 100%; background-color: #dc3545; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Apagar Todos os Dados da Conta</button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="analysis-block">
+                  <div class="analysis-label"><span>Comprometimento</span><strong id="commitmentValue">0%</strong></div>
+                  <div class="commitment-track" aria-hidden="true"><span id="commitmentBar"></span></div>
                 </div>
+                <div class="analysis-block analysis-trend">
+                  <span>Tendência</span>
+                  <div class="trend-value"><span id="trendIcon" aria-hidden="true">→</span><strong id="monthStatus" data-tone="neutral">Sem dados</strong></div>
+                  <p id="monthDescription">Sem movimentação no período.</p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+        </section>
+
+        <section id="page-receitas" class="page statement-page" hidden>
+          <div class="statement-page-header">
+            <div>
+              <span class="eyebrow">Entradas</span>
+              <h1>Minhas receitas</h1>
+              <p>Acompanhe o que estava previsto, o que entrou e o que ainda falta receber.</p>
             </div>
+            <button class="primary action-button" type="button" data-add="receitas"><i data-lucide="plus" aria-hidden="true"></i>Adicionar receita</button>
+          </div>
+          <section class="statement-summary" aria-label="Resumo das receitas filtradas">
+            <div><span>Previsto</span><strong id="incomeStatementPlanned">R$ 0,00</strong></div>
+            <div><span>Recebido</span><strong id="incomeStatementReceived" class="income">R$ 0,00</strong></div>
+            <div><span>A receber</span><strong id="incomeStatementPending">R$ 0,00</strong></div>
+          </section>
+          <section class="statement-toolbar" aria-label="Filtros das receitas">
+            <div class="statement-search">
+              <i data-lucide="search" aria-hidden="true"></i>
+              <label class="sr-only" for="incomeSearch">Buscar receita</label>
+              <input id="incomeSearch" type="search" autocomplete="off" placeholder="Buscar receita">
+            </div>
+            <div class="statement-filters">
+              <div class="statement-scope" role="group" aria-label="Período das receitas">
+                <button type="button" data-income-scope="month" aria-pressed="true">Período</button>
+                <button type="button" data-income-scope="all" aria-pressed="false">Todos</button>
+              </div>
+              <label class="sr-only" for="incomeMonthFilter">Mês das receitas</label>
+              <input id="incomeMonthFilter" type="month">
+              <label class="sr-only" for="incomeStatusFilter">Status das receitas</label>
+              <select id="incomeStatusFilter">
+                <option value="all">Todos os status</option>
+                <option value="received">Recebido</option>
+                <option value="partial">Parcial</option>
+                <option value="pending">A receber</option>
+              </select>
+            </div>
+          </section>
+          <div class="statement-list-head"><span id="incomeResultCount">0 lançamentos</span><span>Extrato de receitas</span></div>
+          <ul id="incomeList" class="statement-list"></ul>
+          <button id="incomeLoadMore" class="statement-load-more" type="button" hidden>Carregar mais</button>
+        </section>
+        <section id="page-despesas" class="page" hidden>
+          <span class="eyebrow">Saídas</span><h1>Minhas despesas</h1><p>Organize pagamentos únicos, parcelas e despesas mensais.</p><button class="primary action-button" type="button" data-add="despesas"><i data-lucide="plus" aria-hidden="true"></i>Adicionar despesa</button><ul id="expenseList" class="entry-list"></ul>
+        </section>
+        <section id="page-economia" class="page" hidden>
+          <span class="eyebrow">Reserva</span><h1>Banco Economia</h1><p>Registre o que você guardou e o que precisou retirar da sua reserva.</p>
+          <div class="economy-layout">
+            <article class="mini-card economy-balance-card"><div class="metric-head"><span>Saldo guardado</span><div class="summary-icon"><i data-lucide="piggy-bank" aria-hidden="true"></i></div></div><strong id="economyBalance">R$ 0,00</strong><p class="muted">Movimentações independentes do fluxo mensal.</p></article>
+            <form id="economyForm" class="quadrant compact-form"><h2>Nova movimentação</h2>
+              <label for="economyName">Motivo</label><input id="economyName" maxlength="160" required placeholder="Ex.: Reserva de emergência">
+              <div class="form-grid"><div><label for="economyValue">Valor (R$)</label><input id="economyValue" type="number" min="0.01" step="0.01" inputmode="decimal" required></div>
+              <div><label for="economyKind">Tipo</label><select id="economyKind"><option value="deposit">Guardar</option><option value="withdraw">Retirar</option></select></div>
+              <div><label for="economyDate">Data</label><input id="economyDate" type="date" required></div></div>
+              <button class="primary" type="submit">Registrar movimentação</button><p id="economyError" role="alert"></p>
+            </form>
+          </div>
+          <section class="quadrant"><h2>Histórico da reserva</h2><ul id="economyList" class="entry-list"></ul></section>
+        </section>
+        <section id="page-configuracoes" class="page" hidden>
+          <span class="eyebrow">Preferências</span><h1>Configurações do sistema</h1>
+          <div class="settings-grid">
+            <form id="profileForm" class="quadrant"><h2>Perfil e aparência</h2>
+              <label for="profileName">Nome</label><input id="profileName" name="nome" autocomplete="given-name" maxlength="80" required>
+              <label for="profileSurname">Sobrenome</label><input id="profileSurname" name="sobrenome" autocomplete="family-name" maxlength="80" required>
+              <label for="profileNickname">Como quer ser chamado?</label><input id="profileNickname" name="apelido" maxlength="80" placeholder="Opcional">
+              <label for="profilePhoto">Foto de perfil</label><input id="profilePhoto" type="file" accept="image/png,image/jpeg,image/webp"><img id="photoPreview" class="avatar" alt="Prévia da foto" hidden>
+              <label for="themeSelect">Tema visual</label><select id="themeSelect"><option value="claro">Claro</option><option value="escuro">Escuro</option></select>
+              <label for="fontSelect">Fonte</label><select id="fontSelect"><option value="Urbanist, sans-serif">Urbanist</option><option value="system-ui, sans-serif">Sistema</option><option value="Georgia, serif">Georgia</option></select>
+              <button type="submit" class="primary">Salvar configurações</button>
+            </form>
+            <section class="quadrant danger-zone"><h2>Dados da conta</h2><p>Baixe uma cópia dos lançamentos antes de fazer alterações importantes.</p><button id="exportButton" type="button">Exportar cópia dos dados</button><p>A limpeza remove todas as receitas, despesas, reservas e anotações. Seu login e perfil são mantidos.</p><button id="clearButton" class="danger" type="button">Apagar dados financeiros</button></section>
+          </div>
+        </section>
+      </main>
         </div>
+      </div>
     </div>
-
-    <!-- MODAIS DO SISTEMA -->
-    <div id="modalEditarDespesa" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3500; justify-content: center; align-items: center;">
-        <div class="modal-box" style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 450px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-            <h2 style="margin-top: 0; color: #001f3f; font-size: 18px; text-align: center;">Editar Despesa</h2>
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px;">Nome da Despesa:</label>
-                    <input type="text" id="editNomeDespesa" oninput="marcarModificadoEdicaoDesp()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: white; color: #333;">
-                </div>
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px;">Valor (R$):</label>
-                    <input type="number" id="editValorDespesa" step="0.01" oninput="marcarModificadoEdicaoDesp()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: white; color: #333;">
-                </div>
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px;">Tipo de Despesa:</label>
-                    <select id="editTipoDespesa" onchange="alternarTipoDespesaEditUI(); marcarModificadoEdicaoDesp()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: white; color: #333; height: 40px;">
-                        <option value="Fixa">Despesa Fixa</option>
-                        <option value="FixaAte">Despesa Fixa Até...</option>
-                        <option value="Variável">Despesa Variável</option>
-                    </select>
-                </div>
-                <div id="containerEditSeletorMesDespesa" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                        <label style="font-size: 13px; font-weight: bold; color: #555;">Período / Meses:</label>
-                        <button type="button" onclick="zerarPeriodoEdicaoDesp()" style="background: #e2e6ea; border: none; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #555; cursor: pointer;">🔄 Zerar Período</button>
-                    </div>
-                    <div class="multi-select">
-                        <div class="select-box" onclick="toggleDropdownMeses('opcoesMesesEdit')">
-                            <span id="textoMesesEdit">Período / Meses...</span> <span>▼</span>
-                        </div>
-                        <div class="opcoes-meses" id="opcoesMesesEdit">
-                            <div class="seletor-ano-container">
-                                <label>Ano de Referência:</label>
-                                <button type="button" class="btn-ano-atual-toggle" onclick="toggleListaAnos(event, 'listaAnosEditSelecao')">
-                                    <span id="txtAnoSelecionadoEdit">2026</span> <span>▼</span>
-                                </button>
-                                <div class="lista-anos-vertical" id="listaAnosEditSelecao">
-                                    <button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2020', event)">2020</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2021', event)">2021</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2022', event)">2022</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2023', event)">2023</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2024', event)">2024</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2025', event)">2025</button><button type="button" class="btn-ano-opcao ativo" onclick="selecionarAnoDespesaEdit('2026', event)">2026</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2027', event)">2027</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2028', event)">2028</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2029', event)">2029</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2030', event)">2030</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2031', event)">2031</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2032', event)">2032</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2033', event)">2033</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2034', event)">2034</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoDespesaEdit('2035', event)">2035</button>
-                                </div>
-                            </div>
-                            <div class="grade-meses-chips" id="gradeMesesEditCriacao">
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Jan" class="chk-edit-mes" value="Jan" onclick="processarSelecaoMesEdit('Jan', event)"><label for="chkEdit-Jan">Jan</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Fev" class="chk-edit-mes" value="Fev" onclick="processarSelecaoMesEdit('Fev', event)"><label for="chkEdit-Fev">Fev</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Mar" class="chk-edit-mes" value="Mar" onclick="processarSelecaoMesEdit('Mar', event)"><label for="chkEdit-Mar">Mar</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Abr" class="chk-edit-mes" value="Abr" onclick="processarSelecaoMesEdit('Abr', event)"><label for="chkEdit-Abr">Abr</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Mai" class="chk-edit-mes" value="Mai" onclick="processarSelecaoMesEdit('Mai', event)"><label for="chkEdit-Mai">Mai</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Jun" class="chk-edit-mes" value="Jun" onclick="processarSelecaoMesEdit('Jun', event)"><label for="chkEdit-Jun">Jun</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Jul" class="chk-edit-mes" value="Jul" onclick="processarSelecaoMesEdit('Jul', event)"><label for="chkEdit-Jul">Jul</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Ago" class="chk-edit-mes" value="Ago" onclick="processarSelecaoMesEdit('Ago', event)"><label for="chkEdit-Ago">Ago</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Set" class="chk-edit-mes" value="Set" onclick="processarSelecaoMesEdit('Set', event)"><label for="chkEdit-Set">Set</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Out" class="chk-edit-mes" value="Out" onclick="processarSelecaoMesEdit('Out', event)"><label for="chkEdit-Out">Out</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Nov" class="chk-edit-mes" value="Nov" onclick="processarSelecaoMesEdit('Nov', event)"><label for="chkEdit-Nov">Nov</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEdit-Dez" class="chk-edit-mes" value="Dez" onclick="processarSelecaoMesEdit('Dez', event)"><label for="chkEdit-Dez">Dez</label></div>
-                            </div>
-                            <div id="infoIntervaloEditFixa" style="font-size: 11px; color: #007BFF; font-weight: bold; text-align: center; margin-top: 4px; display: none;">Clique no mês inicial e no mês final (intervalo contínuo).</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="salvarEdicaoDespesa()" style="flex: 1; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Salvar Alterações</button>
-                <button onclick="tentarFecharModalEdicaoDespesa()" style="flex: 1; padding: 12px; background-color: #6c757d; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Fechar</button>
-            </div>
+    <nav class="bottom-nav" aria-label="Navegação principal no celular">
+      <button type="button" data-page="inicio" aria-current="page" aria-label="Início"><i data-lucide="layout-dashboard" aria-hidden="true"></i><span>Início</span></button>
+      <button type="button" data-page="receitas" aria-label="Receitas"><i data-lucide="trending-up" aria-hidden="true"></i><span>Receitas</span></button>
+      <button type="button" data-page="despesas" aria-label="Despesas"><i data-lucide="trending-down" aria-hidden="true"></i><span>Despesas</span></button>
+      <button type="button" data-page="economia" aria-label="Economia"><i data-lucide="piggy-bank" aria-hidden="true"></i><span>Economia</span></button>
+      <button type="button" data-page="configuracoes" aria-label="Configurações"><i data-lucide="settings-2" aria-hidden="true"></i><span>Ajustes</span></button>
+    </nav>
+  </div>
+  <dialog id="notesDialog" class="notes-dialog" aria-labelledby="notesDialogTitle">
+    <div class="dialog-heading"><div><span class="eyebrow">Apoio</span><h2 id="notesDialogTitle">Anotações</h2></div><button type="button" id="closeNotesDialog" class="icon-button" aria-label="Fechar anotações"><i data-lucide="x" aria-hidden="true"></i></button></div>
+    <form id="noteForm">
+      <label for="noteText">Nova anotação</label>
+      <div class="note-input"><input id="noteText" name="text" maxlength="1000" required><button class="primary" type="submit">Adicionar</button></div>
+    </form>
+    <div class="notes-scroll"><ul id="notesList" class="entry-list"></ul></div>
+  </dialog>
+  <dialog id="dashboardDetailDialog" aria-labelledby="dashboardDetailTitle">
+    <div class="dialog-heading"><div><span id="dashboardDetailEyebrow" class="eyebrow">Resumo</span><h2 id="dashboardDetailTitle">Detalhes</h2></div><button type="button" id="closeDashboardDetail" class="icon-button" aria-label="Fechar detalhes"><i data-lucide="x" aria-hidden="true"></i></button></div>
+    <div id="dashboardDetailBody" class="dashboard-detail-body"></div>
+    <section id="dashboardExpenseDetails" class="dashboard-expense-details" hidden>
+      <div class="dashboard-expense-detail-head">
+        <div><span class="eyebrow">Detalhamento</span><strong>Despesas do mês</strong></div>
+        <label class="sr-only" for="dashboardExpenseMonth">Mês de referência</label>
+        <input id="dashboardExpenseMonth" type="month">
+      </div>
+      <div id="dashboardExpenseDetailSummary" class="dashboard-expense-detail-summary"></div>
+      <div class="dashboard-expense-list-title"><span>Pendentes</span><strong id="dashboardExpensePendingCount">0</strong></div>
+      <ul id="dashboardExpenseDetailList" class="dashboard-expense-detail-list"></ul>
+      <details id="dashboardExpensePaid" class="dashboard-expense-paid" hidden>
+        <summary><span>Pagos</span><strong id="dashboardExpensePaidCount">0</strong></summary>
+        <ul id="dashboardExpensePaidList" class="dashboard-expense-detail-list dashboard-expense-paid-list"></ul>
+      </details>
+    </section>
+    <div class="form-actions">
+      <button type="button" id="dashboardDetailAction" class="primary">Abrir seção</button>
+      <button type="button" id="dashboardDetailMore" class="primary" hidden>Mais detalhes</button>
+    </div>
+  </dialog>
+  <dialog id="entryDialog" aria-labelledby="entryTitle">
+    <form id="entryForm">
+      <div class="dialog-heading"><h2 id="entryTitle">Adicionar lançamento</h2><button type="button" id="closeEntry" class="icon-button" aria-label="Fechar edição"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <p id="entryHelp" class="muted"></p>
+      <label for="entryName">Descrição</label><input id="entryName" name="name" maxlength="160" required>
+      <div class="form-grid">
+        <div><label for="entryMode">Modalidade</label><select id="entryMode" name="mode"><option value="single">Única</option><option value="installments">Parcelada (valor total)</option><option value="monthly">Mensal (valor por mês)</option><option value="custom">Personalizada (meses escolhidos)</option><option value="legacy" hidden>Calendário existente</option></select></div>
+        <div><label id="valueLabel" for="entryValue">Valor (R$)</label><input id="entryValue" name="value" type="number" inputmode="decimal" min="0.01" step="0.01" required></div>
+        <div><label id="dateLabel" for="entryDate">Data prevista</label><input id="entryDate" name="date" type="date" min="1900-01-01" max="9999-12-31" required></div>
+        <div id="countField"><label for="entryCount">Quantidade de meses</label><input id="entryCount" name="count" type="number" min="1" max="360" step="1" value="1" required></div><div id="endDateField" hidden><label for="entryEndDate">Data final</label><input id="entryEndDate" name="endDate" type="date" min="1900-01-01" max="9999-12-31"></div>
+        <div id="categoryField"><label for="entryCategory">Tipo de despesa</label><select id="entryCategory" name="category"><option>Fixa</option><option>Fixa até</option><option>Variável</option></select></div>
+      </div>
+      <fieldset id="customDates" hidden>
+        <legend>Competências escolhidas</legend>
+        <div id="customExpenseRange" class="custom-expense-range" hidden>
+          <span class="custom-range-title">Adicionar intervalo</span>
+          <div class="custom-range-grid">
+            <div><label for="customRangeStart">De</label><input id="customRangeStart" type="month"></div>
+            <span class="custom-range-arrow" aria-hidden="true">→</span>
+            <div><label for="customRangeEnd">Até</label><input id="customRangeEnd" type="month"></div>
+            <button id="addCustomRange" type="button" class="soft">Adicionar intervalo</button>
+          </div>
+          <small id="customRangeHint" class="muted">Selecione o início e o fim.</small>
         </div>
-    </div>
-
-    <div id="modalEditarReceita" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3500; justify-content: center; align-items: center;">
-        <div class="modal-box" style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 450px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-            <h2 style="margin-top: 0; color: #001f3f; font-size: 18px; text-align: center;">Editar Receita</h2>
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px;">Nome da Receita:</label>
-                    <input type="text" id="editNomeReceita" oninput="marcarModificadoEdicaoRec()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: white; color: #333;">
-                </div>
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px;">Valor (R$):</label>
-                    <input type="number" id="editValorReceita" step="0.01" oninput="marcarModificadoEdicaoRec()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: white; color: #333;">
-                </div>
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px;">Tipo de Receita:</label>
-                    <select id="editTipoReceita" onchange="alternarTipoReceitaEditUI(); marcarModificadoEdicaoRec()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: white; color: #333; height: 40px;">
-                        <option value="Fixa">Receita Fixa</option>
-                        <option value="FixaAte">Receita Fixa Até...</option>
-                        <option value="Extra">Receita Extra</option>
-                    </select>
-                </div>
-                <div id="containerEditSeletorMesReceita" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                        <label style="font-size: 13px; font-weight: bold; color: #555;">Mês / Ano da Receita:</label>
-                        <button type="button" onclick="zerarPeriodoEdicaoRec()" style="background: #e2e6ea; border: none; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #555; cursor: pointer;">🔄 Zerar Período</button>
-                    </div>
-                    <div class="multi-select">
-                        <div class="select-box" onclick="toggleDropdownMeses('opcoesMesesEditReceita')">
-                            <span id="textoMesesEditReceita">Mês / Ano da Receita...</span> <span>▼</span>
-                        </div>
-                        <div class="opcoes-meses" id="opcoesMesesEditReceita">
-                            <div class="seletor-ano-container">
-                                <label>Ano de Referência:</label>
-                                <button type="button" class="btn-ano-atual-toggle" onclick="toggleListaAnos(event, 'listaAnosEditReceitaSelecao')">
-                                    <span id="txtAnoSelecionadoEditReceita">2026</span> <span>▼</span>
-                                </button>
-                                <div class="lista-anos-vertical" id="listaAnosEditReceitaSelecao">
-                                    <button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2020', event)">2020</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2021', event)">2021</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2022', event)">2022</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2023', event)">2023</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2024', event)">2024</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2025', event)">2025</button><button type="button" class="btn-ano-opcao ativo" onclick="selecionarAnoReceitaEdit('2026', event)">2026</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2027', event)">2027</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2028', event)">2028</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2029', event)">2029</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2030', event)">2030</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2031', event)">2031</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2032', event)">2032</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2033', event)">2033</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2034', event)">2034</button><button type="button" class="btn-ano-opcao" onclick="selecionarAnoReceitaEdit('2035', event)">2035</button>
-                                </div>
-                            </div>
-                            <div class="grade-meses-chips" id="gradeMesesEditReceitaCriacao">
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Jan" class="chk-edit-rec-mes" value="Jan" onclick="processarSelecaoMesEditReceita('Jan', event)"><label for="chkEditRec-Jan">Jan</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Fev" class="chk-edit-rec-mes" value="Fev" onclick="processarSelecaoMesEditReceita('Fev', event)"><label for="chkEditRec-Fev">Fev</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Mar" class="chk-edit-rec-mes" value="Mar" onclick="processarSelecaoMesEditReceita('Mar', event)"><label for="chkEditRec-Mar">Mar</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Abr" class="chk-edit-rec-mes" value="Abr" onclick="processarSelecaoMesEditReceita('Abr', event)"><label for="chkEditRec-Abr">Abr</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Mai" class="chk-edit-rec-mes" value="Mai" onclick="processarSelecaoMesEditReceita('Mai', event)"><label for="chkEditRec-Mai">Mai</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Jun" class="chk-edit-rec-mes" value="Jun" onclick="processarSelecaoMesEditReceita('Jun', event)"><label for="chkEditRec-Jun">Jun</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Jul" class="chk-edit-rec-mes" value="Jul" onclick="processarSelecaoMesEditReceita('Jul', event)"><label for="chkEditRec-Jul">Jul</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Ago" class="chk-edit-rec-mes" value="Ago" onclick="processarSelecaoMesEditReceita('Ago', event)"><label for="chkEditRec-Ago">Ago</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Set" class="chk-edit-rec-mes" value="Set" onclick="processarSelecaoMesEditReceita('Set', event)"><label for="chkEditRec-Set">Set</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Out" class="chk-edit-rec-mes" value="Out" onclick="processarSelecaoMesEditReceita('Out', event)"><label for="chkEditRec-Out">Out</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Nov" class="chk-edit-rec-mes" value="Nov" onclick="processarSelecaoMesEditReceita('Nov', event)"><label for="chkEditRec-Nov">Nov</label></div>
-                                <div class="mes-chip"><input type="checkbox" id="chkEditRec-Dez" class="chk-edit-rec-mes" value="Dez" onclick="processarSelecaoMesEditReceita('Dez', event)"><label for="chkEditRec-Dez">Dez</label></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="salvarEdicaoReceita()" style="flex: 1; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Salvar Alterações</button>
-                <button onclick="tentarFecharModalEdicaoReceita()" style="flex: 1; padding: 12px; background-color: #6c757d; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalConfirmarExclusaoUniversal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; justify-content: center; align-items: center;">
-        <div class="modal-box" style="background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
-            <h2 style="margin-top: 0; font-size: 18px; color: #dc3545;">⚠️ Confirmar Exclusão</h2>
-            <p id="txtMensagemConfirmacaoExclusao" style="font-size: 14px; color: #444; margin-bottom: 20px;">Deseja realmente apagar este item?</p>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="executarExclusaoConfirmada()" style="flex: 1; padding: 12px; background-color: #dc3545; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Sim, Apagar</button>
-                <button onclick="fecharModalConfirmarExclusao()" style="flex: 1; padding: 12px; background-color: #6c757d; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalConfirmarSaidaEdicao" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 4500; justify-content: center; align-items: center;">
-        <div class="modal-box" style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
-            <h2 style="margin-top: 0; font-size: 18px; color: #dc3545;">Atenção!</h2>
-            <p style="font-size: 14px; margin-bottom: 20px;">Você fez alterações neste item. Deseja salvar o que editou ou fechar sem salvar?</p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button onclick="acaoConfirmarSaidaEdicao(true)" style="width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Salvar o que editei</button>
-                <button onclick="acaoConfirmarSaidaEdicao(false)" style="width: 100%; padding: 10px; background-color: #dc3545; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Fechar sem salvar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalNotificacoes" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; justify-content: center; align-items: center;">
-        <div class="modal-box" style="background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-            <h2 style="margin-top: 0;">Atualização Necessária</h2>
-            <p style="font-size: 14px; margin-bottom: 20px;">Por favor, preencha seu nome, sobrenome e apelido para manter seu perfil atualizado e seguro.</p>
-            <input type="text" id="atlzNome" placeholder="Seu Nome" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
-            <input type="text" id="atlzSobrenome" placeholder="Seu Sobrenome" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
-            <input type="text" id="atlzApelido" placeholder="Seu Apelido" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
-            <button onclick="salvarAtualizacaoPerfil()" style="width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer;">Salvar Meus Dados</button>
-            <button class="btn-fechar" onclick="fecharModalNotificacoes()" style="width: 100%; padding: 10px; margin-top: 10px; background-color: transparent; border: none; cursor: pointer; text-decoration: underline;">Lembrar mais tarde</button>
-        </div>
-    </div>
-
-    <div id="modalConfirmarApagar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 4000; justify-content: center; align-items: center;">
-        <div class="modal-box" style="background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
-            <h2 style="margin-top: 0; font-size: 20px; color: #dc3545;">⚠️ Apagar Todos os Dados?</h2>
-            <p style="font-size: 14px; color: #444; line-height: 1.5; margin-bottom: 20px; text-align: left;">
-                Tem certeza de que deseja apagar permanentemente todas as suas <strong>receitas</strong>, <strong>despesas</strong> e <strong>anotações</strong>? Esta ação vai zerar todos os números da sua conta na nuvem e <strong>não poderá ser desfeita</strong>.
-            </p>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="executarApagarDados()" style="flex: 1; padding: 12px; background-color: #dc3545; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Sim, Apagar Tudo</button>
-                <button onclick="fecharModalApagarDados()" style="flex: 1; padding: 12px; background-color: #6c757d; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalEditarStatusMes" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3500; justify-content: center; align-items: center;">
-        <div class="modal-box" style="background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 380px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-            <h2 style="margin-top: 0; color: #001f3f; font-size: 18px; text-align: center;">Gerenciar Pagamento</h2>
-            <p id="txtSubModalStatus" style="font-size: 13px; color: #666; text-align: center; margin-bottom: 15px;"></p>
-            
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px;">Situação do Pagamento:</label>
-                    <select id="selectStatusPagamentoModal" onchange="alternarOpcaoValorParcialModal(); marcarModificadoStatus()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: white; color: #333; height: 40px; cursor: pointer;">
-                        <option value="Pendente">Pendente</option>
-                        <option value="Pago">Pago Completo</option>
-                        <option value="Parcial">Pago em Parte (Parcial)</option>
-                    </select>
-                </div>
-
-                <div id="containerValorParcialModal" style="display: none;">
-                    <label style="font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px;">Valor Pago Parcial (R$):</label>
-                    <input type="number" id="inputValorParcialModal" step="0.01" oninput="marcarModificadoStatus()" placeholder="0,00" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: white; color: #333;">
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <button onclick="salvarStatusPagamentoModal()" style="flex: 1; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Salvar</button>
-                <button onclick="tentarFecharModalStatus()" style="flex: 1; padding: 12px; background-color: #6c757d; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer;">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalConfirmarSaida" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 4000; justify-content: center; align-items: center;">
-        <div class="modal-box" style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
-            <h2 style="margin-top: 0; font-size: 18px; color: #dc3545;">Atenção!</h2>
-            <p style="font-size: 14px; margin-bottom: 20px;">Você fez alterações neste item. Deseja salvar o que editou ou fechar sem salvar?</p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button onclick="acaoConfirmarSaida(true)" style="width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Salvar o que editei</button>
-                <button onclick="acaoConfirmarSaida(false)" style="width: 100%; padding: 10px; background-color: #dc3545; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Fechar sem salvar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Vincula o arquivo JavaScript externo com controle de versão para evitar cache antiga -->
-    <script type="module" src="app.js?v=2.0"></script>
+        <div class="custom-single-title">Ou adicione uma competência avulsa</div>
+        <div class="custom-month-add"><input id="customMonthInput" type="month"><button id="addCustomMonth" type="button" class="soft">Adicionar mês</button></div>
+        <div id="customMonthList" class="month-chip-list"></div>
+      </fieldset>
+      <fieldset id="legacyDates" hidden><legend>Confirme os vencimentos existentes</legend><div id="legacyDatesList"></div></fieldset>
+      <p id="schedulePreview" class="muted"></p><p id="entryError" role="alert"></p>
+      <div class="form-actions"><button type="button" id="cancelEntry">Cancelar</button><button class="primary" type="submit">Salvar lançamento</button></div>
+    </form>
+  </dialog>
+  <dialog id="settleDialog" aria-labelledby="settleTitle"><form id="settleForm"><h2 id="settleTitle">Registrar pagamento</h2><p id="settleSummary" class="muted"></p><label for="settleValue">Valor desta baixa (R$)</label><input type="number" id="settleValue" min="0.01" step="0.01" inputmode="decimal" required><label for="settleDate">Data efetiva</label><input type="date" id="settleDate" required><div id="paymentHistory" class="payment-history"></div><p id="settleError" role="alert"></p><div class="form-actions"><button type="button" id="cancelSettle">Cancelar</button><button type="submit" class="primary">Registrar</button></div></form></dialog>
+  <dialog id="clearDialog" aria-labelledby="clearTitle"><form id="clearForm"><h2 id="clearTitle">Apagar dados financeiros?</h2><p>Esta ação remove todas as receitas, despesas, movimentações de economia e anotações da conta.</p><label for="clearConfirmation">Digite APAGAR para confirmar</label><input id="clearConfirmation" required pattern="APAGAR" autocomplete="off"><p id="clearError" role="alert"></p><div class="form-actions"><button type="button" id="cancelClear">Cancelar</button><button type="submit" class="danger">Apagar definitivamente</button></div></form></dialog>
+  <noscript>Ative o JavaScript para acessar o sistema financeiro.</noscript>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script>window.lucide?.createIcons();</script>
+  <script type="module" src="js/app.js?v=27"></script>
+  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=27").catch(()=>{}));}</script>
 </body>
 </html>
