@@ -57,6 +57,17 @@ function applyAppearance(){
   $('themeToggle').setAttribute('aria-pressed',String(dark));$('themeToggle').setAttribute('aria-label',dark?'Ativar tema claro':'Ativar tema escuro');$('themeToggle').title=dark?'Tema claro':'Tema escuro';
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#0f100f':'#f7f7f5');
 }
+const UPDATE_GUIDE_VERSION='redesign-2026-10';
+const updateGuideKey=uid=>`updateGuideSeen:${UPDATE_GUIDE_VERSION}:${uid}`;
+function markUpdateGuideSeen(){if(state.uid)remember(updateGuideKey(state.uid),'true');}
+function closeUpdateGuide(){markUpdateGuideSeen();if($('updateGuideDialog').open)$('updateGuideDialog').close();}
+function maybeShowUpdateGuide(){
+  if(!state.uid||stored(updateGuideKey(state.uid),'false')==='true'||$('updateGuideDialog').open)return;
+  requestAnimationFrame(()=>{if(state.uid&&stored(updateGuideKey(state.uid),'false')!=='true'&&!$('updateGuideDialog').open)$('updateGuideDialog').showModal();});
+}
+$('closeUpdateGuide').addEventListener('click',closeUpdateGuide);
+$('finishUpdateGuide').addEventListener('click',closeUpdateGuide);
+$('updateGuideDialog').addEventListener('cancel',event=>{event.preventDefault();closeUpdateGuide();});
 const savedTheme=stored('temaSolon','claro'),savedFont=stored('fonteSolon','Urbanist, sans-serif');$('themeSelect').value=['claro','escuro'].includes(savedTheme)?savedTheme:'claro';$('fontSelect').value=[...$('fontSelect').options].some(option=>option.value===savedFont)?savedFont:'Urbanist, sans-serif';applyAppearance();
 $('themeSelect').addEventListener('change',()=>{remember('temaSolon',$('themeSelect').value);applyAppearance();});
 $('themeToggle').addEventListener('click',async()=>{
@@ -464,7 +475,7 @@ async function authChanged(user){
   $('senhaLogin').value='';$('senhaCadastro').value='';$('confirmaSenha').value='';
   if(!user){showAuth('loginForm');renderProfile();return;}
   showPage('inicio',{animate:false,focus:false});updateConnection();
-  state.unsubscribe=repository.watchFinance(user.uid,data=>{if(session!==state.session)return;state.data=data;state.ready=true;updateConnection();render();},error=>{if(session!==state.session)return;state.ready=false;$('connectionStatus').textContent=errorMessage(error);notify(errorMessage(error),true);});
+  state.unsubscribe=repository.watchFinance(user.uid,data=>{if(session!==state.session)return;state.data=data;state.ready=true;updateConnection();render();maybeShowUpdateGuide();},error=>{if(session!==state.session)return;state.ready=false;$('connectionStatus').textContent=errorMessage(error);notify(errorMessage(error),true);});
   try{const profile=await repository.getProfile(user.uid);if(session===state.session){state.profile=profile;const cloudTheme=['claro','escuro'].includes(profile.temaPadrao)?profile.temaPadrao:$('themeSelect').value;const cloudFont=[...$('fontSelect').options].some(option=>option.value===profile.fontePadrao)?profile.fontePadrao:$('fontSelect').value;$('themeSelect').value=cloudTheme||'claro';$('fontSelect').value=cloudFont||'Urbanist, sans-serif';remember('temaSolon',$('themeSelect').value);remember('fonteSolon',$('fontSelect').value);applyAppearance();renderProfile();if(!profile.nome||!profile.sobrenome)notify('Complete seu nome e sobrenome em Configurações.');}}catch(error){if(session===state.session)notify(errorMessage(error),true);}
 }
 try{repository=await import('./repository.js');repository.watchAuth(authChanged);}catch{ $('authLoading').hidden=true;$('authError').textContent='Não foi possível carregar o acesso. Verifique sua conexão e recarregue a página.'; }

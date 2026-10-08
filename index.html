@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=27">
+  <link rel="stylesheet" href="styles.css?v=28">
 </head>
 <body>
   <a class="skip-link" href="#main">Ir para o conteúdo</a>
@@ -288,6 +288,22 @@
       <button type="button" data-page="configuracoes" aria-label="Configurações"><i data-lucide="settings-2" aria-hidden="true"></i><span>Ajustes</span></button>
     </nav>
   </div>
+  <dialog id="updateGuideDialog" class="update-guide-dialog" aria-labelledby="updateGuideTitle">
+    <div class="update-guide-head">
+      <div><span class="eyebrow">Nova versão</span><h2 id="updateGuideTitle">Conheça as principais mudanças</h2><p>O sistema ficou mais simples para acompanhar, registrar e conferir suas finanças no dia a dia.</p></div>
+      <button type="button" id="closeUpdateGuide" class="icon-button" aria-label="Fechar guia"><i data-lucide="x" aria-hidden="true"></i></button>
+    </div>
+    <div class="update-guide-assurance"><i data-lucide="shield-check" aria-hidden="true"></i><div><strong>Seus dados continuam preservados</strong><span>Seu login, histórico, receitas, despesas, economia e anotações permanecem na sua conta.</span></div></div>
+    <div class="update-guide-grid">
+      <article><span class="update-guide-icon"><i data-lucide="layout-dashboard" aria-hidden="true"></i></span><div><strong>Nova visão geral</strong><p>Saldo, receitas, despesas, fluxo e análise agora ficam organizados em um painel mais direto.</p></div></article>
+      <article><span class="update-guide-icon"><i data-lucide="calendar-range" aria-hidden="true"></i></span><div><strong>Mensal ou anual</strong><p>Troque rapidamente o período da análise no topo do painel e acompanhe o cenário que quiser.</p></div></article>
+      <article><span class="update-guide-icon"><i data-lucide="list-filter" aria-hidden="true"></i></span><div><strong>Receitas e despesas mais claras</strong><p>As telas ganharam filtros, busca e uma leitura melhor do que está previsto, recebido, pago ou pendente.</p></div></article>
+      <article><span class="update-guide-icon"><i data-lucide="circle-check-big" aria-hidden="true"></i></span><div><strong>Pagamentos organizados</strong><p>Ao registrar uma despesa como paga, ela sai dos pendentes e vai para a área de Pagos.</p></div></article>
+      <article><span class="update-guide-icon"><i data-lucide="notebook-pen" aria-hidden="true"></i></span><div><strong>Anotações no topo</strong><p>Suas anotações agora ficam em um modal próprio, acessado ao lado de Mensal e Anual.</p></div></article>
+      <article><span class="update-guide-icon"><i data-lucide="panel-left" aria-hidden="true"></i></span><div><strong>Navegação mais simples</strong><p>No computador, use o menu lateral. No celular, as principais áreas continuam sempre acessíveis na barra inferior.</p></div></article>
+    </div>
+    <div class="update-guide-actions"><button type="button" id="finishUpdateGuide" class="primary">Começar a usar</button></div>
+  </dialog>
   <dialog id="notesDialog" class="notes-dialog" aria-labelledby="notesDialogTitle">
     <div class="dialog-heading"><div><span class="eyebrow">Apoio</span><h2 id="notesDialogTitle">Anotações</h2></div><button type="button" id="closeNotesDialog" class="icon-button" aria-label="Fechar anotações"><i data-lucide="x" aria-hidden="true"></i></button></div>
     <form id="noteForm">
@@ -356,7 +372,7 @@
   <noscript>Ative o JavaScript para acessar o sistema financeiro.</noscript>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script>window.lucide?.createIcons();</script>
-  <script type="module" src="js/app.js?v=27"></script>
-  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=27").catch(()=>{}));}</script>
+  <script type="module" src="js/app.js?v=28"></script>
+  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=28").catch(()=>{}));}</script>
 </body>
 </html>
