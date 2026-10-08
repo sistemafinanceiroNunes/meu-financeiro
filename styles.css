@@ -80,6 +80,7 @@ svg{width:18px;height:18px;stroke-width:1.65}.icon-button{width:42px;min-width:4
 .login-box{background:var(--surface);padding:28px;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
 .login-heading{margin-bottom:23px}.login-heading h1{font-size:31px}.login-heading p{margin:0;color:var(--muted);font-size:13px}
 .login-box form>button{display:block;width:100%;margin-top:12px}.developer-footer{margin-top:15px;color:var(--muted-2);text-align:center;font-size:11px;line-height:1.7}
+.password-field{position:relative}.password-field input{padding-right:50px}.password-toggle{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:38px;min-width:38px;min-height:38px;padding:0;border:0;border-radius:10px;background:transparent;color:var(--muted);display:grid;place-items:center}.password-toggle:hover{background:var(--surface-soft);color:var(--text);border:0;transform:translateY(-50%)}.password-toggle:active{transform:translateY(-50%) scale(.96)}.password-toggle svg{width:17px;height:17px}.password-toggle [hidden]{display:none!important}
 #authError,[role=alert]{color:var(--expense);line-height:1.5}#authError:empty,[role=alert]:empty{display:none}
 
 /* Shell — sidebar integrada e recolhível no desktop */

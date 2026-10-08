@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=30">
+  <link rel="stylesheet" href="styles.css?v=32">
 </head>
 <body>
   <a class="skip-link" href="#main">Ir para o conteúdo</a>
@@ -27,7 +27,14 @@
         <p id="authLoading" role="status">Carregando acesso…</p>
         <form id="loginForm" hidden>
           <label for="emailLogin">E-mail</label><input id="emailLogin" name="email" type="email" autocomplete="username" required>
-          <label for="senhaLogin">Senha</label><input id="senhaLogin" name="password" type="password" autocomplete="current-password" required>
+          <label for="senhaLogin">Senha</label>
+          <div class="password-field">
+            <input id="senhaLogin" name="password" type="password" autocomplete="current-password" required>
+            <button id="toggleLoginPassword" class="password-toggle" type="button" aria-label="Mostrar senha" aria-pressed="false" title="Mostrar senha">
+              <i class="password-icon-show" data-lucide="eye" aria-hidden="true"></i>
+              <i class="password-icon-hide" data-lucide="eye-off" aria-hidden="true" hidden></i>
+            </button>
+          </div>
           <label class="check-row" for="rememberLogin"><input id="rememberLogin" type="checkbox"> <span>Manter conectado neste dispositivo</span></label>
           <button class="primary" type="submit">Entrar</button>
           <button class="link" type="button" data-auth="registerForm">Novo usuário? Criar conta</button>
@@ -370,7 +377,7 @@
   <noscript>Ative o JavaScript para acessar o sistema financeiro.</noscript>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script>window.lucide?.createIcons();</script>
-  <script type="module" src="js/app.js?v=31"></script>
-  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=31").catch(()=>{}));}</script>
+  <script type="module" src="js/app.js?v=32"></script>
+  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=32").catch(()=>{}));}</script>
 </body>
 </html>

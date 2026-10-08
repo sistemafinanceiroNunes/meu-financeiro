@@ -29,6 +29,16 @@ async function write(operation) {
 function showAuth(id) { for(const form of $('auth').querySelectorAll('form')) form.hidden=form.id!==id; $('authError').textContent=''; }
 for(const button of document.querySelectorAll('[data-auth]')) button.addEventListener('click',()=>showAuth(button.dataset.auth));
 $('loginForm').addEventListener('submit',e=>{e.preventDefault();const email=$('emailLogin').value.trim(),password=$('senhaLogin').value,keep=$('rememberLogin').checked;formTask(e.currentTarget,'authError',()=>repository.login(email,password,keep));});
+$('toggleLoginPassword').addEventListener('click',()=>{
+  const input=$('senhaLogin'),button=$('toggleLoginPassword'),show=input.type==='password';
+  input.type=show?'text':'password';
+  button.setAttribute('aria-pressed',String(show));
+  button.setAttribute('aria-label',show?'Ocultar senha':'Mostrar senha');
+  button.title=show?'Ocultar senha':'Mostrar senha';
+  button.querySelector('.password-icon-show').hidden=show;
+  button.querySelector('.password-icon-hide').hidden=!show;
+  input.focus({preventScroll:true});
+});
 $('resetForm').addEventListener('submit',e=>{e.preventDefault();const email=$('emailRecuperacao').value.trim();formTask(e.currentTarget,'authError',async()=>{await repository.resetPassword(email);notify('Se houver uma conta para este e-mail, você receberá as instruções.');});});
 $('registerForm').addEventListener('submit',e=>{e.preventDefault();const nome=$('nomeCadastro').value.trim();const profile={nome,sobrenome:$('sobrenomeCadastro').value.trim(),apelido:$('apelidoCadastro').value.trim()||nome,sexo:$('sexoCadastro').value,email:$('emailCadastro').value.trim(),temaPadrao:'claro',fontePadrao:'Urbanist, sans-serif'};const password=$('senhaCadastro').value,confirm=$('confirmaSenha').value,file=$('fotoCadastro').files[0];formTask(e.currentTarget,'authError',async()=>{
   if(!profile.nome || !profile.sobrenome) throw new Error('Preencha nome e sobrenome.');
@@ -524,7 +534,7 @@ async function authChanged(user){
   setSettingsMenu(false);document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());state.editing=null;state.dirty=false;state.currentPage='inicio';state.visitedPages=new Set();state.dashboardAnimated=false;state.metricAnimationToken++;state.connectionNotified=false;state.incomeVisibleCount=30;$('notice').hidden=true;
   for(const id of ['incomeList','expenseList','economyList','notesList'])$(id).replaceChildren();for(const id of ['incomeTotal','expenseTotal','balanceTotal','actualBalanceTotal','incomeForecast','incomeReceivable','expensePaid','expensePayable','economyBalance'])$(id).textContent='R$ 0,00';$('actualSummary').textContent='';$('reviewNotice').hidden=true;
   renderProfile();$('commitmentValue').textContent='0%';$('commitmentBar').style.width='0%';$('analysisIncomeShare').textContent='0%';$('analysisExpenseShare').textContent='0%';$('analysisIncomeBar').style.width='0%';$('analysisExpenseBar').style.width='0%';$('monthStatus').textContent='Sem dados';$('monthStatus').dataset.tone='neutral';$('trendIcon').textContent='→';$('monthDescription').textContent='Sem movimentação no período.';$('profilePhoto').value='';$('noteText').value='';$('auth').hidden=!!user;$('app').hidden=!user;$('authLoading').hidden=true;
-  $('senhaLogin').value='';$('senhaCadastro').value='';$('confirmaSenha').value='';$('sexoCadastro').value='';
+  $('senhaLogin').value='';$('senhaLogin').type='password';$('toggleLoginPassword').setAttribute('aria-pressed','false');$('toggleLoginPassword').setAttribute('aria-label','Mostrar senha');$('toggleLoginPassword').title='Mostrar senha';$('toggleLoginPassword').querySelector('.password-icon-show').hidden=false;$('toggleLoginPassword').querySelector('.password-icon-hide').hidden=true;$('senhaCadastro').value='';$('confirmaSenha').value='';$('sexoCadastro').value='';
   if(!user){showAuth('loginForm');renderProfile();return;}
   showPage('inicio',{animate:false,focus:false});updateConnection();
   state.unsubscribe=repository.watchFinance(user.uid,data=>{if(session!==state.session)return;state.data=data;state.ready=true;updateConnection();render();maybeStartProductTour();},error=>{if(session!==state.session)return;state.ready=false;$('connectionStatus').textContent=errorMessage(error);notify(errorMessage(error),true);});
