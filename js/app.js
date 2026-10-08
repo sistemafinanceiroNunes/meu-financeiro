@@ -30,7 +30,7 @@ function showAuth(id) { for(const form of $('auth').querySelectorAll('form')) fo
 for(const button of document.querySelectorAll('[data-auth]')) button.addEventListener('click',()=>showAuth(button.dataset.auth));
 $('loginForm').addEventListener('submit',e=>{e.preventDefault();const email=$('emailLogin').value.trim(),password=$('senhaLogin').value,keep=$('rememberLogin').checked;formTask(e.currentTarget,'authError',()=>repository.login(email,password,keep));});
 $('resetForm').addEventListener('submit',e=>{e.preventDefault();const email=$('emailRecuperacao').value.trim();formTask(e.currentTarget,'authError',async()=>{await repository.resetPassword(email);notify('Se houver uma conta para este e-mail, você receberá as instruções.');});});
-$('registerForm').addEventListener('submit',e=>{e.preventDefault();const nome=$('nomeCadastro').value.trim();const profile={nome,sobrenome:$('sobrenomeCadastro').value.trim(),apelido:$('apelidoCadastro').value.trim()||nome,email:$('emailCadastro').value.trim(),temaPadrao:'claro',fontePadrao:'Urbanist, sans-serif'};const password=$('senhaCadastro').value,confirm=$('confirmaSenha').value,file=$('fotoCadastro').files[0];formTask(e.currentTarget,'authError',async()=>{
+$('registerForm').addEventListener('submit',e=>{e.preventDefault();const nome=$('nomeCadastro').value.trim();const profile={nome,sobrenome:$('sobrenomeCadastro').value.trim(),apelido:$('apelidoCadastro').value.trim()||nome,sexo:$('sexoCadastro').value,email:$('emailCadastro').value.trim(),temaPadrao:'claro',fontePadrao:'Urbanist, sans-serif'};const password=$('senhaCadastro').value,confirm=$('confirmaSenha').value,file=$('fotoCadastro').files[0];formTask(e.currentTarget,'authError',async()=>{
   if(!profile.nome || !profile.sobrenome) throw new Error('Preencha nome e sobrenome.');
   if(password!==confirm) throw new Error('As senhas não coincidem.');
   if(file) profile.fotoPerfil=await readPhoto(file);
@@ -46,10 +46,12 @@ async function readPhoto(file) {
 function safePhoto(value) { return typeof value==='string' && /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(value) && value.length<150000 ? value : ''; }
 function renderProfile() {
   const profile=state.profile, photo=safePhoto(profile.fotoPerfil),displayName=profile.apelido||profile.nome||'Minha conta';
+  const sexo=profile.sexo==='feminino'?'feminino':profile.sexo==='masculino'?'masculino':'';
+  $('welcomeLabel').textContent=sexo==='feminino'?'Bem-vinda':sexo==='masculino'?'Bem-vindo':'Boas-vindas';
   $('userName').textContent=displayName;$('avatarInitials').textContent=(displayName || 'U').slice(0,1).toUpperCase();
   $('avatarImage').hidden=!photo;$('avatarInitials').hidden=!!photo;
   if(photo) $('avatarImage').src=photo; else $('avatarImage').removeAttribute('src');
-  $('profileName').value=profile.nome || '';$('profileSurname').value=profile.sobrenome || '';$('profileNickname').value=profile.apelido || profile.nome || '';
+  $('profileName').value=profile.nome || '';$('profileSurname').value=profile.sobrenome || '';$('profileNickname').value=profile.apelido || profile.nome || '';$('profileSex').value=sexo;
   $('photoPreview').hidden=!photo;if(photo) $('photoPreview').src=photo;else $('photoPreview').removeAttribute('src');
 }
 function applyAppearance(){
@@ -126,10 +128,10 @@ $('themeToggle').addEventListener('click',()=>{
 });
 $('profileForm').addEventListener('submit',async e=>{
   e.preventDefault();const form=e.currentTarget;if(form.dataset.busy)return;const session=state.session,uid=state.uid;
-  const nome=$('profileName').value.trim(),sobrenome=$('profileSurname').value.trim(),apelido=$('profileNickname').value.trim()||nome,file=$('profilePhoto').files[0];
+  const nome=$('profileName').value.trim(),sobrenome=$('profileSurname').value.trim(),apelido=$('profileNickname').value.trim()||nome,sexo=$('profileSex').value,file=$('profilePhoto').files[0];
   const theme=$('themeSelect').value,font=$('fontSelect').value;
   form.dataset.busy='true';const button=form.querySelector('[type=submit]');const controls=[...form.querySelectorAll('input,select,button')];controls.forEach(control=>control.disabled=true);
-  try {if(!nome||!sobrenome)throw new Error('Preencha nome e sobrenome.');const profile={nome,sobrenome,apelido,temaPadrao:theme,fontePadrao:font};if(file)profile.fotoPerfil=await readPhoto(file);await repository.saveProfile(uid,profile);if(state.session!==session)return;state.profile={...state.profile,...profile};remember('temaSolon',theme);remember('fonteSolon',font);applyAppearance();renderProfile();$('profilePhoto').value='';notify('Configurações salvas.');}
+  try {if(!nome||!sobrenome)throw new Error('Preencha nome e sobrenome.');const profile={nome,sobrenome,apelido,sexo,temaPadrao:theme,fontePadrao:font};if(file)profile.fotoPerfil=await readPhoto(file);await repository.saveProfile(uid,profile);if(state.session!==session)return;state.profile={...state.profile,...profile};remember('temaSolon',theme);remember('fonteSolon',font);applyAppearance();renderProfile();$('profilePhoto').value='';notify('Configurações salvas.');}
   catch(error){notify(errorMessage(error),true);}finally{delete form.dataset.busy;controls.forEach(control=>control.disabled=false);}
 });
 $('profilePhoto').addEventListener('change',async()=>{const session=state.session;try{const file=$('profilePhoto').files[0];if(file){const photo=await readPhoto(file);if(session===state.session){$('photoPreview').src=photo;$('photoPreview').hidden=false;}}}catch(error){$('profilePhoto').value='';notify(errorMessage(error),true);}});
@@ -522,7 +524,7 @@ async function authChanged(user){
   setSettingsMenu(false);document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());state.editing=null;state.dirty=false;state.currentPage='inicio';state.visitedPages=new Set();state.dashboardAnimated=false;state.metricAnimationToken++;state.connectionNotified=false;state.incomeVisibleCount=30;$('notice').hidden=true;
   for(const id of ['incomeList','expenseList','economyList','notesList'])$(id).replaceChildren();for(const id of ['incomeTotal','expenseTotal','balanceTotal','actualBalanceTotal','incomeForecast','incomeReceivable','expensePaid','expensePayable','economyBalance'])$(id).textContent='R$ 0,00';$('actualSummary').textContent='';$('reviewNotice').hidden=true;
   renderProfile();$('commitmentValue').textContent='0%';$('commitmentBar').style.width='0%';$('analysisIncomeShare').textContent='0%';$('analysisExpenseShare').textContent='0%';$('analysisIncomeBar').style.width='0%';$('analysisExpenseBar').style.width='0%';$('monthStatus').textContent='Sem dados';$('monthStatus').dataset.tone='neutral';$('trendIcon').textContent='→';$('monthDescription').textContent='Sem movimentação no período.';$('profilePhoto').value='';$('noteText').value='';$('auth').hidden=!!user;$('app').hidden=!user;$('authLoading').hidden=true;
-  $('senhaLogin').value='';$('senhaCadastro').value='';$('confirmaSenha').value='';
+  $('senhaLogin').value='';$('senhaCadastro').value='';$('confirmaSenha').value='';$('sexoCadastro').value='';
   if(!user){showAuth('loginForm');renderProfile();return;}
   showPage('inicio',{animate:false,focus:false});updateConnection();
   state.unsubscribe=repository.watchFinance(user.uid,data=>{if(session!==state.session)return;state.data=data;state.ready=true;updateConnection();render();maybeStartProductTour();},error=>{if(session!==state.session)return;state.ready=false;$('connectionStatus').textContent=errorMessage(error);notify(errorMessage(error),true);});

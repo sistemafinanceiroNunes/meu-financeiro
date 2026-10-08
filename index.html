@@ -38,6 +38,7 @@
           <label for="nomeCadastro">Nome</label><input id="nomeCadastro" name="nome" autocomplete="given-name" maxlength="80" required>
           <label for="sobrenomeCadastro">Sobrenome</label><input id="sobrenomeCadastro" name="sobrenome" autocomplete="family-name" maxlength="80" required>
           <label for="apelidoCadastro">Como quer ser chamado? (opcional)</label><input id="apelidoCadastro" name="apelido" maxlength="80">
+          <label for="sexoCadastro">Sexo (opcional)</label><select id="sexoCadastro" name="sexo"><option value="">Prefiro não informar</option><option value="feminino">Feminino</option><option value="masculino">Masculino</option></select>
           <label for="emailCadastro">E-mail</label><input id="emailCadastro" name="email" type="email" autocomplete="email" required>
           <label for="senhaCadastro">Senha (mínimo 6 caracteres)</label><input id="senhaCadastro" name="password" type="password" autocomplete="new-password" minlength="6" required>
           <label for="confirmaSenha">Repita a senha</label><input id="confirmaSenha" name="confirm" type="password" autocomplete="new-password" minlength="6" required>
@@ -81,7 +82,7 @@
         <header class="topbar">
           <div class="user-greeting">
             <span id="avatarInitials" class="avatar" aria-hidden="true">U</span><img id="avatarImage" class="avatar" alt="" hidden>
-            <div class="greeting-copy"><span class="eyebrow">Bem-vindo</span><strong>Olá, <span id="userName">usuário</span>!</strong></div>
+            <div class="greeting-copy"><span id="welcomeLabel" class="eyebrow">Boas-vindas</span><strong>Olá, <span id="userName">usuário</span>!</strong></div>
           </div>
           <div class="top-actions">
             <button id="notificationButton" class="icon-button top-action" type="button" aria-label="Notificações"><i data-lucide="bell" aria-hidden="true"></i><span class="notification-dot" hidden></span></button>
@@ -268,6 +269,7 @@
               <label for="profileName">Nome</label><input id="profileName" name="nome" autocomplete="given-name" maxlength="80" required>
               <label for="profileSurname">Sobrenome</label><input id="profileSurname" name="sobrenome" autocomplete="family-name" maxlength="80" required>
               <label for="profileNickname">Como quer ser chamado?</label><input id="profileNickname" name="apelido" maxlength="80" placeholder="Opcional">
+              <label for="profileSex">Sexo (opcional)</label><select id="profileSex" name="sexo"><option value="">Prefiro não informar</option><option value="feminino">Feminino</option><option value="masculino">Masculino</option></select>
               <label for="profilePhoto">Foto de perfil</label><input id="profilePhoto" type="file" accept="image/png,image/jpeg,image/webp"><img id="photoPreview" class="avatar" alt="Prévia da foto" hidden>
               <label for="themeSelect">Tema visual</label><select id="themeSelect"><option value="claro">Claro</option><option value="escuro">Escuro</option><option value="margaridas">🌼 Margaridas</option></select>
               <label for="fontSelect">Fonte</label><select id="fontSelect"><option value="Urbanist, sans-serif">Urbanist</option><option value="system-ui, sans-serif">Sistema</option><option value="Georgia, serif">Georgia</option></select>
@@ -368,7 +370,7 @@
   <noscript>Ative o JavaScript para acessar o sistema financeiro.</noscript>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script>window.lucide?.createIcons();</script>
-  <script type="module" src="js/app.js?v=30"></script>
-  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=30").catch(()=>{}));}</script>
+  <script type="module" src="js/app.js?v=31"></script>
+  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=31").catch(()=>{}));}</script>
 </body>
 </html>
