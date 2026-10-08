@@ -53,9 +53,9 @@ function renderProfile() {
   $('photoPreview').hidden=!photo;if(photo) $('photoPreview').src=photo;else $('photoPreview').removeAttribute('src');
 }
 function applyAppearance(){
-  const dark=$('themeSelect').value==='escuro';document.body.classList.toggle('dark',dark);document.body.style.fontFamily=$('fontSelect').value;
+  const theme=$('themeSelect').value,dark=theme==='escuro';document.body.classList.toggle('dark',dark);document.body.classList.toggle('margaridas',theme==='margaridas');document.body.style.fontFamily=$('fontSelect').value;
   $('themeToggle').setAttribute('aria-pressed',String(dark));$('themeToggle').setAttribute('aria-label',dark?'Ativar tema claro':'Ativar tema escuro');$('themeToggle').title=dark?'Tema claro':'Tema escuro';
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#0f100f':'#f7f7f5');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#0f100f':theme==='margaridas'?'#df8eae':'#f7f7f5');
 }
 
 const PRODUCT_TOUR_VERSION='redesign-tour-2026-10-v2';
@@ -118,7 +118,7 @@ $('productTourBack').addEventListener('click',()=>showProductTourStep(productTou
 $('productTourSkip').addEventListener('click',finishProductTour);
 addEventListener('resize',()=>{if(productTourIndex>=0)positionProductTour();});
 addEventListener('scroll',()=>{if(productTourIndex>=0)positionProductTour();},{passive:true,capture:true});
-const savedTheme=stored('temaSolon','claro'),savedFont=stored('fonteSolon','Urbanist, sans-serif');$('themeSelect').value=['claro','escuro'].includes(savedTheme)?savedTheme:'claro';$('fontSelect').value=[...$('fontSelect').options].some(option=>option.value===savedFont)?savedFont:'Urbanist, sans-serif';applyAppearance();
+const savedTheme=stored('temaSolon','claro'),savedFont=stored('fonteSolon','Urbanist, sans-serif');$('themeSelect').value=['claro','escuro','margaridas'].includes(savedTheme)?savedTheme:'claro';$('fontSelect').value=[...$('fontSelect').options].some(option=>option.value===savedFont)?savedFont:'Urbanist, sans-serif';applyAppearance();
 $('themeSelect').addEventListener('change',()=>{remember('temaSolon',$('themeSelect').value);applyAppearance();});
 $('themeToggle').addEventListener('click',async()=>{
   const next=$('themeSelect').value==='escuro'?'claro':'escuro';$('themeSelect').value=next;remember('temaSolon',next);applyAppearance();state.profile={...state.profile,temaPadrao:next};
@@ -526,7 +526,7 @@ async function authChanged(user){
   if(!user){showAuth('loginForm');renderProfile();return;}
   showPage('inicio',{animate:false,focus:false});updateConnection();
   state.unsubscribe=repository.watchFinance(user.uid,data=>{if(session!==state.session)return;state.data=data;state.ready=true;updateConnection();render();maybeStartProductTour();},error=>{if(session!==state.session)return;state.ready=false;$('connectionStatus').textContent=errorMessage(error);notify(errorMessage(error),true);});
-  try{const profile=await repository.getProfile(user.uid);if(session===state.session){state.profile=profile;const cloudTheme=['claro','escuro'].includes(profile.temaPadrao)?profile.temaPadrao:$('themeSelect').value;const cloudFont=[...$('fontSelect').options].some(option=>option.value===profile.fontePadrao)?profile.fontePadrao:$('fontSelect').value;$('themeSelect').value=cloudTheme||'claro';$('fontSelect').value=cloudFont||'Urbanist, sans-serif';remember('temaSolon',$('themeSelect').value);remember('fonteSolon',$('fontSelect').value);applyAppearance();renderProfile();if(!profile.nome||!profile.sobrenome)notify('Complete seu nome e sobrenome em Configurações.');}}catch(error){if(session===state.session)notify(errorMessage(error),true);}
+  try{const profile=await repository.getProfile(user.uid);if(session===state.session){state.profile=profile;const cloudTheme=['claro','escuro','margaridas'].includes(profile.temaPadrao)?profile.temaPadrao:$('themeSelect').value;const cloudFont=[...$('fontSelect').options].some(option=>option.value===profile.fontePadrao)?profile.fontePadrao:$('fontSelect').value;$('themeSelect').value=cloudTheme||'claro';$('fontSelect').value=cloudFont||'Urbanist, sans-serif';remember('temaSolon',$('themeSelect').value);remember('fonteSolon',$('fontSelect').value);applyAppearance();renderProfile();if(!profile.nome||!profile.sobrenome)notify('Complete seu nome e sobrenome em Configurações.');}}catch(error){if(session===state.session)notify(errorMessage(error),true);}
 }
 try{repository=await import('./repository.js');repository.watchAuth(authChanged);}catch{ $('authLoading').hidden=true;$('authError').textContent='Não foi possível carregar o acesso. Verifique sua conexão e recarregue a página.'; }
 
