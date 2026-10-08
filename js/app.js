@@ -57,17 +57,67 @@ function applyAppearance(){
   $('themeToggle').setAttribute('aria-pressed',String(dark));$('themeToggle').setAttribute('aria-label',dark?'Ativar tema claro':'Ativar tema escuro');$('themeToggle').title=dark?'Tema claro':'Tema escuro';
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#0f100f':'#f7f7f5');
 }
-const UPDATE_GUIDE_VERSION='redesign-2026-10';
-const updateGuideKey=uid=>`updateGuideSeen:${UPDATE_GUIDE_VERSION}:${uid}`;
-function markUpdateGuideSeen(){if(state.uid)remember(updateGuideKey(state.uid),'true');}
-function closeUpdateGuide(){markUpdateGuideSeen();if($('updateGuideDialog').open)$('updateGuideDialog').close();}
-function maybeShowUpdateGuide(){
-  if(!state.uid||stored(updateGuideKey(state.uid),'false')==='true'||$('updateGuideDialog').open)return;
-  requestAnimationFrame(()=>{if(state.uid&&stored(updateGuideKey(state.uid),'false')!=='true'&&!$('updateGuideDialog').open)$('updateGuideDialog').showModal();});
+
+const PRODUCT_TOUR_VERSION='redesign-tour-2026-10-v2';
+const productTourKey=uid=>`productTourSeen:${PRODUCT_TOUR_VERSION}:${uid}`;
+let productTourIndex=-1,productTourTarget=null,productTourPositionToken=0;
+const productTourSteps=[
+  {page:'inicio',selector:'.dashboard-period',title:'Escolha o período',text:'Use Mensal e Anual aqui para mudar a leitura do painel. O seletor de mês ou ano acompanha automaticamente.'},
+  {page:'inicio',selector:'#openNotesDialog',title:'Suas anotações ficaram aqui',text:'Clique neste botão quando quiser registrar ou consultar uma anotação sem ocupar espaço no dashboard.'},
+  {page:'inicio',selector:'.dashboard-income [data-add="receitas"]',title:'Adicione receitas mais rápido',text:'Clique aqui para cadastrar uma nova receita. O botão fica direto no card para reduzir passos.'},
+  {page:'inicio',selector:'.dashboard-expense',title:'Veja suas despesas',text:'Este card mostra previsto, pago e a pagar. Clique no card para abrir os detalhes; os pagamentos ficam separados entre Pendentes e Pagos.'},
+  {page:'inicio',selector:'.dashboard-flow',title:'Acompanhe o fluxo',text:'Veja aqui como receitas e despesas se comportam no período selecionado e acompanhe o balanço atual e a previsão.'},
+  {page:'receitas',selector:'.statement-toolbar',title:'Busque e filtre receitas',text:'Nesta tela você pode pesquisar, trocar o período e filtrar por recebido, parcial ou a receber.'},
+  {page:'despesas',selector:'#page-despesas .action-button',title:'Organize suas despesas',text:'Use este botão para lançar despesas únicas, parceladas, mensais fixas, variáveis ou com data final.'},
+  {page:'economia',selector:'#economyForm',title:'Controle sua reserva',text:'Registre aqui o que você guardou ou retirou. O Banco Economia fica separado do fluxo mensal para facilitar a leitura.'},
+  {page:'inicio',selector:()=>desktop.matches?'.sidebar-nav':'.bottom-nav',title:'Navegue por aqui',text:'Use esta navegação para alternar entre Visão geral, Receitas, Despesas, Economia e Ajustes. Pronto — a nova versão é sua.'}
+];
+function productTourSelector(step){return typeof step.selector==='function'?step.selector():step.selector;}
+function clearProductTourTarget(){if(productTourTarget)productTourTarget.classList.remove('product-tour-target-pulse');productTourTarget=null;}
+function finishProductTour(){
+  if(state.uid)remember(productTourKey(state.uid),'true');
+  clearProductTourTarget();productTourIndex=-1;$('productTour').hidden=true;showPage('inicio',{animate:false,focus:false});
 }
-$('closeUpdateGuide').addEventListener('click',closeUpdateGuide);
-$('finishUpdateGuide').addEventListener('click',closeUpdateGuide);
-$('updateGuideDialog').addEventListener('cancel',event=>{event.preventDefault();closeUpdateGuide();});
+function positionProductTour(){
+  if(productTourIndex<0||$('productTour').hidden)return;
+  const step=productTourSteps[productTourIndex],target=document.querySelector(productTourSelector(step));
+  if(!target||target.hidden)return;
+  clearProductTourTarget();productTourTarget=target;target.classList.add('product-tour-target-pulse');
+  const rect=target.getBoundingClientRect(),pad=8,spot=$('productTourSpotlight'),tip=$('productTourTip');
+  const top=Math.max(6,rect.top-pad),left=Math.max(6,rect.left-pad),right=Math.min(innerWidth-6,rect.right+pad),bottom=Math.min(innerHeight-6,rect.bottom+pad);
+  Object.assign(spot.style,{top:`${top}px`,left:`${left}px`,width:`${Math.max(20,right-left)}px`,height:`${Math.max(20,bottom-top)}px`});
+  tip.style.left='12px';tip.style.top='12px';
+  const tipRect=tip.getBoundingClientRect(),gap=12,maxLeft=Math.max(10,innerWidth-tipRect.width-10);
+  let tipLeft=Math.min(maxLeft,Math.max(10,rect.left+(rect.width-tipRect.width)/2));
+  let tipTop=bottom+gap;
+  if(tipTop+tipRect.height>innerHeight-10)tipTop=top-tipRect.height-gap;
+  if(tipTop<10)tipTop=Math.max(10,Math.min(innerHeight-tipRect.height-10,(innerHeight-tipRect.height)/2));
+  Object.assign(tip.style,{left:`${tipLeft}px`,top:`${tipTop}px`});
+}
+function showProductTourStep(index){
+  if(index<0||index>=productTourSteps.length){finishProductTour();return;}
+  productTourIndex=index;const step=productTourSteps[index];
+  document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());
+  if(state.currentPage!==step.page)showPage(step.page,{animate:false,focus:false});
+  $('productTour').hidden=false;$('productTourCount').textContent=`${index+1} de ${productTourSteps.length}`;$('productTourTitle').textContent=step.title;$('productTourText').textContent=step.text;
+  $('productTourBack').hidden=index===0;$('productTourNext').textContent=index===productTourSteps.length-1?'Concluir':'Próximo';
+  const token=++productTourPositionToken;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if(token!==productTourPositionToken)return;
+    const target=document.querySelector(productTourSelector(step));
+    if(target)target.scrollIntoView({block:'center',inline:'nearest',behavior:reducedMotion.matches?'auto':'smooth'});
+    setTimeout(()=>{if(token===productTourPositionToken)positionProductTour();},reducedMotion.matches?20:260);
+  }));
+}
+function maybeStartProductTour(){
+  if(!state.uid||stored(productTourKey(state.uid),'false')==='true'||productTourIndex>=0)return;
+  setTimeout(()=>{if(state.uid&&state.ready&&stored(productTourKey(state.uid),'false')!=='true')showProductTourStep(0);},350);
+}
+$('productTourNext').addEventListener('click',()=>showProductTourStep(productTourIndex+1));
+$('productTourBack').addEventListener('click',()=>showProductTourStep(productTourIndex-1));
+$('productTourSkip').addEventListener('click',finishProductTour);
+addEventListener('resize',()=>{if(productTourIndex>=0)positionProductTour();});
+addEventListener('scroll',()=>{if(productTourIndex>=0)positionProductTour();},{passive:true,capture:true});
 const savedTheme=stored('temaSolon','claro'),savedFont=stored('fonteSolon','Urbanist, sans-serif');$('themeSelect').value=['claro','escuro'].includes(savedTheme)?savedTheme:'claro';$('fontSelect').value=[...$('fontSelect').options].some(option=>option.value===savedFont)?savedFont:'Urbanist, sans-serif';applyAppearance();
 $('themeSelect').addEventListener('change',()=>{remember('temaSolon',$('themeSelect').value);applyAppearance();});
 $('themeToggle').addEventListener('click',async()=>{
@@ -475,7 +525,7 @@ async function authChanged(user){
   $('senhaLogin').value='';$('senhaCadastro').value='';$('confirmaSenha').value='';
   if(!user){showAuth('loginForm');renderProfile();return;}
   showPage('inicio',{animate:false,focus:false});updateConnection();
-  state.unsubscribe=repository.watchFinance(user.uid,data=>{if(session!==state.session)return;state.data=data;state.ready=true;updateConnection();render();maybeShowUpdateGuide();},error=>{if(session!==state.session)return;state.ready=false;$('connectionStatus').textContent=errorMessage(error);notify(errorMessage(error),true);});
+  state.unsubscribe=repository.watchFinance(user.uid,data=>{if(session!==state.session)return;state.data=data;state.ready=true;updateConnection();render();maybeStartProductTour();},error=>{if(session!==state.session)return;state.ready=false;$('connectionStatus').textContent=errorMessage(error);notify(errorMessage(error),true);});
   try{const profile=await repository.getProfile(user.uid);if(session===state.session){state.profile=profile;const cloudTheme=['claro','escuro'].includes(profile.temaPadrao)?profile.temaPadrao:$('themeSelect').value;const cloudFont=[...$('fontSelect').options].some(option=>option.value===profile.fontePadrao)?profile.fontePadrao:$('fontSelect').value;$('themeSelect').value=cloudTheme||'claro';$('fontSelect').value=cloudFont||'Urbanist, sans-serif';remember('temaSolon',$('themeSelect').value);remember('fonteSolon',$('fontSelect').value);applyAppearance();renderProfile();if(!profile.nome||!profile.sobrenome)notify('Complete seu nome e sobrenome em Configurações.');}}catch(error){if(session===state.session)notify(errorMessage(error),true);}
 }
 try{repository=await import('./repository.js');repository.watchAuth(authChanged);}catch{ $('authLoading').hidden=true;$('authError').textContent='Não foi possível carregar o acesso. Verifique sua conexão e recarregue a página.'; }
