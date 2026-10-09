@@ -247,30 +247,53 @@ function incomeStatementRows(){
     const rowStatus=incomeStatus(row).key;if(status!=='all'&&rowStatus!==status)return false;return true;
   }).sort((a,b)=>b.date.localeCompare(a.date)||a.name.localeCompare(b.name,'pt-BR'));
 }
+function incomeIconAction(label,entry){
+  const button=action('',()=>label==='Editar'?openEntry('receitas',entry):remove('receitas',entry),`${label} ${entry.name}`);
+  button.className=`expense-icon-action ${label==='Excluir'?'expense-icon-delete':'expense-icon-edit'}`;button.title=`${label} ${entry.name}`;
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.9');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');svg.setAttribute('aria-hidden','true');
+  const paths=label==='Editar'?['M12 20h9','M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z','m15 5 4 4']:['M3 6h18','M8 6V4h8v2','M19 6l-1 14H6L5 6','M10 11v6','M14 11v6'];
+  for(const d of paths){const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',d);svg.append(path);}button.append(svg);return button;
+}
 function renderIncomeOccurrence(row){
-  const li=node('li');li.dataset.entryId=row.entryId;li.dataset.occurrenceId=row.id;
-  const main=node('div',undefined,'statement-row-main'),date=node('span',undefined,'statement-date'),day=row.estimated?'—':String(Number(row.date.slice(8,10))).padStart(2,'0'),monthLabel=new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(Number(row.date.slice(0,4)),Number(row.date.slice(5,7))-1,1)).replace('.','');
-  date.append(node('strong',day),node('span',monthLabel));
-  const copy=node('span',undefined,'statement-copy');copy.append(node('strong',row.name),node('small',row.count>1?`${row.index}/${row.count} · ${displayDate(row.date)}`:displayDate(row.date)));
-  const value=node('span',undefined,'statement-value'),status=incomeStatus(row);value.append(node('strong',money(row.cents),'income'),node('span',status.label,`statement-status ${status.className}`));
-  main.append(date,copy,value);li.append(main);
-  const actions=node('div',undefined,'statement-row-actions'),receiveLabel=row.settled?'Ver recebimentos':row.partial?'Registrar outro recebimento':'Registrar recebimento';
-  const receive=action(receiveLabel,()=>settle(row),`${receiveLabel}: ${row.name}`);if(!row.settled)receive.classList.add('primary-mini');
-  const entry=state.data.receitas.find(item=>item.id===row.entryId),edit=action('Editar',()=>openEntry('receitas',entry),`Editar ${row.name}`);actions.append(edit,receive);li.append(actions);return li;
+  const line=node('div',undefined,'income-card-period');line.dataset.occurrenceId=row.id;
+  const details=node('div',undefined,'income-period-details'),status=incomeStatus(row);
+  const date=row.estimated?row.date.slice(0,7).split('-').reverse().join('/'):displayDate(row.date);
+  details.append(node('span',date,'income-period-date'),node('span',status.label,`statement-status ${status.className}`));
+  const side=node('div',undefined,'income-period-side');side.append(node('strong',money(row.cents),'income'));
+  const receiveLabel=row.settled?'Ver recebimentos':row.partial?'Registrar outro recebimento':'Registrar recebimento';
+  const receive=action(receiveLabel,()=>settle(row),`${receiveLabel}: ${row.name} em ${date}`);receive.className='income-receive-action';if(!row.settled)receive.classList.add('primary-mini');side.append(receive);
+  line.append(details,side);return line;
+}
+function renderIncomeCard(entry,rows){
+  const li=node('li');li.className='income-entry-card';li.dataset.entryId=entry.id;
+  const header=node('div',undefined,'income-card-header'),heading=node('div',undefined,'income-card-heading');
+  heading.append(node('strong',entry.name));
+  const type=entry.mode==='single'||entry.mode==='custom'?'Extra':entry.mode==='installments'||entry.category==='Fixa até'?'Fixa até':'Fixa';
+  const description=entry.openEnded?'Recebimento mensal sem data final':entry.mode==='installments'?'Parcelamento existente':entry.mode==='single'?'Mês único':`${rows.length} competência(s) exibida(s)`;
+  heading.append(node('span',`${type} · ${description}`,'income-card-subtitle'));
+  const tools=node('div',undefined,'income-card-tools');tools.append(incomeIconAction('Editar',entry),incomeIconAction('Excluir',entry));
+  header.append(heading,tools);li.append(header);
+  const periods=node('div',undefined,'income-card-periods');for(const row of rows)periods.append(renderIncomeOccurrence(row));li.append(periods);return li;
 }
 function renderIncomeReviewEntry(entry){
-  const li=node('li');li.dataset.entryId=entry.id;li.className='statement-review';const head=node('div',undefined,'statement-review-head');head.append(node('strong',entry.name),node('span','Revisão','statement-status partial'));li.append(head,node('p','Este cadastro precisa ter as competências confirmadas antes de entrar no extrato.'));
-  li.append(action('Revisar cadastro',()=>openEntry('receitas',entry),`Editar ${entry.name}`));return li;
+  const li=node('li');li.dataset.entryId=entry.id;li.className='income-entry-card statement-review';
+  const head=node('div',undefined,'income-card-header'),heading=node('div',undefined,'income-card-heading');
+  heading.append(node('strong',entry.name),node('span','Revisão pendente · confirme as competências','income-card-subtitle'));
+  const actions=node('div',undefined,'income-card-tools');actions.append(incomeIconAction('Editar',entry),incomeIconAction('Excluir',entry));head.append(heading,actions);li.append(head);return li;
 }
 function renderIncomeStatement(){
-  if(!state.ready)return;const rows=incomeStatementRows(),query=normalizedSearch($('incomeSearch').value),issues=state.data.receitas.filter(entry=>entry.pendingReview&&(query?normalizedSearch(entry.name).includes(query):true));
+  if(!state.ready)return;
+  const rows=incomeStatementRows(),query=normalizedSearch($('incomeSearch').value),issues=state.data.receitas.filter(entry=>entry.pendingReview&&(query?normalizedSearch(entry.name).includes(query):true));
   const planned=rows.reduce((sum,row)=>sum+row.cents,0),received=rows.reduce((sum,row)=>sum+row.paymentCents,0),pending=rows.reduce((sum,row)=>sum+row.outstandingCents,0);
   $('incomeStatementPlanned').textContent=money(planned);$('incomeStatementReceived').textContent=money(received);$('incomeStatementPending').textContent=money(pending);
-  const total=rows.length+issues.length;$('incomeResultCount').textContent=total===1?'1 lançamento':`${total} lançamentos`;
+  const groups=new Map();for(const row of rows){if(!groups.has(row.entryId))groups.set(row.entryId,[]);groups.get(row.entryId).push(row);}
+  const total=groups.size+issues.length;$('incomeResultCount').textContent=total===1?'1 receita':`${total} receitas`;
   const target=$('incomeList');target.replaceChildren();issues.forEach(entry=>target.append(renderIncomeReviewEntry(entry)));
-  rows.slice(0,state.incomeVisibleCount).forEach(row=>target.append(renderIncomeOccurrence(row)));
+  const visible=[...groups.entries()].slice(0,state.incomeVisibleCount);
+  for(const [id,group] of visible){const entry=state.data.receitas.find(item=>item.id===id);if(entry)target.append(renderIncomeCard(entry,group));}
   if(!total)target.append(node('li','Nenhuma receita encontrada para estes filtros.','empty'));
-  $('incomeLoadMore').hidden=rows.length<=state.incomeVisibleCount;const remaining=Math.max(0,rows.length-state.incomeVisibleCount);$('incomeLoadMore').textContent=`Carregar mais (${remaining} restantes)`;
+  $('incomeLoadMore').hidden=groups.size<=state.incomeVisibleCount;
+  const remaining=Math.max(0,groups.size-state.incomeVisibleCount);$('incomeLoadMore').textContent=`Carregar mais (${remaining} restantes)`;
 }
 function dashboardPeriod(){
   if(state.dashboardPeriodMode==='year'){
@@ -481,7 +504,36 @@ function renderEconomyItem(item){
   head.append(node('strong',item.name),node('span',`${signed>=0?'+':'−'} ${money(Math.abs(signed))}`,`amount ${signed>=0?'income':'expense'}`));li.append(head,node('p',`${item.kind==='withdraw'?'Retirada':'Depósito'} · ${displayDate(item.date)}`));
   const actions=node('div',undefined,'row-actions');actions.append(action('Excluir',()=>remove('economia',item),`Excluir movimentação ${item.name}`));li.append(actions);return li;
 }
-async function remove(collection,entry){const label=collection==='itens'?'esta anotação':collection==='economia'?`a movimentação “${entry.name}”`:`“${entry.name}” e todas as suas competências`;if(!confirm(`Excluir ${label}?`))return;try{await write({type:'remove',collection,id:entry.id,expectedRevision:entry.revision});notify('Item excluído.');}catch(error){notify(errorMessage(error),true);}}
+let pendingDelete=null,deleteInProgress=false;
+function closeDeleteConfirm(){if(deleteInProgress)return;$('deleteConfirmDialog').close();pendingDelete=null;}
+function remove(collection,entry){
+  if(deleteInProgress)return;
+  pendingDelete={collection,id:entry.id,revision:entry.revision,name:entry.name};
+  const label=collection==='itens'?'esta anotação':collection==='economia'?'esta movimentação':collection==='receitas'?'esta receita':'esta despesa';
+  $('deleteConfirmTitle').textContent='Excluir '+label+'?';
+  $('deleteConfirmDescription').textContent=collection==='receitas'||collection==='despesas'
+    ?'Deseja excluir “'+entry.name+'” e todos os seus períodos e registros de '+(collection==='receitas'?'recebimento':'pagamento')+'? Esta ação não pode ser desfeita.'
+    :'Deseja excluir “'+(entry.name||'item')+'”? Esta ação não pode ser desfeita.';
+  $('deleteConfirmError').hidden=true;$('deleteConfirmError').textContent='';
+  $('deleteConfirmDialog').showModal();$('cancelDeleteConfirm').focus();
+}
+$('cancelDeleteConfirm').addEventListener('click',closeDeleteConfirm);
+$('deleteConfirmDialog').addEventListener('cancel',event=>{event.preventDefault();closeDeleteConfirm();});
+$('acceptDeleteConfirm').addEventListener('click',async()=>{
+  if(!pendingDelete||deleteInProgress)return;
+  const {collection,id,revision}=pendingDelete;deleteInProgress=true;
+  $('acceptDeleteConfirm').disabled=true;$('cancelDeleteConfirm').disabled=true;
+  $('acceptDeleteConfirm').textContent='Excluindo...';
+  try{
+    await write({type:'remove',collection,id,expectedRevision:revision});
+    $('deleteConfirmDialog').close();pendingDelete=null;notify('Item excluído com sucesso.');
+  }catch(error){
+    $('deleteConfirmError').textContent=errorMessage(error);$('deleteConfirmError').hidden=false;
+  }finally{
+    deleteInProgress=false;$('acceptDeleteConfirm').disabled=false;$('cancelDeleteConfirm').disabled=false;
+    $('acceptDeleteConfirm').textContent='Sim, excluir';
+  }
+});
 $('openNotesDialog').addEventListener('click',()=>{$('notesDialog').showModal();requestAnimationFrame(()=>$('noteText').focus());});
 $('closeNotesDialog').addEventListener('click',()=>{if(!$('noteForm').dataset.busy)$('notesDialog').close();});
 $('notesDialog').addEventListener('cancel',e=>{if($('noteForm').dataset.busy)e.preventDefault();});
@@ -490,7 +542,7 @@ $('economyDate').value=today();
 $('economyForm').addEventListener('submit',e=>{e.preventDefault();const id=crypto.randomUUID();let value;try{value=cents($('economyValue').value);if(!$('economyName').value.trim())throw new Error('Informe o motivo da movimentação.');if(!validDate($('economyDate').value))throw new Error('Informe uma data válida.');}catch(error){$('economyError').textContent=errorMessage(error);return;}const entry={id,name:$('economyName').value.trim(),kind:$('economyKind').value,cents:value,date:$('economyDate').value,revision:0};formTask(e.currentTarget,'economyError',async()=>{await write({type:'add',collection:'economia',id,entry});e.currentTarget.reset();$('economyDate').value=today();notify('Movimentação da reserva salva.');});});
 for(const button of document.querySelectorAll('[data-add]'))button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();openEntry(button.dataset.add);});
 function renderCustomMonths(){
-  const target=$('customMonthList');target.replaceChildren();
+  const target=state.editing?.collection==='receitas'?$('incomeChosenMonths'):$('customMonthList');target.replaceChildren();
   state.customMonths.sort().forEach(month=>{const chip=node('span',undefined,'month-chip');chip.append(node('span',month.split('-').reverse().join('/')));const removeButton=action('×',()=>{state.customMonths=state.customMonths.filter(value=>value!==month);state.dirty=true;renderCustomMonths();previewSchedule();},`Remover ${month}`);removeButton.className='month-chip-remove';chip.append(removeButton);target.append(chip);});
 }
 $('addCustomMonth').addEventListener('click',()=>{const month=$('customMonthInput').value;if(!/^\d{4}-\d{2}$/.test(month)){notify('Escolha uma competência válida.',true);return;}if(!state.customMonths.includes(month))state.customMonths.push(month);$('customMonthInput').value='';state.dirty=true;renderCustomMonths();previewSchedule();});
@@ -510,14 +562,50 @@ $('addCustomRange').addEventListener('click',()=>{
   const months=customRangeMonths($('customRangeStart').value,$('customRangeEnd').value);if(!months.length){notify('Escolha um intervalo válido de até 360 meses.',true);return;}
   state.customMonths=[...new Set([...state.customMonths,...months])].sort();state.dirty=true;renderCustomMonths();previewSchedule();notify(`${months.length} competência(s) adicionadas.`);
 });
+
+let incomePeriodStart=today().slice(0,7),incomePeriodEnd='',incomePickerDraft=today().slice(0,7);
+function setIncomePickerOpen(open){$('incomePeriodPicker').hidden=!open;$('incomePeriodToggle').setAttribute('aria-expanded',String(open));$('incomeYearOptions').hidden=true;$('incomeYearToggle').setAttribute('aria-expanded','false');}
+function renderIncomePeriod(){
+  if(!state.editing||state.editing.collection!=='receitas')return;
+  const type=$('incomeMode').value,selected=state.customMonths;
+  const slots=$('incomePeriodSelections');slots.replaceChildren();
+  if(type!=='extra'){
+    const start=action('Início: '+incomePeriodStart.split('-').reverse().join('/'),()=>{incomePickerDraft=incomePeriodStart;updateIncomePicker();setIncomePickerOpen(true);},'Selecionar início');
+    start.className='income-period-slot';start.dataset.target='start';slots.append(start);
+    if(type==='until'){const end=action('Fim: '+(incomePeriodEnd?incomePeriodEnd.split('-').reverse().join('/'):'Selecionar'),()=>{incomePickerDraft=incomePeriodEnd||incomePeriodStart;updateIncomePicker();setIncomePickerOpen(true);},'Selecionar fim');end.className='income-period-slot';end.dataset.target='end';slots.append(end);}
+  }
+  $('incomeChosenMonths').hidden=type!=='extra';if(type==='extra')renderCustomMonths();
+  $('incomePeriodLabel').textContent=type==='extra'?'Adicionar mês':type==='until'?'Selecionar período':'Selecionar mês inicial';
+  updateIncomePicker();
+}
+let incomePickerTarget='start';
+function updateIncomePicker(){
+  const [year,month]=incomePickerDraft.split('-').map(Number);
+  $('incomeYearLabel').textContent=String(year);
+  const target=$('incomeMonthOptions');target.replaceChildren();
+  expenseMonthNames.forEach((name,i)=>{const btn=node('button',name,'expense-month-option');btn.type='button';btn.classList.toggle('is-selected',i+1===month);btn.setAttribute('aria-pressed',String(i+1===month));btn.addEventListener('click',()=>{
+    const chosen=year+'-'+String(i+1).padStart(2,'0');const type=$('incomeMode').value;
+    if(type==='extra'){if(!state.customMonths.includes(chosen))state.customMonths.push(chosen);state.customMonths.sort();}
+    else if(type==='fixed'||incomePickerTarget==='start'){incomePeriodStart=chosen;if(type==='until'&&incomePeriodEnd&&incomePeriodEnd<chosen)incomePeriodEnd='';}
+    else incomePeriodEnd=chosen;
+    incomePickerDraft=chosen;state.dirty=true;setIncomePickerOpen(false);renderIncomePeriod();previewSchedule();
+  });target.append(btn);});
+  const years=$('incomeYearOptions');years.replaceChildren();const now=Number(today().slice(0,4));for(let y=Math.max(year+12,now+12);y>=Math.min(year-12,now-12);y--){const btn=node('button',String(y),'expense-year-option');btn.type='button';btn.classList.toggle('is-selected',y===year);btn.addEventListener('click',()=>{incomePickerDraft=y+'-'+String(month).padStart(2,'0');updateIncomePicker();$('incomeYearOptions').hidden=true;$('incomeYearToggle').setAttribute('aria-expanded','false');});years.append(btn);}
+}
+$('incomePeriodToggle').addEventListener('click',()=>{incomePickerTarget=$('incomeMode').value==='until'&&incomePeriodEnd?'end':'start';incomePickerDraft=incomePickerTarget==='end'?incomePeriodEnd:incomePeriodStart;updateIncomePicker();setIncomePickerOpen($('incomePeriodPicker').hidden);});
+$('incomePeriodSelections').addEventListener('click',e=>{const btn=e.target.closest('[data-target]');if(btn)incomePickerTarget=btn.dataset.target;});
+$('incomeYearToggle').addEventListener('click',()=>{const open=$('incomeYearOptions').hidden;$('incomeYearOptions').hidden=!open;$('incomeYearToggle').setAttribute('aria-expanded',String(open));});
+document.addEventListener('click',e=>{if(!e.target.closest('.income-picker-anchor')&&!e.target.closest('.income-period-selections'))setIncomePickerOpen(false);});
+
 function openEntry(collection,entry=null){
   if(!state.ready){notify('Aguarde os dados carregarem.',true);return;}
-  state.editing={collection,entry:entry?structuredClone(entry):null,id:entry?.id||crypto.randomUUID()};state.dirty=false;state.customMonths=entry?.mode==='custom'?(entry.occurrences||[]).map(p=>p.date.slice(0,7)):[];
-  $('entryForm').reset();$('customRangeStart').removeAttribute('max');$('customRangeEnd').removeAttribute('min');$('customRangeHint').textContent='Selecione o início e o fim.';renderCustomMonths();$('entryError').textContent='';$('entryTitle').textContent=`${entry?'Editar':'Adicionar'} ${collection==='receitas'?'receita':'despesa'}`;
+  state.editing={collection,entry:entry?structuredClone(entry):null,id:entry?.id||crypto.randomUUID()};state.dirty=false;state.customMonths=entry&&collection==='receitas'&&['single','custom'].includes(entry.mode)?(entry.occurrences||[]).map(p=>p.date.slice(0,7)):entry?.mode==='custom'?(entry.occurrences||[]).map(p=>p.date.slice(0,7)):[];
+  $('entryForm').reset();incomePeriodStart=entry?.firstDate?.slice(0,7)||today().slice(0,7);incomePeriodEnd=entry?.endDate?.slice(0,7)||entry?.occurrences?.at(-1)?.date?.slice(0,7)||'';incomePickerDraft=incomePeriodStart;$('customRangeStart').removeAttribute('max');$('customRangeEnd').removeAttribute('min');$('customRangeHint').textContent='Selecione o início e o fim.';renderCustomMonths();$('entryError').textContent='';$('entryTitle').textContent=`${entry?'Editar':'Adicionar'} ${collection==='receitas'?'receita':'despesa'}`;
   $('entryName').value=entry?.name||'';$('entryValue').value=entry ? (entry.amountCents/100).toFixed(2) : '';
   const legacy=entry?.mode==='legacy'&&!entry.pendingReview;
   $('entryMode').querySelector('[value=legacy]').hidden=!legacy;
   $('entryMode').value=legacy?'legacy':entry?.mode==='legacy'?'installments':entry?.mode||'single';
+  $('incomeMode').value=entry?.mode==='single'||entry?.mode==='custom'?'extra':entry?.mode==='installments'||entry?.mode==='monthly'&&entry?.category==='Fixa até'?'until':'fixed';
   $('entryDate').value=entry?.firstDate||today();$('entryEndDate').value=entry?.endDate||entry?.occurrences?.at(-1)?.date||today();$('entryCount').value=entry?.count||1;$('entryCategory').value=entry?.category||'Fixa';$('categoryField').hidden=collection==='receitas';
   $('legacyDatesList').replaceChildren();
   if(legacy)entry.occurrences.forEach((p,i)=>{const label=node('label',`Vencimento ${i+1}`);label.htmlFor=`legacy-date-${i}`;const input=node('input');input.id=label.htmlFor;input.type='date';input.value=p.date;input.required=true;input.min='1900-01-01';input.max='9999-12-31';$('legacyDatesList').append(label,input);});
@@ -526,16 +614,36 @@ function openEntry(collection,entry=null){
   updateEntryFields();$('entryDialog').showModal();$('entryName').focus();
 }
 function updateEntryFields(){
+  const isIncome=state.editing?.collection==='receitas',incomeType=$('incomeMode').value;
+  if(isIncome){$('entryMode').value=incomeType==='extra'?'custom':incomeType==='single'||incomeType==='installments'?incomeType:'monthly';$('entryCategory').value=incomeType==='until'?'Fixa até':'Fixa';}
   const mode=$('entryMode').value,settled=state.editing?.entry?.occurrences.some(p=>(p.payments||[]).length),legacy=mode==='legacy',custom=mode==='custom',collection=state.editing?.collection,category=collection==='receitas'?'Fixa':$('entryCategory').value,fixedMonthly=mode==='monthly'&&category==='Fixa',fixedUntil=mode==='monthly'&&category==='Fixa até';
   $('valueLabel').textContent=(mode==='monthly'||custom)?'Valor por competência (R$)':mode==='single'?'Valor (R$)':'Valor total (R$)';$('dateLabel').textContent=mode==='single'?'Data prevista':'Primeiro vencimento';
-  $('countField').hidden=mode==='single'||legacy||custom||fixedMonthly||fixedUntil;$('endDateField').hidden=!fixedUntil;$('legacyDates').hidden=!legacy;$('customDates').hidden=!custom;$('customExpenseRange').hidden=!(custom&&collection==='despesas');$('entryDate').parentElement.hidden=legacy||custom;
+  $('countField').hidden=mode==='single'||legacy||custom||fixedMonthly||fixedUntil;$('endDateField').hidden=!fixedUntil;$('legacyDates').hidden=!legacy;$('customDates').hidden=!custom;$('customExpenseRange').hidden=!(custom&&collection==='despesas');$('entryDate').parentElement.hidden=(isIncome&&incomeType!=='single'&&incomeType!=='installments')||legacy||custom;
+  $('incomeModeField').hidden=!isIncome;$('genericModeField').hidden=isIncome;$('incomePeriodFields').hidden=!isIncome||incomeType==='single'||incomeType==='installments';$('customDates').hidden=!custom||isIncome;
+  if(isIncome&&incomeType!=='single'&&incomeType!=='installments'){$('entryDate').value=incomePeriodStart+'-01';if(incomeType==='until')$('entryEndDate').value=(incomePeriodEnd||incomePeriodStart)+'-01';$('endDateField').hidden=true;$('incomePeriodHint').textContent=incomeType==='extra'?'Escolha os meses em que receberá este valor.':incomeType==='fixed'?'Escolha o primeiro mês. A receita continuará mensalmente até você alterar.':'Escolha o primeiro e o último mês do período.';renderIncomePeriod();}
+
   for(const id of ['entryMode','entryValue','entryDate','entryEndDate','entryCount','customMonthInput','addCustomMonth','customRangeStart','customRangeEnd','addCustomRange'])$(id).disabled=!!settled||(legacy&&['entryDate','entryEndDate','entryCount'].includes(id));
-  $('entryCount').required=mode==='installments'||(mode==='monthly'&&!fixedMonthly&&!fixedUntil);$('entryEndDate').required=fixedUntil;$('entryDate').required=!legacy&&!custom;
+  $('entryCount').required=mode==='installments'||(mode==='monthly'&&!fixedMonthly&&!fixedUntil);$('entryEndDate').required=fixedUntil&&!isIncome;$('entryDate').required=!legacy&&!custom&&(!isIncome||incomeType==='single'||incomeType==='installments');
+  $('incomeMode').disabled=!!settled;$('incomePeriodToggle').disabled=!!settled;
   $('legacyDatesList').querySelectorAll('input').forEach(input=>input.disabled=!!settled||!legacy);$('customMonthList').querySelectorAll('button').forEach(button=>button.disabled=!!settled);
   previewSchedule();
 }
 function draftEntry(){
   const {entry,id}=state.editing;
+  const income=state.editing.collection==='receitas',convertSingle=income&&entry?.mode==='single'&&$('incomeMode').value==='extra',convertInstallments=income&&entry?.mode==='installments'&&$('incomeMode').value==='until';
+  if(entry&&(convertSingle||convertInstallments)){
+    const originalMonths=(entry.occurrences||[]).map(p=>p.date.slice(0,7)).sort();
+    const selectedMonths=convertSingle?[...state.customMonths].sort():customRangeMonths(incomePeriodStart,incomePeriodEnd);
+    const sameMonths=originalMonths.length===selectedMonths.length&&originalMonths.every((m,i)=>m===selectedMonths[i]);
+    if(sameMonths){
+      const preserved=structuredClone(entry);
+      preserved.name=$('entryName').value.trim();
+      if(convertSingle){preserved.mode='custom';preserved.category='Fixa';preserved.count=preserved.occurrences.length;}
+      else {preserved.mode='monthly';preserved.category='Fixa até';preserved.openEnded=false;preserved.endDate=preserved.occurrences.at(-1)?.date;preserved.count=preserved.occurrences.length;}
+      return preserved;
+    }
+    if(entry.occurrences.some(p=>(p.payments||[]).length))throw new Error('Existem recebimentos registrados. Mantenha os meses originais para preservar os valores e as baixas.');
+  }
   if(entry?.occurrences.some(p=>(p.payments||[]).length))return {...structuredClone(entry),name:$('entryName').value.trim(),category:$('entryCategory').value};
   if($('entryMode').value==='legacy'){
     const amount=cents($('entryValue').value),dates=[...$('legacyDatesList').querySelectorAll('input')].map(input=>input.value);
@@ -544,13 +652,14 @@ function draftEntry(){
     const occurrences=entry.occurrences.map((p,i)=>({...p,date:dates[i],estimated:false,cents:Math.floor(amount/dates.length)+(i<amount%dates.length?1:0)})).sort((a,b)=>a.date.localeCompare(b.date));
     return {...structuredClone(entry),name:$('entryName').value.trim(),category:$('entryCategory').value,amountCents:amount,firstDate:occurrences[0].date,occurrences,pendingReview:false};
   }
-  const category=state.editing.collection==='receitas'?'Fixa':$('entryCategory').value;
+  const category=state.editing.collection==='receitas'?($('incomeMode').value==='until'?'Fixa até':'Fixa'):$('entryCategory').value;
+  if(state.editing.collection==='receitas'&&!['single','installments'].includes($('incomeMode').value)){$('entryDate').value=incomePeriodStart+'-01';$('entryEndDate').value=(incomePeriodEnd||incomePeriodStart)+'-01';if($('incomeMode').value==='until'&&(!incomePeriodEnd||incomePeriodEnd<incomePeriodStart))throw new Error('Selecione um período válido: mês inicial e final.');}
   const result=makeEntry({id,name:$('entryName').value,value:$('entryValue').value,date:$('entryDate').value,endDate:$('entryEndDate').value,count:$('entryCount').value,mode:$('entryMode').value,months:state.customMonths,category,revision:entry?.revision||0});
   if(entry?.legacy)result.legacy=structuredClone(entry.legacy);
   return result;
 }
 function previewSchedule(){try{const entry=draftEntry();if(entry.openEnded){$('schedulePreview').textContent=`Recorrência mensal fixa a partir de ${displayDate(entry.firstDate)}, sem data final. Valor mensal: ${money(entry.amountCents)}.`;return;}const rows=entry.occurrences,total=rows.reduce((s,p)=>s+p.cents,0);if(entry.category==='Fixa até'){$('schedulePreview').textContent=`${rows.length} mês(es) no intervalo de ${displayDate(entry.firstDate)} até ${displayDate(entry.endDate)}. Valor mensal: ${money(entry.amountCents)} · Total previsto: ${money(total)}.`;return;}$('schedulePreview').textContent=`${rows.length} vencimento(s): ${displayDate(rows[0].date)} a ${displayDate(rows.at(-1).date)}. Total do período: ${money(total)}.`;}catch{$('schedulePreview').textContent='Preencha os dados para conferir os vencimentos.';}}
-$('entryForm').addEventListener('input',()=>{state.dirty=true;previewSchedule();});$('entryMode').addEventListener('change',updateEntryFields);$('entryCategory').addEventListener('change',()=>{state.dirty=true;updateEntryFields();});
+$('entryForm').addEventListener('input',()=>{state.dirty=true;previewSchedule();});$('entryMode').addEventListener('change',updateEntryFields);$('incomeMode').addEventListener('change',()=>{state.dirty=true;setIncomePickerOpen(false);updateEntryFields();});$('entryCategory').addEventListener('change',()=>{state.dirty=true;updateEntryFields();});
 function closeEntry(){if($('entryForm').dataset.busy)return;if(state.dirty&&!confirm('Descartar as alterações não salvas?'))return;$('entryDialog').close();state.editing=null;state.dirty=false;}
 $('entryDialog').addEventListener('cancel',e=>{e.preventDefault();closeEntry();});$('closeEntry').addEventListener('click',closeEntry);$('cancelEntry').addEventListener('click',closeEntry);
 $('entryForm').addEventListener('submit',e=>{

@@ -389,3 +389,51 @@ body.dark #page-despesas .expense-icon-action:hover,
 body.dark #page-despesas .expense-icon-edit:hover,
 body.dark #page-despesas .expense-icon-delete:hover{color:#fff}
 #page-despesas .expense-icon-action:focus-visible{outline:2px solid var(--text);outline-offset:3px}
+
+/* Seletor de competências temático para receitas */
+.income-period-fields{position:relative;border:1px solid var(--line-strong);border-radius:14px;padding:16px;margin:14px 0}
+.income-period-fields legend{font-weight:700;padding:0 7px}
+.income-period-fields .income-picker-anchor{position:relative;display:inline-block;max-width:100%}
+.income-period-fields .expense-period-picker{z-index:110;left:0;right:auto;width:min(320px,calc(100vw - 64px))}
+.income-period-selections{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
+.income-period-slot{border:1px solid var(--line-strong);background:var(--surface-soft);color:var(--text);border-radius:10px;padding:10px 13px;font-weight:600}
+.income-period-slot:hover{border-color:var(--accent)}
+#incomeChosenMonths{margin-top:12px}
+
+/* Receitas agrupadas em cartões individuais, com ações discretas como nas despesas */
+#page-receitas .statement-list{display:grid;gap:12px;border:0;border-radius:0;background:transparent;overflow:visible;box-shadow:none}
+#page-receitas .statement-list>li.income-entry-card{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--shadow-sm);padding:16px;min-width:0}
+#page-receitas .income-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+#page-receitas .income-card-heading{min-width:0;display:grid;gap:5px}
+#page-receitas .income-card-heading>strong{font-size:15px;line-height:1.35;overflow-wrap:anywhere;color:var(--text)}
+#page-receitas .income-card-subtitle{font-size:11px;line-height:1.45;color:var(--muted)}
+#page-receitas .income-card-tools{display:flex;flex-shrink:0;gap:6px}
+#page-receitas .expense-icon-action{width:36px;height:36px;min-height:36px;padding:8px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-strong);border-radius:10px;background:transparent;color:#101010;box-shadow:none;transform:none}
+#page-receitas .expense-icon-action svg{width:18px;height:18px;stroke-width:1.8}
+#page-receitas .expense-icon-action:hover{background:var(--surface-soft);border-color:var(--line-strong);color:#101010;transform:none}
+body.dark #page-receitas .expense-icon-action,body.dark #page-receitas .expense-icon-action:hover{color:#fff}
+#page-receitas .expense-icon-action:focus-visible{outline:2px solid var(--text);outline-offset:3px}
+#page-receitas .income-card-periods{display:grid;gap:0;margin-top:12px;border-top:1px solid var(--line)}
+#page-receitas .income-card-period{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+#page-receitas .income-card-period+.income-card-period{border-top:1px solid var(--line)}
+#page-receitas .income-period-details{display:grid;justify-items:start;gap:5px;min-width:0}
+#page-receitas .income-period-date{font-size:12px;font-weight:600;color:var(--text)}
+#page-receitas .income-period-side{display:grid;justify-items:end;gap:7px;text-align:right;min-width:0}
+#page-receitas .income-period-side>strong{font-size:14px}
+#page-receitas .income-receive-action{font-size:11px;min-height:34px;padding:7px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-soft);color:var(--text)}
+#page-receitas .income-receive-action.primary-mini{background:var(--black);border-color:var(--black);color:var(--on-strong)}
+@media(max-width:420px){#page-receitas .income-card-period{align-items:flex-start}#page-receitas .income-receive-action{max-width:158px;line-height:1.25;white-space:normal}#page-receitas .income-card-heading>strong{font-size:14px}}
+
+/* Confirmação de exclusão própria do sistema */
+.delete-confirm-dialog{width:min(420px,calc(100% - 28px));padding:26px;border-radius:20px;text-align:center}
+.delete-confirm-symbol{width:54px;height:54px;margin:0 auto 14px;border-radius:16px;display:grid;place-items:center;background:var(--expense-soft);color:var(--expense)}
+.delete-confirm-symbol svg{width:25px;height:25px}
+.delete-confirm-dialog h2{font-size:20px;margin:0 0 10px;color:var(--text)}
+.delete-confirm-dialog p{font-size:13px;line-height:1.65;color:var(--muted);margin:0;overflow-wrap:anywhere}
+.delete-confirm-actions{display:flex;gap:10px;justify-content:center;margin-top:23px}
+.delete-confirm-actions button{flex:1;min-height:43px;border-radius:11px;font-weight:700}
+.delete-confirm-actions .delete-confirm-danger{background:var(--expense);border-color:var(--expense);color:#fff}
+.delete-confirm-actions .delete-confirm-danger:hover{filter:brightness(.94)}
+.delete-confirm-actions button:disabled{opacity:.55;cursor:wait}
+#deleteConfirmError:not([hidden]){margin-top:12px;color:var(--expense);font-weight:600}
+@media(max-width:380px){.delete-confirm-dialog{padding:20px}.delete-confirm-actions{flex-direction:column}}

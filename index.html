@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=38">
+  <link rel="stylesheet" href="styles.css?v=42">
 </head>
 <body>
   <a class="skip-link" href="#main">Ir para o conteúdo</a>
@@ -341,12 +341,27 @@
       <p id="entryHelp" class="muted"></p>
       <label for="entryName">Descrição</label><input id="entryName" name="name" maxlength="160" required>
       <div class="form-grid">
-        <div><label for="entryMode">Modalidade</label><select id="entryMode" name="mode"><option value="single">Única</option><option value="installments">Parcelada (valor total)</option><option value="monthly">Mensal (valor por mês)</option><option value="custom">Personalizada (meses escolhidos)</option><option value="legacy" hidden>Calendário existente</option></select></div>
+        <div id="incomeModeField" hidden><label for="incomeMode">Modalidade da receita</label><select id="incomeMode"><option value="extra">Extra — meses escolhidos</option><option value="fixed">Fixa — todo mês, até alterar</option><option value="until">Fixa até — período definido</option></select></div>
+        <div id="genericModeField"><label for="entryMode">Modalidade</label><select id="entryMode" name="mode"><option value="single">Única</option><option value="installments">Parcelada (valor total)</option><option value="monthly">Mensal (valor por mês)</option><option value="custom">Personalizada (meses escolhidos)</option><option value="legacy" hidden>Calendário existente</option></select></div>
         <div><label id="valueLabel" for="entryValue">Valor (R$)</label><input id="entryValue" name="value" type="number" inputmode="decimal" min="0.01" step="0.01" required></div>
         <div><label id="dateLabel" for="entryDate">Data prevista</label><input id="entryDate" name="date" type="date" min="1900-01-01" max="9999-12-31" required></div>
         <div id="countField"><label for="entryCount">Quantidade de meses</label><input id="entryCount" name="count" type="number" min="1" max="360" step="1" value="1" required></div><div id="endDateField" hidden><label for="entryEndDate">Data final</label><input id="entryEndDate" name="endDate" type="date" min="1900-01-01" max="9999-12-31"></div>
         <div id="categoryField"><label for="entryCategory">Tipo de despesa</label><select id="entryCategory" name="category"><option>Fixa</option><option>Fixa até</option><option>Variável</option></select></div>
       </div>
+      <fieldset id="incomePeriodFields" class="income-period-fields" hidden>
+        <legend>Período da receita</legend>
+        <p id="incomePeriodHint" class="muted">Selecione os meses no calendário.</p>
+        <div id="incomePeriodSelections" class="income-period-selections"></div>
+        <div class="income-picker-anchor">
+          <button id="incomePeriodToggle" class="expense-period-toggle" type="button" aria-expanded="false" aria-controls="incomePeriodPicker"><i data-lucide="calendar-days" aria-hidden="true"></i><span id="incomePeriodLabel">Selecionar mês e ano</span><i data-lucide="chevron-down" aria-hidden="true"></i></button>
+          <div id="incomePeriodPicker" class="expense-period-picker" hidden>
+            <div class="expense-picker-head"><span>Selecionar mês</span><button id="incomeYearToggle" class="expense-year-toggle" type="button" aria-expanded="false"><span id="incomeYearLabel"></span><i data-lucide="chevron-down" aria-hidden="true"></i></button></div>
+            <div id="incomeYearOptions" class="expense-year-options" hidden></div>
+            <div id="incomeMonthOptions" class="expense-month-options"></div>
+          </div>
+        </div>
+        <div id="incomeChosenMonths" class="month-chip-list"></div>
+      </fieldset>
       <fieldset id="customDates" hidden>
         <legend>Competências escolhidas</legend>
         <div id="customExpenseRange" class="custom-expense-range" hidden>
@@ -368,12 +383,22 @@
       <div class="form-actions"><button type="button" id="cancelEntry">Cancelar</button><button class="primary" type="submit">Salvar lançamento</button></div>
     </form>
   </dialog>
+  <dialog id="deleteConfirmDialog" class="delete-confirm-dialog" aria-labelledby="deleteConfirmTitle" aria-describedby="deleteConfirmDescription">
+    <div class="delete-confirm-symbol" aria-hidden="true"><i data-lucide="trash-2"></i></div>
+    <h2 id="deleteConfirmTitle">Excluir item?</h2>
+    <p id="deleteConfirmDescription">Deseja realmente excluir este item?</p>
+    <p id="deleteConfirmError" role="alert" hidden></p>
+    <div class="delete-confirm-actions">
+      <button type="button" id="cancelDeleteConfirm">Cancelar</button>
+      <button type="button" id="acceptDeleteConfirm" class="delete-confirm-danger">Sim, excluir</button>
+    </div>
+  </dialog>
   <dialog id="settleDialog" aria-labelledby="settleTitle"><form id="settleForm"><h2 id="settleTitle">Registrar pagamento</h2><p id="settleSummary" class="muted"></p><label for="settleValue">Valor desta baixa (R$)</label><input type="number" id="settleValue" min="0.01" step="0.01" inputmode="decimal" required><label for="settleDate">Data efetiva</label><input type="date" id="settleDate" required><div id="paymentHistory" class="payment-history"></div><p id="settleError" role="alert"></p><div class="form-actions"><button type="button" id="cancelSettle">Cancelar</button><button type="submit" class="primary">Registrar</button></div></form></dialog>
   <dialog id="clearDialog" aria-labelledby="clearTitle"><form id="clearForm"><h2 id="clearTitle">Apagar dados financeiros?</h2><p>Esta ação remove todas as receitas, despesas, movimentações de economia e anotações da conta.</p><label for="clearConfirmation">Digite APAGAR para confirmar</label><input id="clearConfirmation" required pattern="APAGAR" autocomplete="off"><p id="clearError" role="alert"></p><div class="form-actions"><button type="button" id="cancelClear">Cancelar</button><button type="submit" class="danger">Apagar definitivamente</button></div></form></dialog>
   <noscript>Ative o JavaScript para acessar o sistema financeiro.</noscript>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script>window.lucide?.createIcons();</script>
-  <script type="module" src="js/app.js?v=38"></script>
-  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=38").catch(()=>{}));}</script>
+  <script type="module" src="js/app.js?v=42"></script>
+  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=42").catch(()=>{}));}</script>
 </body>
 </html>
