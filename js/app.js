@@ -338,12 +338,12 @@ function renderFlowChart(series){
   $('flowIncomeLine').setAttribute('d',path(series.income));$('flowExpenseLine').setAttribute('d',path(series.expense));
 }
 function setDashboardMetrics(summary,breakdown,commitment,animate=false){
-  $('balanceTotal').className=summary.balance<0?'expense':'income';const actualBalance=summary.income-breakdown.expensePaid;$('actualBalanceTotal').className=actualBalance<0?'expense':'income';$('incomeForecast').className=summary.balance<0?'expense':'income';
+  $('balanceTotal').className=summary.balance<0?'expense':'income';const actualBalance=summary.income-breakdown.expensePaid;$('actualBalanceTotal').className=actualBalance<0?'expense':'income';$('incomeForecast').className='income';
   const totalMovement=summary.income+summary.expenses,incomeShare=totalMovement?summary.income/totalMovement*100:0,expenseShare=totalMovement?summary.expenses/totalMovement*100:0;
   const setFrame=progress=>{
     const eased=1-Math.pow(1-progress,3);
     $('incomeTotal').textContent=money(Math.round(summary.income*eased));$('expenseTotal').textContent=money(Math.round(summary.expenses*eased));$('balanceTotal').textContent=money(Math.round(summary.balance*eased));$('actualBalanceTotal').textContent=money(Math.round(actualBalance*eased));
-    $('incomeForecast').textContent=money(Math.round(summary.balance*eased));$('incomeReceivable').textContent=money(Math.round(breakdown.incomeReceivable*eased));$('expensePaid').textContent=money(Math.round(breakdown.expensePaid*eased));$('expensePayable').textContent=money(Math.round(breakdown.expensePayable*eased));
+    $('incomeForecast').textContent=money(Math.round(breakdown.incomeReceived*eased));$('incomeReceivable').textContent=money(Math.round(breakdown.incomeReceivable*eased));$('expensePaid').textContent=money(Math.round(breakdown.expensePaid*eased));$('expensePayable').textContent=money(Math.round(breakdown.expensePayable*eased));
     $('analysisIncomeShare').textContent=`${Math.round(incomeShare*eased)}%`;$('analysisExpenseShare').textContent=`${Math.round(expenseShare*eased)}%`;$('analysisIncomeBar').style.width=`${incomeShare*eased}%`;$('analysisExpenseBar').style.width=`${expenseShare*eased}%`;
     $('commitmentValue').textContent=commitment===null?(progress<1?'0%':'Sem renda'):`${Math.round(commitment*eased)}%`;const width=commitment===null?100:Math.min(100,Math.max(0,commitment))*eased;$('commitmentBar').style.width=`${width}%`;$('commitmentBar').dataset.level=commitment===null||commitment>100?'danger':commitment>80?'warning':'ok';
   };
