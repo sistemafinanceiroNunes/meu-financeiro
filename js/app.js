@@ -66,7 +66,6 @@ function renderProfile() {
 }
 function applyAppearance(){
   const theme=stored('temaSolon','claro'),dark=theme==='escuro';document.body.classList.toggle('dark',dark);document.body.classList.toggle('margaridas',theme==='margaridas');document.body.style.fontFamily=stored('fonteSolon','Urbanist, sans-serif');
-  $('themeToggle').setAttribute('aria-pressed',String(dark));$('themeToggle').setAttribute('aria-label',dark?'Ativar tema claro':'Ativar tema escuro');$('themeToggle').title=dark?'Tema claro':'Tema escuro';
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#0f100f':theme==='margaridas'?'#df8eae':'#f7f7f5');
 }
 
@@ -132,10 +131,6 @@ addEventListener('resize',()=>{if(productTourIndex>=0)positionProductTour();});
 addEventListener('scroll',()=>{if(productTourIndex>=0)positionProductTour();},{passive:true,capture:true});
 const savedTheme=stored('temaSolon','claro'),savedFont=stored('fonteSolon','Urbanist, sans-serif');$('themeSelect').value=['claro','escuro','margaridas'].includes(savedTheme)?savedTheme:'claro';$('fontSelect').value=[...$('fontSelect').options].some(option=>option.value===savedFont)?savedFont:'Urbanist, sans-serif';applyAppearance();
 // A seleção do tema é provisória; somente Salvar configurações aplica e persiste a preferência.
-$('themeToggle').addEventListener('click',()=>{
-  const next=$('themeSelect').value==='escuro'?'claro':'escuro';$('themeSelect').value=next;
-  notify('Tema selecionado. Clique em Salvar configurações para aplicar.');
-});
 $('profileForm').addEventListener('submit',async e=>{
   e.preventDefault();const form=e.currentTarget;if(form.dataset.busy)return;const session=state.session,uid=state.uid;
   const nome=$('profileName').value.trim(),sobrenome=$('profileSurname').value.trim(),apelido=$('profileNickname').value.trim()||nome,sexo=$('profileSex').value,file=$('profilePhoto').files[0];
