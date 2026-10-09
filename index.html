@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=32">
+  <link rel="stylesheet" href="styles.css?v=37">
 </head>
 <body>
   <a class="skip-link" href="#main">Ir para o conteúdo</a>
@@ -253,7 +253,7 @@
           <button id="incomeLoadMore" class="statement-load-more" type="button" hidden>Carregar mais</button>
         </section>
         <section id="page-despesas" class="page" hidden>
-          <span class="eyebrow">Saídas</span><h1>Minhas despesas</h1><p>Organize pagamentos únicos, parcelas e despesas mensais.</p><button class="primary action-button" type="button" data-add="despesas"><i data-lucide="plus" aria-hidden="true"></i>Adicionar despesa</button><ul id="expenseList" class="entry-list"></ul>
+          <span class="eyebrow">Saídas</span><h1>Minhas despesas</h1><p>Organize pagamentos únicos, parcelas e despesas mensais.</p><div class="expense-toolbar"><button class="primary action-button" type="button" data-add="despesas"><i data-lucide="plus" aria-hidden="true"></i>Adicionar despesa</button><div class="expense-filter" role="group" aria-label="Filtrar despesas por período"><div class="expense-period-wrap"><button id="expensePeriodToggle" class="expense-period-toggle" type="button" aria-expanded="false" aria-controls="expensePeriodPicker"><i data-lucide="calendar-days" aria-hidden="true"></i><span id="expensePeriodLabel">Selecionar período</span><i data-lucide="chevron-down" aria-hidden="true"></i></button><div id="expensePeriodPicker" class="expense-period-picker" hidden><div class="expense-picker-head"><span>Selecionar período</span><button id="expenseYearToggle" class="expense-year-toggle" type="button" aria-expanded="false" aria-controls="expenseYearOptions"><span id="expenseYearLabel"></span><i data-lucide="chevron-down" aria-hidden="true"></i></button></div><div id="expenseYearOptions" class="expense-year-options" role="group" aria-label="Escolha o ano" hidden></div><div id="expenseMonthOptions" class="expense-month-options" role="group" aria-label="Escolha o mês"></div></div></div><button id="expenseFilterApply" class="primary" type="button">Aplicar</button><button id="expenseFilterAll" type="button">Todas</button></div></div><span id="expenseFilterStatus" class="expense-filter-status" role="status">Todas as despesas</span><ul id="expenseList" class="entry-list"></ul>
         </section>
         <section id="page-economia" class="page" hidden>
           <span class="eyebrow">Reserva</span><h1>Banco Economia</h1><p>Registre o que você guardou e o que precisou retirar da sua reserva.</p>
@@ -377,7 +377,7 @@
   <noscript>Ative o JavaScript para acessar o sistema financeiro.</noscript>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script>window.lucide?.createIcons();</script>
-  <script type="module" src="js/app.js?v=32"></script>
-  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=32").catch(()=>{}));}</script>
+  <script type="module" src="js/app.js?v=37"></script>
+  <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js?v=37").catch(()=>{}));}</script>
 </body>
 </html>

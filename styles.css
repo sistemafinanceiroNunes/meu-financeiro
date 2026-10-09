@@ -324,3 +324,68 @@ body.margaridas .auth-screen::after{background:#fff;opacity:.14}
 body.margaridas .topbar{background:color-mix(in srgb,var(--bg) 90%,transparent)}
 body.margaridas .login-box,body.margaridas .quadrant{box-shadow:0 8px 26px rgba(134,52,90,.08)}
 body.margaridas .brand-mark>span{background:#e6a54b}
+
+/* Despesas: filtro mensal e ações compactas adaptadas aos temas. */
+#page-despesas .expense-filter{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin:18px 0 20px;padding:15px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--shadow-sm)}
+#page-despesas .expense-filter-field{display:grid;gap:7px;flex:1 1 190px;max-width:300px}
+#page-despesas .expense-filter-field label{font-size:12px;font-weight:700;color:var(--text)}
+#page-despesas .expense-filter-field input{width:100%;min-height:42px}
+#page-despesas .expense-filter button{min-height:42px;padding:10px 17px}
+#page-despesas .expense-filter-status{flex-basis:100%;font-size:12px;color:var(--muted)}
+#page-despesas .expense-entry{position:relative}
+#page-despesas .expense-entry .entry-heading .amount{font-size:clamp(17px,2.4vw,21px);font-weight:700;font-variant-numeric:tabular-nums}
+#page-despesas .expense-entry-actions{justify-content:flex-end;gap:8px;margin-top:8px}
+#page-despesas .expense-icon-action{width:38px;height:38px;min-height:38px;padding:8px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-strong);border-radius:11px;background:var(--surface-soft);color:var(--text);transition:background .2s,border-color .2s,transform .2s}
+#page-despesas .expense-icon-action svg{width:18px;height:18px;stroke-width:1.9}
+#page-despesas .expense-icon-action:hover{background:var(--accent-soft);border-color:var(--accent);transform:translateY(-1px)}
+#page-despesas .expense-icon-delete{color:var(--expense)}
+#page-despesas .expense-icon-delete:hover{background:var(--expense-soft);border-color:var(--expense)}
+#page-despesas .expense-icon-action:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media(max-width:540px){#page-despesas .expense-filter-field{max-width:none;flex-basis:100%}#page-despesas .expense-filter button{flex:1}}
+
+/* Seletor de período integrado à barra de ações. */
+#page-despesas .expense-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 8px}
+#page-despesas .expense-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+#page-despesas .expense-filter button{min-height:40px;padding:9px 12px}
+#page-despesas .expense-period-wrap{position:relative}
+#page-despesas .expense-period-toggle{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);background:var(--surface);color:var(--text);border-radius:var(--r-sm);font-weight:650}
+#page-despesas .expense-period-toggle svg{width:16px;height:16px}
+#page-despesas .expense-period-picker{position:absolute;z-index:100;top:calc(100% + 8px);left:0;width:min(320px,calc(100vw - 36px));padding:16px;border:1px solid var(--line-strong);border-radius:var(--r-lg);background:var(--surface);color:var(--text);box-shadow:var(--shadow-md)}
+#page-despesas .expense-period-picker[hidden],#page-despesas .expense-year-options[hidden]{display:none}
+#page-despesas .expense-picker-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px;font-weight:700}
+#page-despesas .expense-year-toggle{display:inline-flex;align-items:center;gap:7px;background:var(--surface-soft);border:1px solid var(--line);border-radius:10px;color:var(--text);font-weight:700}
+#page-despesas .expense-year-toggle svg{width:14px;height:14px}
+#page-despesas .expense-month-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#page-despesas .expense-month-option{width:100%;min-height:44px;padding:7px 3px;border:1px solid transparent;border-radius:999px;background:var(--surface-soft);color:var(--text);font-weight:650}
+#page-despesas .expense-month-option.is-selected{border:2px solid var(--accent);background:var(--accent-soft);color:var(--text);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}
+#page-despesas .expense-year-options{position:absolute;z-index:2;top:54px;right:12px;width:140px;max-height:230px;overflow-y:auto;padding:7px;display:grid;gap:4px;border:1px solid var(--line-strong);border-radius:12px;background:var(--surface);box-shadow:var(--shadow-md)}
+#page-despesas .expense-year-option{min-height:36px;border:0;border-radius:8px;background:transparent;color:var(--text);font-weight:600}
+#page-despesas .expense-year-option.is-selected{outline:2px solid var(--accent);outline-offset:-2px;background:var(--accent-soft)}
+#page-despesas .expense-month-option:hover,#page-despesas .expense-year-option:hover{background:var(--accent-soft)}
+#page-despesas .expense-filter-status{display:block;margin:0 0 18px;font-size:12px;color:var(--muted)}
+@media(max-width:540px){#page-despesas .expense-toolbar{align-items:stretch}#page-despesas .expense-filter{flex:1 1 100%}#page-despesas .expense-filter button{flex:initial}#page-despesas .expense-period-wrap{flex:1 1 auto}#page-despesas .expense-period-toggle{width:100%;justify-content:center}#page-despesas .expense-period-picker{left:0}}
+
+/* Ajustes de legibilidade e ícones de despesas. */
+#page-despesas .expense-entry .entry-heading strong{font-size:16px;line-height:1.45;font-weight:700}
+#page-despesas .expense-entry p{font-size:13px;line-height:1.6}
+#page-despesas .expense-entry .entry-heading .amount{font-size:clamp(19px,2.4vw,23px)}
+#page-despesas .expense-icon-action svg{display:block;width:19px;height:19px;flex:none}
+#page-despesas .expense-icon-edit,#page-despesas .expense-icon-delete{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,var(--line-strong))}
+#page-despesas .expense-icon-delete:hover,#page-despesas .expense-icon-edit:hover{color:var(--accent);background:var(--accent-soft);border-color:var(--accent)}
+
+/* Ações de despesas: monocromáticas e discretas, conforme modo claro/escuro. */
+#page-despesas .expense-entry-actions{gap:6px}
+#page-despesas .expense-icon-action,
+#page-despesas .expense-icon-edit,
+#page-despesas .expense-icon-delete{width:36px;height:36px;min-height:36px;padding:8px;border:1px solid var(--line-strong);border-radius:10px;background:transparent;color:#101010;box-shadow:none;transform:none}
+#page-despesas .expense-icon-action svg{width:18px;height:18px;stroke-width:1.8}
+#page-despesas .expense-icon-action:hover,
+#page-despesas .expense-icon-edit:hover,
+#page-despesas .expense-icon-delete:hover{background:var(--surface-soft);border-color:var(--line-strong);color:#101010;transform:none}
+body.dark #page-despesas .expense-icon-action,
+body.dark #page-despesas .expense-icon-edit,
+body.dark #page-despesas .expense-icon-delete{color:#fff}
+body.dark #page-despesas .expense-icon-action:hover,
+body.dark #page-despesas .expense-icon-edit:hover,
+body.dark #page-despesas .expense-icon-delete:hover{color:#fff}
+#page-despesas .expense-icon-action:focus-visible{outline:2px solid var(--text);outline-offset:3px}

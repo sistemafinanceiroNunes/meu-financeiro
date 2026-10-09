@@ -1,6 +1,6 @@
 import {today,money,displayDate,cents,validDate,makeEntry,normalize,summarize,occurrencesFor,economyBalance} from './finance.js';
 const $ = id => document.getElementById(id);
-const state = {uid:null,data:normalize(),ready:false,profile:{},unsubscribe:null,session:0,editing:null,dirty:false,writing:false,settling:null,customMonths:[],clearRevision:0,currentPage:'inicio',visitedPages:new Set(),dashboardAnimated:false,metricAnimationToken:0,connectionNotified:false,dashboardPeriodMode:'month',incomeVisibleCount:30};
+const state = {uid:null,data:normalize(),ready:false,profile:{},unsubscribe:null,session:0,editing:null,dirty:false,writing:false,settling:null,customMonths:[],clearRevision:0,currentPage:'inicio',visitedPages:new Set(),dashboardAnimated:false,metricAnimationToken:0,connectionNotified:false,dashboardPeriodMode:'month',incomeVisibleCount:30,expenseFilterMonth:null};
 let repository, noticeTimer;
 const stored = (key,fallback) => { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } };
 const remember = (key,value) => { try { localStorage.setItem(key,value); } catch { /* Preferência não impede o uso. */ } };
@@ -393,6 +393,53 @@ function renderReviewNotice(){
   const head=node('div',undefined,'warning-head');head.append(node('span','!','warning-symbol'),node('span',issues.length===1?'1 ajuste precisa da sua atenção':`${issues.length} ajustes precisam da sua atenção`));notice.append(head);
   issues.forEach(issue=>{const button=node('button',undefined,'warning-item');button.type='button';const copy=node('span',undefined,'warning-copy');copy.append(node('strong',issue.name),node('small',issue.detail));button.append(copy,node('span','→','warning-arrow'));button.addEventListener('click',()=>focusIssue(issue));notice.append(button);});
 }
+function renderExpenseList(){
+  const month=state.expenseFilterMonth;
+  const entries=month===null?state.data.despesas:state.data.despesas.filter(entry=>!entry.pendingReview&&occurrencesFor({...state.data,despesas:[entry]},month).some(row=>row.collection==='despesas'));
+  list('expenseList',entries,entry=>renderEntry(entry,'despesas'),month===null?'Nenhuma despesa adicionada.':'Nenhuma despesa neste mês.');
+  $('expenseFilterStatus').textContent=month===null?'Todas as despesas':`Exibindo despesas de ${new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(new Date(Number(month.slice(0,4)),Number(month.slice(5,7))-1,1))}`;
+}
+const expenseMonthNames=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+let expenseDraftMonth=today().slice(0,7);
+function setExpensePickerOpen(open){
+  $('expensePeriodPicker').hidden=!open;
+  $('expensePeriodToggle').setAttribute('aria-expanded',String(open));
+  if(!open)setExpenseYearOpen(false);
+}
+function setExpenseYearOpen(open){
+  $('expenseYearOptions').hidden=!open;
+  $('expenseYearToggle').setAttribute('aria-expanded',String(open));
+}
+function updateExpensePicker(){
+  const [year,month]=expenseDraftMonth.split('-').map(Number);
+  $('expenseYearLabel').textContent=String(year);
+  $('expensePeriodLabel').textContent=expenseMonthNames[month-1]+' / '+year;
+  const months=$('expenseMonthOptions');months.replaceChildren();
+  expenseMonthNames.forEach((name,i)=>{
+    const button=node('button',name,'expense-month-option');button.type='button';
+    const selected=i+1===month;button.classList.toggle('is-selected',selected);button.setAttribute('aria-pressed',String(selected));
+    button.addEventListener('click',()=>{expenseDraftMonth=year+'-'+String(i+1).padStart(2,'0');updateExpensePicker();});
+    months.append(button);
+  });
+  const years=$('expenseYearOptions');years.replaceChildren();
+  const currentYear=Number(today().slice(0,4)),first=Math.min(year-12,currentYear-12),last=Math.max(year+12,currentYear+12);
+  for(let y=last;y>=first;y--){
+    const button=node('button',String(y),'expense-year-option');button.type='button';
+    button.classList.toggle('is-selected',y===year);button.setAttribute('aria-pressed',String(y===year));
+    button.addEventListener('click',()=>{expenseDraftMonth=y+'-'+String(month).padStart(2,'0');updateExpensePicker();setExpenseYearOpen(false);});
+    years.append(button);
+  }
+}
+updateExpensePicker();
+$('expensePeriodToggle').addEventListener('click',()=>setExpensePickerOpen($('expensePeriodPicker').hidden));
+$('expenseYearToggle').addEventListener('click',()=>setExpenseYearOpen($('expenseYearOptions').hidden));
+$('expenseFilterApply').addEventListener('click',()=>{
+  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(expenseDraftMonth)){notify('Selecione um mês e ano válidos.',true);return;}
+  state.expenseFilterMonth=expenseDraftMonth;setExpensePickerOpen(false);if(state.ready)renderExpenseList();
+});
+$('expenseFilterAll').addEventListener('click',()=>{state.expenseFilterMonth=null;expenseDraftMonth=today().slice(0,7);updateExpensePicker();setExpensePickerOpen(false);if(state.ready)renderExpenseList();});
+document.addEventListener('click',event=>{if(!event.target.closest('.expense-period-wrap'))setExpensePickerOpen(false);});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('expensePeriodPicker').hidden){setExpensePickerOpen(false);$('expensePeriodToggle').focus();}});
 function render(){
   if(!state.ready)return;
   const context=dashboardContext();if(!context)return;const {period,summary,breakdown}=context,commitment=summary.commitment;
@@ -404,17 +451,25 @@ function render(){
   else if(hasData){status='Equilíbrio';description='Receitas e despesas previstas estão equilibradas.';}
   $('monthStatus').textContent=status;$('monthStatus').dataset.tone=tone;$('trendIcon').textContent=icon;$('monthDescription').textContent=description;
   renderReviewNotice();
-  renderIncomeStatement();list('expenseList',state.data.despesas,e=>renderEntry(e,'despesas'),'Nenhuma despesa adicionada.');
+  renderIncomeStatement();renderExpenseList();
   if($('dashboardDetailDialog').open&&$('dashboardDetailDialog').dataset.kind==='despesas'&&!$('dashboardExpenseDetails').hidden)renderExpenseModalDetails();
   $('economyBalance').textContent=money(economyBalance(state.data));$('economyBalance').className=economyBalance(state.data)<0?'expense':'income';
   list('economyList',state.data.economia||[],renderEconomyItem,'Nenhuma movimentação na sua reserva.');
   list('notesList',state.data.itens,item=>{const li=node('li');li.append(node('span',item.text));const actions=node('div',undefined,'row-actions');actions.append(action('Excluir',()=>remove('itens',item),`Excluir anotação: ${item.text}`));li.append(actions);return li;},'Nenhuma anotação.');
 }
 function renderEntry(entry,collection){
-  const li=node('li'),head=node('div',undefined,'entry-heading');li.dataset.entryId=entry.id;li.tabIndex=-1;if(entry.pendingReview||(entry.mode==='legacy'&&entry.occurrences.some(p=>p.estimated)))li.classList.add('has-issue');head.append(node('strong',entry.name),node('span',money(entry.amountCents),`amount ${collection==='receitas'?'income':'expense'}`));li.append(head);
+  const li=node('li'),head=node('div',undefined,'entry-heading');if(collection==='despesas')li.classList.add('expense-entry');li.dataset.entryId=entry.id;li.tabIndex=-1;if(entry.pendingReview||(entry.mode==='legacy'&&entry.occurrences.some(p=>p.estimated)))li.classList.add('has-issue');head.append(node('strong',entry.name),node('span',money(entry.amountCents),`amount ${collection==='receitas'?'income':'expense'}`));li.append(head);
   const occurrences=entry.occurrences;const modeLabel=entry.mode==='monthly'?'mensalidade(s) — valor por mês':entry.mode==='custom'?'competência(s) escolhida(s) — valor por competência':'parcela(s) — valor total';li.append(node('p',entry.pendingReview?'Revisão pendente: defina as datas para incluir nos totais.':entry.openEnded?`Mensal fixa · desde ${displayDate(entry.firstDate)} · sem data final`:entry.category==='Fixa até'?`Fixa até · ${entry.count} mês(es) · ${displayDate(entry.firstDate)} a ${displayDate(entry.endDate||occurrences.at(-1)?.date)}`:`${occurrences.length} ${modeLabel} · ${displayDate(occurrences[0]?.date)} a ${displayDate(occurrences.at(-1)?.date)}`));
-  if(entry.mode==='legacy'&&occurrences.some(p=>p.estimated))li.append(node('p','Dias de vencimento a confirmar; meses originais preservados.'));else if(occurrences.some(p=>p.estimated))li.append(node('p','Competências mensais preservadas do sistema anterior.'));
-  const actions=node('div',undefined,'row-actions');actions.append(action('Editar',()=>openEntry(collection,entry),`Editar ${entry.name}`),action('Excluir',()=>remove(collection,entry),`Excluir ${entry.name}`));li.append(actions);return li;
+  if(collection!=='despesas'){if(entry.mode==='legacy'&&occurrences.some(p=>p.estimated))li.append(node('p','Dias de vencimento a confirmar; meses originais preservados.'));else if(occurrences.some(p=>p.estimated))li.append(node('p','Competências mensais preservadas do sistema anterior.'));}
+  const actions=node('div',undefined,'row-actions');if(collection==='despesas'){
+    actions.classList.add('expense-entry-actions');
+    for(const [label,icon,handler] of [['Editar','book-open-pen',()=>openEntry(collection,entry)],['Excluir','trash-2',()=>remove(collection,entry)]]){
+      const button=action('',handler,`${label} ${entry.name}`);button.className=`expense-icon-action ${label==='Excluir'?'expense-icon-delete':'expense-icon-edit'}`;button.title=`${label} ${entry.name}`;
+      const glyph=document.createElementNS('http://www.w3.org/2000/svg','svg');glyph.setAttribute('viewBox','0 0 24 24');glyph.setAttribute('fill','none');glyph.setAttribute('stroke','currentColor');glyph.setAttribute('stroke-width','1.9');glyph.setAttribute('stroke-linecap','round');glyph.setAttribute('stroke-linejoin','round');glyph.setAttribute('aria-hidden','true');
+      const paths=label==='Editar'?['M12 20h9','M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z','m15 5 4 4']:['M3 6h18','M8 6V4h8v2','M19 6l-1 14H6L5 6','M10 11v6','M14 11v6'];
+      paths.forEach(d=>{const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',d);glyph.append(path);});button.append(glyph);actions.append(button);
+    }
+  }else actions.append(action('Editar',()=>openEntry(collection,entry),`Editar ${entry.name}`),action('Excluir',()=>remove(collection,entry),`Excluir ${entry.name}`));li.append(actions);return li;
 }
 function renderOccurrence(row){
   const li=node('li'),head=node('div',undefined,'entry-heading');head.append(node('strong',row.name),node('span',money(row.cents),`amount ${row.collection==='receitas'?'income':'expense'}`));li.append(head);
