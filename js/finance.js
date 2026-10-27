@@ -1,7 +1,7 @@
 // Regras puras: valores em centavos e datas locais YYYY-MM-DD, sem fuso horário.
 export const CURRENT_SCHEMA = 3;
 // Compatibilidade com Safari/iOS anteriores ao structuredClone nativo.
-const clone = value => typeof structuredClone === 'function' ? clone(value) : JSON.parse(JSON.stringify(value));
+const clone = value => typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value));
 export const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 export const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 export const money = cents => (cents / 100).toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
