@@ -1,5 +1,7 @@
 // Regras puras: valores em centavos e datas locais YYYY-MM-DD, sem fuso horário.
 export const CURRENT_SCHEMA = 3;
+// Compatibilidade com Safari/iOS anteriores ao structuredClone nativo.
+const clone = value => typeof structuredClone === 'function' ? clone(value) : JSON.parse(JSON.stringify(value));
 export const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 export const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 export const money = cents => (cents / 100).toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
@@ -35,7 +37,7 @@ function monthDate(value) {
 }
 function paymentTotal(occurrence) { return (occurrence.payments || []).reduce((sum,p)=>sum + (Number.isSafeInteger(p.cents) ? p.cents : 0),0); }
 function upgradeOccurrence(occurrence, index=0) {
-  const result = {...structuredClone(occurrence)};
+  const result = {...clone(occurrence)};
   result.id = result.id || `p${index+1}`;
   result.payments = Array.isArray(result.payments) ? result.payments.filter(p=>p && validDate(p.date) && Number.isSafeInteger(p.cents) && p.cents > 0).map((p,i)=>({id:p.id || `legacy-pay-${i}`,date:p.date,cents:p.cents,...(p.estimated?{estimated:true}:{})})) : [];
   if (!result.payments.length && result.settled && validDate(result.settledDate) && Number.isSafeInteger(result.cents) && result.cents > 0) {
@@ -100,7 +102,7 @@ export function makeEntry({id, name, value, date, endDate, count, mode, category
 }
 function modernEntry(entry,index,prefix) {
   return {
-    ...structuredClone(entry),
+    ...clone(entry),
     id:entry.id || `${prefix}-${index}`,
     revision:Number.isInteger(entry.revision)&&entry.revision>=0?entry.revision:0,
     pendingReview:!!entry.pendingReview,
@@ -132,7 +134,7 @@ function paymentsFromOldStatus(status, date, plannedCents) {
 }
 function migrateCurrentGitHubEntry(raw,index,collection) {
   const amount=Math.round(Number(raw.valor)*100), name=String(raw.nome || '').trim(), type=raw.tipo || 'Fixa';
-  const base={id:`github-${collection[0]}-${index}`,name,amountCents:amount,category:collection==='despesas'?(type==='Variável'?'Variável':type==='FixaAte'?'Fixa até':'Fixa'):'Fixa',revision:0,pendingReview:false,legacy:structuredClone(raw)};
+  const base={id:`github-${collection[0]}-${index}`,name,amountCents:amount,category:collection==='despesas'?(type==='Variável'?'Variável':type==='FixaAte'?'Fixa até':'Fixa'):'Fixa',revision:0,pendingReview:false,legacy:clone(raw)};
   if (!name || !Number.isSafeInteger(amount) || amount<=0) return {...base,mode:'legacy',count:1,firstDate:null,pendingReview:true,occurrences:[]};
   let dates=[];
   if (type==='FixaAte') dates=oldIntervalDates(raw.intervaloCompleto);
@@ -147,7 +149,7 @@ function migrateCurrentGitHubEntry(raw,index,collection) {
     const status=raw.statusPagamento?.[`${monthName}_${year}`];
     return {id:`p${i+1}`,date,cents:amount,payments:paymentsFromOldStatus(status,date,amount),estimated:true};
   });
-  return {...base,mode:(type==='FixaAte'?'monthly':'custom'),count:occurrences.length,firstDate:occurrences[0].date,...(type==='FixaAte'?{endDate:occurrences.at(-1).date}:{}),occurrences};
+  return {...base,mode:(type==='FixaAte'?'monthly':'custom'),count:occurrences.length,firstDate:occurrences[0].date,...(type==='FixaAte'?{endDate:occurrences[occurrences.length-1].date}:{}),occurrences};
 }
 function parseBrazilDate(value) {
   const match=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(value||''));
@@ -157,14 +159,14 @@ function parseBrazilDate(value) {
 }
 function migrateEconomy(items=[]) {
   return items.map((item,i)=>{
-    if (item && Number.isSafeInteger(item.cents) && validDate(item.date)) return {...structuredClone(item),id:item.id||`eco-${i}`,revision:Number.isInteger(item.revision)?item.revision:0};
+    if (item && Number.isSafeInteger(item.cents) && validDate(item.date)) return {...clone(item),id:item.id||`eco-${i}`,revision:Number.isInteger(item.revision)?item.revision:0};
     const rawCents=Math.round(Math.abs(Number(item?.valor))*100);
     const kind=Number(item?.valor)<0 || item?.tipo==='Saque' ? 'withdraw' : 'deposit';
-    return {id:`github-e-${i}`,name:String(item?.motivo||item?.name||'Movimentação'),kind,cents:Number.isSafeInteger(rawCents)&&rawCents>0?rawCents:0,date:parseBrazilDate(item?.data)||today(),revision:0,legacy:structuredClone(item)};
+    return {id:`github-e-${i}`,name:String(item?.motivo||item?.name||'Movimentação'),kind,cents:Number.isSafeInteger(rawCents)&&rawCents>0?rawCents:0,date:parseBrazilDate(item?.data)||today(),revision:0,legacy:clone(item)};
   }).filter(item=>item.cents>0);
 }
 function finalize(data) {
-  const result={...structuredClone(data),schemaVersion:CURRENT_SCHEMA};
+  const result={...clone(data),schemaVersion:CURRENT_SCHEMA};
   result.revision=Number.isInteger(result.revision)&&result.revision>=0?result.revision:0;
   result.receitas=(result.receitas||[]).map((e,i)=>modernEntry(e,i,'r'));
   result.despesas=(result.despesas||[]).map((e,i)=>modernEntry(e,i,'d'));
@@ -186,13 +188,13 @@ export function normalize(raw = {}) {
       itens:(raw.itens||[]).map((text,i)=>typeof text==='string'?{id:`github-n-${i}`,text:String(text)}:text),
       economia:migrateEconomy(raw.economia||[])});
   }
-  const result={...structuredClone(raw),schemaVersion:CURRENT_SCHEMA,revision:0,economia:[]};
-  result.receitas=(raw.receitas||[]).map((r,i)=>({id:`legacy-r-${i}`,name:String(r.nome||''),amountCents:Math.round(Number(r.valor)*100),mode:'single',count:1,firstDate:null,pendingReview:true,revision:0,occurrences:[],legacy:structuredClone(r)}));
+  const result={...clone(raw),schemaVersion:CURRENT_SCHEMA,revision:0,economia:[]};
+  result.receitas=(raw.receitas||[]).map((r,i)=>({id:`legacy-r-${i}`,name:String(r.nome||''),amountCents:Math.round(Number(r.valor)*100),mode:'single',count:1,firstDate:null,pendingReview:true,revision:0,occurrences:[],legacy:clone(r)}));
   result.despesas=(raw.despesas||[]).map((d,i)=>{
     const amount=Math.round(Number(d.valor)*100),months=[...new Set(d.meses||[])].map(m=>MONTHS.indexOf(m)).sort((a,b)=>a-b),year=d.ano==null||d.ano===''?null:String(d.ano);
     const valid=Number.isSafeInteger(amount)&&amount>0&&year!==null&&months.length===Number(d.parcelas)&&months.length>0&&months.every(m=>m>=0)&&validDate(`${year}-01-01`);
     const occurrences=valid?months.map((m,j)=>({id:`p${j+1}`,date:`${year}-${String(m+1).padStart(2,'0')}-01`,cents:Math.floor(amount/months.length)+(j<amount%months.length?1:0),payments:[],estimated:true})):[];
-    return {id:`legacy-d-${i}`,name:String(d.nome||''),amountCents:amount,mode:'legacy',category:d.tipo||'Fixa',count:Number(d.parcelas)||1,firstDate:occurrences[0]?.date||null,pendingReview:!valid,revision:0,occurrences,legacy:structuredClone(d)};
+    return {id:`legacy-d-${i}`,name:String(d.nome||''),amountCents:amount,mode:'legacy',category:d.tipo||'Fixa',count:Number(d.parcelas)||1,firstDate:occurrences[0]?.date||null,pendingReview:!valid,revision:0,occurrences,legacy:clone(d)};
   });
   result.itens=(raw.itens||[]).map((text,i)=>({id:`legacy-n-${i}`,text:String(text)}));
   return finalize(result);
@@ -208,7 +210,7 @@ export function occurrencesFor(data, month) {
     for (const occurrence of rows) {
       const paid=paymentTotal(occurrence), outstanding=Math.max(0,occurrence.cents-paid), settled=outstanding===0&&occurrence.cents>0;
       const payments=(occurrence.payments||[]).map(p=>({...p})),persistedIndex=(entry.occurrences||[]).findIndex(item=>item.id===occurrence.id);
-      result.push({...occurrence,payments,paymentCents:paid,outstandingCents:outstanding,settled,partial:paid>0&&!settled,settledDate:settled?payments.filter(p=>!p.estimated).sort((a,b)=>a.date.localeCompare(b.date)).at(-1)?.date||null:null,
+      result.push({...occurrence,payments,paymentCents:paid,outstandingCents:outstanding,settled,partial:paid>0&&!settled,settledDate:settled?(()=>{const confirmed=payments.filter(p=>!p.estimated).sort((a,b)=>a.date.localeCompare(b.date));return confirmed.length?confirmed[confirmed.length-1].date:null;})():null,
         entryId:entry.id,name:entry.name,category:entry.category,collection,revision:entry.revision,index:persistedIndex>=0?persistedIndex+1:null,count:entry.openEnded?null:entry.occurrences.length});
     }
   }
@@ -236,13 +238,13 @@ export function applyOperation(raw, op) {
   const list=data[op.collection],index=list.findIndex(e=>e.id===op.id);
   if (op.type==='add') {
     if (index>=0) return data;
-    list.push(structuredClone(op.entry));
+    list.push(clone(op.entry));
   } else {
     if (index<0) throw new Error('Este item foi excluído em outro dispositivo.');
     const current=list[index];
     if (!['itens'].includes(op.collection) && current.revision!==op.expectedRevision) throw new Error('Este lançamento mudou em outro dispositivo. Feche e abra novamente para revisar.');
     if (op.type==='remove') list.splice(index,1);
-    else if (op.type==='edit') list[index]={...structuredClone(op.entry),id:current.id,revision:(current.revision||0)+1};
+    else if (op.type==='edit') list[index]={...clone(op.entry),id:current.id,revision:(current.revision||0)+1};
     else if (['payment','removePayment','settle'].includes(op.type)) {
       if (!['receitas','despesas'].includes(op.collection)) throw new Error('Operação inválida.');
       let occurrence=current.occurrences.find(p=>p.id===op.occurrenceId);
